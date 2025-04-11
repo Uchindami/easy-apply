@@ -1,8 +1,9 @@
-import { useRef } from "react"
-import { Button } from "@/components/ui/button"
+"use client"
+
+import type React from "react"
+
+import { UploadCloud } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Upload, CheckCircle2 } from "lucide-react"
-import { cn } from "@/lib/utils"
 
 interface ResumeUploaderProps {
   resumeFile: File | null
@@ -10,81 +11,41 @@ interface ResumeUploaderProps {
 }
 
 export function ResumeUploader({ resumeFile, onFileChange }: ResumeUploaderProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null)
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      onFileChange(e.target.files[0])
-    }
-  }
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-  }
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      onFileChange(e.dataTransfer.files[0])
-    }
+    const file = e.target.files?.[0] || null
+    onFileChange(file)
   }
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Upload Your Resume</CardTitle>
-        <CardDescription>
-          Upload your existing resume to tailor it for the job you're applying to
-        </CardDescription>
+        <CardDescription>Upload your current resume in PDF, DOCX, or TXT format</CardDescription>
       </CardHeader>
       <CardContent>
-        <div
-          className={cn(
-            "border-2 border-dashed rounded-lg p-12 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors",
-            resumeFile ? "border-green-500" : "border-gray-300",
-          )}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
-        >
+        <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 cursor-pointer hover:bg-muted/50 transition-colors">
           <input
             type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
+            id="resume-upload"
             className="hidden"
-            accept=".pdf,.doc,.docx,.txt,.md"
+            accept=".pdf,.docx,.doc,.txt"
+            onChange={handleFileChange}
           />
-
-          {resumeFile ? (
-            <div className="flex flex-col items-center">
-              <CheckCircle2 className="h-12 w-12 text-green-500 mb-4" />
-              <p className="text-lg font-medium">{resumeFile.name}</p>
-              <p className="text-sm text-gray-500 mt-2">File uploaded successfully</p>
-              <Button
-                variant="outline"
-                size="sm"
-                className="mt-4"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onFileChange(null)
-                }}
-              >
-                Change File
-              </Button>
+          <label htmlFor="resume-upload" className="cursor-pointer flex flex-col items-center">
+            <UploadCloud className="h-10 w-10 text-muted-foreground mb-2" />
+            <div className="text-center">
+              {resumeFile ? (
+                <p className="font-medium text-primary">{resumeFile.name}</p>
+              ) : (
+                <>
+                  <p className="font-medium">Click to upload or drag and drop</p>
+                  <p className="text-sm text-muted-foreground">PDF, DOCX, or TXT (max 5MB)</p>
+                </>
+              )}
             </div>
-          ) : (
-            <div className="flex flex-col items-center">
-              <Upload className="h-12 w-12 text-gray-400 mb-4" />
-              <p className="text-lg font-medium">Drag and drop your resume</p>
-              <p className="text-sm text-gray-500 mt-2">or click to browse files</p>
-              <p className="text-xs text-gray-400 mt-4">Supports PDF, Word, Text, and Markdown files</p>
-            </div>
-          )}
+          </label>
         </div>
       </CardContent>
     </Card>
   )
-} 
+}

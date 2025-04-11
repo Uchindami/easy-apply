@@ -1,8 +1,13 @@
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
+"use client"
+
+import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Download } from "lucide-react"
-import { DiffViewer } from "@/components/diff-viewer"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Download, FileText, Mail } from "lucide-react"
 
 interface DocumentPreviewProps {
   generatedResume: string
@@ -10,8 +15,8 @@ interface DocumentPreviewProps {
   originalResume: string
   showDiff: boolean
   onShowDiffChange: (show: boolean) => void
-  onResumeChange: (resume: string) => void
-  onCoverLetterChange: (coverLetter: string) => void
+  onResumeChange: (content: string) => void
+  onCoverLetterChange: (content: string) => void
   onDownload: (type: "resume" | "coverLetter") => void
 }
 
@@ -25,65 +30,64 @@ export function DocumentPreview({
   onCoverLetterChange,
   onDownload,
 }: DocumentPreviewProps) {
+  const [activeDocTab, setActiveDocTab] = useState<string>("resume")
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Tailored Resume</CardTitle>
-            <CardDescription>Your resume tailored to the job posting</CardDescription>
+            <CardTitle>Your Tailored Documents</CardTitle>
+            <CardDescription>Review and edit your tailored resume and cover letter</CardDescription>
           </div>
           <div className="flex items-center space-x-2">
-            {originalResume && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onShowDiffChange(!showDiff)}
-                className={showDiff ? "bg-muted" : ""}
-              >
-                {showDiff ? "Hide Changes" : "Show Changes"}
-              </Button>
-            )}
-            <Button variant="outline" size="icon" onClick={() => onDownload("resume")}>
-              <Download className="h-4 w-4" />
-            </Button>
+            <Switch id="show-diff" checked={showDiff} onCheckedChange={onShowDiffChange} />
+            <Label htmlFor="show-diff">Show Changes</Label>
           </div>
-        </CardHeader>
-        <CardContent>
-          {showDiff && originalResume ? (
-            <DiffViewer
-              originalText={originalResume}
-              newText={generatedResume}
-              className="h-[500px] overflow-y-auto border rounded-md p-2"
-            />
-          ) : (
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Tabs value={activeDocTab} onValueChange={setActiveDocTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-4">
+            <TabsTrigger value="resume" className="flex items-center">
+              <FileText className="mr-2 h-4 w-4" />
+              Resume
+            </TabsTrigger>
+            <TabsTrigger value="coverLetter" className="flex items-center">
+              <Mail className="mr-2 h-4 w-4" />
+              Cover Letter
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="resume" className="space-y-4">
             <Textarea
-              className="font-mono h-[500px] resize-none"
               value={generatedResume}
               onChange={(e) => onResumeChange(e.target.value)}
+              className="min-h-[400px] font-mono text-sm"
             />
-          )}
-        </CardContent>
-      </Card>
+            <div className="flex justify-end">
+              <Button onClick={() => onDownload("resume")} className="flex items-center">
+                <Download className="mr-2 h-4 w-4" />
+                Download Resume
+              </Button>
+            </div>
+          </TabsContent>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Cover Letter</CardTitle>
-            <CardDescription>A personalized cover letter for your application</CardDescription>
-          </div>
-          <Button variant="outline" size="icon" onClick={() => onDownload("coverLetter")}>
-            <Download className="h-4 w-4" />
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <Textarea
-            className="font-mono h-[500px] resize-none"
-            value={generatedCoverLetter}
-            onChange={(e) => onCoverLetterChange(e.target.value)}
-          />
-        </CardContent>
-      </Card>
-    </div>
+          <TabsContent value="coverLetter" className="space-y-4">
+            <Textarea
+              value={generatedCoverLetter}
+              onChange={(e) => onCoverLetterChange(e.target.value)}
+              className="min-h-[400px] font-mono text-sm"
+            />
+            <div className="flex justify-end">
+              <Button onClick={() => onDownload("coverLetter")} className="flex items-center">
+                <Download className="mr-2 h-4 w-4" />
+                Download Cover Letter
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   )
-} 
+}

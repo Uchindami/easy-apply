@@ -1,9 +1,13 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+	"easy-apply/middleware"
+)
+
 
 // Setup API routes
 func setupRoutes() {
-	http.HandleFunc("/auth", authHandler)
-	http.HandleFunc("/upload", uploadHandler)
+	http.HandleFunc("/auth", middleware.WithCORS(authHandler))
+	http.HandleFunc("/upload", middleware.WithCORS(uploadHandler))
 }

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 
@@ -22,7 +23,7 @@ func init() {
 	pdfProcessor = processors.NewPDFProcessor("") // Empty path since we don't save
 	webProcessor = processors.NewWebProcessor("") // Optional: still may use download path
 	openAIProcessor = processors.NewOpenAIProcessor()
-	
+
 }
 
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
@@ -36,12 +37,14 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 func handleFileUpload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(10 << 20) // 10MB limit
 	if err != nil {
+		log.Printf("Error parsing multipart form: %v", err)
 		http.Error(w, "File too large or invalid form data", http.StatusBadRequest)
 		return
 	}
 
 	// Check if weblink was submitted
 	webLink := r.FormValue("weblink")
+	log.Printf("Received web link: %s", webLink)
 	if webLink == "" {
 		http.Error(w, "Job posting(Link to job posting) is required", http.StatusBadRequest)
 		return
@@ -51,8 +54,10 @@ func handleFileUpload(w http.ResponseWriter, r *http.Request) {
 	file, handler, err := r.FormFile("file")
 	if err == nil {
 		defer file.Close()
+		log.Printf("Received file: %s (Size: %d bytes)", handler.Filename, handler.Size)
 
 		if strings.ToLower(getFileExt(handler.Filename)) != ".pdf" {
+			log.Printf("Invalid file type received: %s", handler.Filename)
 			http.Error(w, "Only PDF files are supported", http.StatusBadRequest)
 			return
 		}
@@ -86,7 +91,6 @@ func sendOpenAIAnalysis(w http.ResponseWriter, jobPosting, resumeContent, source
 
 	content := fmt.Sprintf("APPLY FOR THIS JOB```%s``` WITH THIS RESUME ```%s```", jobPosting, resumeContent)
 
-
 	analysis, err := openAIProcessor.ProcessText(content)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to analyze with OpenAI: %v", err), http.StatusInternalServerError)
@@ -94,9 +98,8 @@ func sendOpenAIAnalysis(w http.ResponseWriter, jobPosting, resumeContent, source
 	}
 
 	response := map[string]interface{}{
-		"message":  "Processed successfully",
-		"source":   source,
-		"Improved Resume": analysis,
+		"resume":      analysis,
+		"coverLetter": "", // You might want to add cover letter generation later
 	}
 
 	w.Header().Set("Content-Type", "application/json")

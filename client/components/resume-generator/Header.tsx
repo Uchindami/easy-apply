@@ -1,5 +1,6 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
-import { FileText } from "lucide-react"
 
 interface HeaderProps {
   onReset: () => void
@@ -8,14 +9,13 @@ interface HeaderProps {
 
 export function Header({ onReset, isResetDisabled }: HeaderProps) {
   return (
-    <header className="border-b p-4 flex items-center justify-between bg-white dark:bg-gray-800">
-      <div className="flex items-center">
-        <FileText className="h-6 w-6 mr-2 text-red-600" />
-        <h1 className="text-xl font-semibold">Easy Apply</h1>
+    <header className="border-b bg-background p-4 sticky top-0 z-10">
+      <div className="flex items-center justify-between max-w-[1200px] mx-auto">
+        <h1 className="text-xl font-bold">Resume Tailoring Tool</h1>
+        <Button onClick={onReset} variant="ghost" disabled={isResetDisabled}>
+          Reset
+        </Button>
       </div>
-      <Button variant="outline" size="sm" onClick={onReset} disabled={isResetDisabled}>
-        Start New
-      </Button>
     </header>
   )
-} 
+}
