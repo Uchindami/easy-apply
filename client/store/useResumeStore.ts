@@ -2,104 +2,112 @@ import { create } from "zustand"
 import { generateTailoredDocuments } from "@/services/resumeService"
 
 interface ResumeState {
-    // File states
-    resumeFile: File | null
-    originalResume: string
+  // File states
+  resumeFile: File | null
+  originalResume: string
 
-    // Job details
-    jobUrl: string
+  // Job details
+  jobUrl: string
 
-    // UI states
-    activeTab: "upload" | "preview"
-    isGenerating: boolean
-    isComplete: boolean
-    showDiff: boolean
+  // UI states
+  activeTab: "upload" | "preview"
+  isGenerating: boolean
+  isComplete: boolean
 
-    // Generated content
-    generatedResume: string
-    generatedCoverLetter: string
+  // Template and styling
+  selectedTemplate: string
+  accentColor: string
 
-    // Actions
-    setResumeFile: (file: File | null) => void
-    setJobUrl: (url: string) => void
-    setActiveTab: (tab: "upload" | "preview") => void
-    setShowDiff: (show: boolean) => void
-    setGeneratedResume: (content: string) => void
-    setGeneratedCoverLetter: (content: string) => void
-    generateDocuments: () => Promise<void>
-    resetForm: () => void
+  // Generated content
+  generatedResume: string
+  generatedCoverLetter: string
+
+  // Actions
+  setResumeFile: (file: File | null) => void
+  setJobUrl: (url: string) => void
+  setActiveTab: (tab: "upload" | "preview") => void
+  setSelectedTemplate: (template: string) => void
+  setAccentColor: (color: string) => void
+  setGeneratedResume: (content: string) => void
+  setGeneratedCoverLetter: (content: string) => void
+  generateDocuments: () => Promise<void>
+  resetForm: () => void
 }
 
 export const useResumeStore = create<ResumeState>((set, get) => ({
-    // Initial states
-    resumeFile: null,
-    originalResume: "",
-    jobUrl: "",
-    activeTab: "upload",
-    isGenerating: false,
-    isComplete: false,
-    showDiff: false,
-    generatedResume: "",
-    generatedCoverLetter: "",
+  // Initial states
+  resumeFile: null,
+  originalResume: "",
+  jobUrl: "",
+  activeTab: "upload",
+  isGenerating: false,
+  isComplete: false,
+  selectedTemplate: "modern",
+  accentColor: "#0066cc",
+  generatedResume: "",
+  generatedCoverLetter: "",
 
-    // Actions
-    setResumeFile: (file) => {
-        set({ resumeFile: file })
+  // Actions
+  setResumeFile: (file) => {
+    set({ resumeFile: file })
 
-        if (file) {
-            const reader = new FileReader()
-            reader.onload = (event) => {
-                if (event.target?.result) {
-                    set({ originalResume: event.target.result as string })
-                }
-            }
-            reader.readAsText(file)
-        } else {
-            set({ originalResume: "" })
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          set({ originalResume: event.target.result as string })
         }
-    },
+      }
+      reader.readAsText(file)
+    } else {
+      set({ originalResume: "" })
+    }
+  },
 
-    setJobUrl: (url) => set({ jobUrl: url }),
+  setJobUrl: (url) => set({ jobUrl: url }),
 
-    setActiveTab: (tab) => set({ activeTab: tab }),
+  setActiveTab: (tab) => set({ activeTab: tab }),
 
-    setShowDiff: (show) => set({ showDiff: show }),
+  setSelectedTemplate: (template) => set({ selectedTemplate: template }),
 
-    setGeneratedResume: (content) => set({ generatedResume: content }),
+  setAccentColor: (color) => set({ accentColor: color }),
 
-    setGeneratedCoverLetter: (content) => set({ generatedCoverLetter: content }),
+  setGeneratedResume: (content) => set({ generatedResume: content }),
 
-    generateDocuments: async () => {
-        const { resumeFile, jobUrl } = get()
+  setGeneratedCoverLetter: (content) => set({ generatedCoverLetter: content }),
 
-        if (!resumeFile || !jobUrl) return
+  generateDocuments: async () => {
+    const { resumeFile, jobUrl } = get()
 
-        set({ isGenerating: true, activeTab: "preview" })
+    if (!resumeFile || !jobUrl) return
 
-        try {
-            const { resume, coverLetter } = await generateTailoredDocuments(resumeFile, jobUrl)
+    set({ isGenerating: true, activeTab: "preview" })
 
-            set({
-                generatedResume: resume,
-                generatedCoverLetter: coverLetter,
-                isComplete: true,
-            })
-        } catch (error) {
-            console.error("Error generating documents:", error)
-            // You might want to set an error state here
-        } finally {
-            set({ isGenerating: false })
-        }
-    },
+    try {
+      const { resume, coverLetter } = await generateTailoredDocuments(resumeFile, jobUrl)
 
-    resetForm: () =>
-        set({
-            resumeFile: null,
-            originalResume: "",
-            jobUrl: "",
-            isComplete: false,
-            generatedResume: "",
-            generatedCoverLetter: "",
-            activeTab: "upload",
-        }),
+      set({
+        generatedResume: resume,
+        generatedCoverLetter: coverLetter,
+        isComplete: true,
+      })
+    } catch (error) {
+      console.error("Error generating documents:", error)
+      // You might want to set an error state here
+    } finally {
+      set({ isGenerating: false })
+    }
+  },
+
+  resetForm: () =>
+    set({
+      resumeFile: null,
+      originalResume: "",
+      jobUrl: "",
+      isComplete: false,
+      generatedResume: "",
+      generatedCoverLetter: "",
+      activeTab: "upload",
+      // Keep template and color preferences
+    }),
 }))

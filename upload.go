@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"easy-apply/processors"
+	"easy-apply/constants"
 )
 
 var (
@@ -35,6 +36,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleFileUpload(w http.ResponseWriter, r *http.Request) {
+
 	err := r.ParseMultipartForm(10 << 20) // 10MB limit
 	if err != nil {
 		log.Printf("Error parsing multipart form: %v", err)
@@ -89,16 +91,16 @@ func handleFileUpload(w http.ResponseWriter, r *http.Request) {
 
 func sendOpenAIAnalysis(w http.ResponseWriter, jobPosting, resumeContent, source string) {
 
-	content := fmt.Sprintf("APPLY FOR THIS JOB```%s``` WITH THIS RESUME ```%s```", jobPosting, resumeContent)
+	// content := fmt.Sprintf("APPLY FOR THIS JOB```%s``` WITH THIS RESUME ```%s```", jobPosting, resumeContent)
 
-	analysis, err := openAIProcessor.ProcessText(content)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to analyze with OpenAI: %v", err), http.StatusInternalServerError)
-		return
-	}
+	// analysis, err := openAIProcessor.ProcessText(content)
+	// if err != nil {
+	// 	http.Error(w, fmt.Sprintf("Failed to analyze with OpenAI: %v", err), http.StatusInternalServerError)
+	// 	return
+	// }
 
 	response := map[string]interface{}{
-		"resume":      analysis,
+		"resume":      constants.ModelResponse,
 		"coverLetter": "", // You might want to add cover letter generation later
 	}
 

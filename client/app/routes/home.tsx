@@ -1,5 +1,4 @@
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
 import { useNavigate } from 'react-router'
 import { useAuthStore } from "@/store/auth"
 import { LandingPage } from "@/components/landing-page";

@@ -23,15 +23,7 @@ export default function Dashboard() {
   const handleNewChat = () => {
     // Implement new chat functionality
   }
-
-  const handleClearChat = () => {
-    // Implement clear chat functionality
-  }
-
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    // Implement form submission
-  }
-
+  
   const isActive = (path: string) => {
     return location.pathname === path;
   }
