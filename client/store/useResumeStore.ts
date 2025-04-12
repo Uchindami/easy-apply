@@ -14,10 +14,6 @@ interface ResumeState {
   isGenerating: boolean
   isComplete: boolean
 
-  // Template and styling
-  selectedTemplate: string
-  accentColor: string
-
   // Generated content
   generatedResume: string
   generatedCoverLetter: string
@@ -26,8 +22,6 @@ interface ResumeState {
   setResumeFile: (file: File | null) => void
   setJobUrl: (url: string) => void
   setActiveTab: (tab: "upload" | "preview") => void
-  setSelectedTemplate: (template: string) => void
-  setAccentColor: (color: string) => void
   setGeneratedResume: (content: string) => void
   setGeneratedCoverLetter: (content: string) => void
   generateDocuments: () => Promise<void>
@@ -42,8 +36,6 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
   activeTab: "upload",
   isGenerating: false,
   isComplete: false,
-  selectedTemplate: "modern",
-  accentColor: "#0066cc",
   generatedResume: "",
   generatedCoverLetter: "",
 
@@ -67,10 +59,6 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
   setJobUrl: (url) => set({ jobUrl: url }),
 
   setActiveTab: (tab) => set({ activeTab: tab }),
-
-  setSelectedTemplate: (template) => set({ selectedTemplate: template }),
-
-  setAccentColor: (color) => set({ accentColor: color }),
 
   setGeneratedResume: (content) => set({ generatedResume: content }),
 
@@ -108,6 +96,5 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
       generatedResume: "",
       generatedCoverLetter: "",
       activeTab: "upload",
-      // Keep template and color preferences
     }),
 }))
