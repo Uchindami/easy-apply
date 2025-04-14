@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
-import { Header } from "@/components/resume-generator/Header"
+import { Header } from "@/components/Header"
 import { ResumeUploader } from "@/components/resume-generator/ResumeUploader"
 import { JobDetails } from "@/components/resume-generator/JobDetails"
 import { DocumentPreview } from "@/components/resume-generator/DocumentPreview"
@@ -46,7 +46,7 @@ export default function ResumeGenerator() {
 
   return (
     <main className="flex-1 flex flex-col h-full w-full overflow-hidden bg-gray-50 dark:bg-gray-900">
-      <Header onReset={resetForm} isResetDisabled={activeTab === "upload" && !resumeFile && !jobUrl} />
+      <Header title="Resume tailoring tool" onReset={resetForm} isResetDisabled={activeTab === "upload" && !resumeFile && !jobUrl} />
 
       <div className="flex-1 overflow-y-auto p-6 w-full max-w-[1200px] mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab as (value: string) => void} className="w-full">

@@ -15,6 +15,7 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar"
 import { Mic, Send, Trash2, Plus, Search, LightbulbIcon, BookOpen, Settings, User, Home } from "lucide-react"
+import { ModeToggle } from "@/components/mode-toggle";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -33,7 +34,6 @@ export default function Dashboard() {
       <SidebarProvider>
         <div className="flex h-screen w-full bg-background">
           <Sidebar variant="floating" collapsible="icon">
-            <SidebarTrigger className="" />
             <SidebarHeader>
               <SidebarMenu>
                 <SidebarMenuItem>
@@ -104,17 +104,8 @@ export default function Dashboard() {
             </SidebarContent>
 
             <SidebarFooter>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    onClick={() => navigate('/dashboard/settings')}
-                    tooltip="Settings"
-                    className={isActive('/dashboard/settings') ? 'bg-accent' : ''}
-                  >
-                    <Settings className="mr-2" />
-                    <span>Settings</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+              
+              <SidebarMenu className="flex-row items-center justify-between">
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     onClick={() => navigate('/dashboard/profile')}
@@ -125,6 +116,7 @@ export default function Dashboard() {
                     <span>Profile</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+
               </SidebarMenu>
             </SidebarFooter>
           </Sidebar>

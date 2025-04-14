@@ -1,6 +1,6 @@
 import type { Route } from ".react-router/types/app/+types/root";
 import { Login } from "@/components/auth/login";
-import { useAuthStore } from "@/store/auth";
+import { useProfileStore } from "@/store/profile-store";
 import { Navigate } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
@@ -11,9 +11,9 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function LoginPage() {
-  const { user, loading } = useAuthStore();
+  const { user, isloading } = useProfileStore();
 
-  if (loading) {
+  if (isloading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 

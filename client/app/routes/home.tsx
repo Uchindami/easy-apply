@@ -1,6 +1,6 @@
 import type { Route } from "./+types/home";
 import { useNavigate } from 'react-router'
-import { useAuthStore } from "@/store/auth"
+import { useProfileStore } from "@/store/profile-store"
 import { LandingPage } from "@/components/landing-page";
 
 export function meta({ }: Route.MetaArgs) {
@@ -12,9 +12,9 @@ export function meta({ }: Route.MetaArgs) {
 
 export default function Home() {
   const navigate = useNavigate()
-  const { user, loading } = useAuthStore()
+  const { user, isloading } = useProfileStore()
 
-  if (loading) {
+  if (isloading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>
   }
 

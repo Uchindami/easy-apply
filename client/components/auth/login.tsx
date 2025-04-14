@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { auth } from "@/lib/firebase"
-import { useAuthStore } from "@/store/auth"
+import { useProfileStore } from "@/store/profile-store"
 
 interface LoginProps {
   heading?: string
@@ -43,7 +43,7 @@ const Login = ({
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const { setUser } = useAuthStore()
+  const { setUser } = useProfileStore()
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault()

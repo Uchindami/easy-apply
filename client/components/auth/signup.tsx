@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { auth } from "@/lib/firebase"
-import { useAuthStore } from "@/store/auth"
+import { useProfileStore } from "@/store/profile-store"
 
 interface SignupProps {
   heading?: string
@@ -44,7 +44,7 @@ const Signup = ({
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const { setUser } = useAuthStore()
+  const { setUser } = useProfileStore()
 
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault()
