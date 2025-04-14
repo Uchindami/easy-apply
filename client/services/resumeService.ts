@@ -8,8 +8,10 @@ export async function generateTailoredDocuments(resumeFile: File, jobUrl: string
   formData.append("file", resumeFile)
   formData.append("weblink", jobUrl)
 
+  // console.log(resumeFile,jobUrl)
+
   try {
-    const response = await fetch("/api/generate-resume", {
+    const response = await fetch("http://localhost:8080/upload", {
       method: "POST",
       body: formData,
     })
@@ -20,8 +22,8 @@ export async function generateTailoredDocuments(resumeFile: File, jobUrl: string
 
     const data = await response.json()
     return {
-      resume: data.resume || "",
-      coverLetter: data.coverLetter || "",
+      resume: data.resume,
+      coverLetter: data.coverLetter,
     }
   } catch (error) {
     console.error("Failed to generate documents:", error)
