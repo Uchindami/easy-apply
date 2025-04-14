@@ -5,7 +5,7 @@ jobs:
     name: 🎉 Deploy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           lfs: true
           fetch-depth: 0
@@ -17,4 +17,4 @@ jobs:
           ftp-username: easyapply_ftp
           ftp-password: ${{ secrets.SSH_PASSWORD }}
           local-dir: ./client # The directory to upload (relative to the root of the repository)
-          server-dir: / # The directory on the server to upload to (relative to the root of the FTP server) 
+
