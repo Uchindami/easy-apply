@@ -5,15 +5,16 @@ jobs:
     name: 🎉 Deploy
     runs-on: ubuntu-latest
     steps:
-    - name: 🚚 Get latest code
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 0
 
-    - name: 📂 Sync files
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      with:
-        server: ftp-easyapply.alwaysdata.net
-        username: easyapply_ftp
-        password: ${{ secrets.SSH_PASSWORD }}
-        local-dir: ./client/ # The directory to upload (relative to the root of the repository)
-        protocol: ftps
-        port: 21 # todo replace with your web hosts ftps port
+      - name: 📂📄 Update files on FTP server
+        uses: SamKirkland/FTP-Deploy-Action@3.1.1
+        with:
+          ftp-server: ftpes://ftp-easyapply.alwaysdata.net
+          ftp-username: easyapply_ftp
+          ftp-password: ${{ secrets.SSH_PASSWORD }}
+          local-dir: ./client # The directory to upload (relative to the root of the repository)
+          server-dir: / # The directory on the server to upload to (relative to the root of the FTP server)
