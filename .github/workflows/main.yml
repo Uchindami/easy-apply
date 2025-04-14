@@ -14,6 +14,8 @@ jobs:
         server: ftp-easyapply.alwaysdata.net
         username: easyapply_ftp
         password: ${{ secrets.SSH_PASSWORD }}
+        protocol: ftps
+        port: 21 # 
         exclude: |
           **/.git*
           **/.git*/**
