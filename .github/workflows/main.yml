@@ -14,6 +14,6 @@ jobs:
         server: ssh-easyapply.alwaysdata.net
         username: easyapply_ssh
         password: ${{ secrets.SSH_PASSWORD }}
-        local-dir: ./client # The directory to upload (relative to the root of the repository)
+        local-dir: ./client/ # The directory to upload (relative to the root of the repository)
         protocol: ftps
         port: 22 # todo replace with your web hosts ftps port
