@@ -11,9 +11,9 @@ jobs:
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
-        server: ssh-easyapply.alwaysdata.net
-        username: easyapply_ssh
+        server: ftp-easyapply.alwaysdata.net
+        username: easyapply_ftp
         password: ${{ secrets.SSH_PASSWORD }}
         local-dir: ./client/ # The directory to upload (relative to the root of the repository)
         protocol: ftps
-        port: 22 # todo replace with your web hosts ftps port
+        port: 21 # todo replace with your web hosts ftps port
