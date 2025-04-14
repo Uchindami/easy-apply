@@ -20,3 +20,5 @@ jobs:
           **/.git*
           **/.git*/**
           **/node_modules/**
+        retries: 3 # Retries in case of failure
+        timeout: 120 # Timeout in seconds
