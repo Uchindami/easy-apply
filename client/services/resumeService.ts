@@ -1,3 +1,4 @@
+
 interface GeneratedDocuments {
   resume: string
   coverLetter: string
