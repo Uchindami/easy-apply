@@ -8,6 +8,7 @@ export async function generateTailoredDocuments(resumeFile: File, jobUrl: string
   const formData = new FormData()
   formData.append("file", resumeFile)
   formData.append("weblink", jobUrl)
+  formData.append("weblink", jobUrl)
 
   // console.log(resumeFile,jobUrl)
 

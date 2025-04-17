@@ -12,9 +12,9 @@ export function meta({ }: Route.MetaArgs) {
 
 export default function Home() {
   const navigate = useNavigate()
-  const { user, isloading } = useProfileStore()
+  const { user, isLoading } = useProfileStore()
 
-  if (isloading) {
+  if (isLoading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>
   }
 
