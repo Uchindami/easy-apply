@@ -211,7 +211,7 @@ export default function Dashboard() {
 
             <SidebarContent className="overflow-hidden">
               <SidebarGroup>
-                <SidebarGroupLabel>Recent Chats</SidebarGroupLabel>
+                <SidebarGroupLabel>Recent Applications</SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
                     {isLoading ? (

@@ -6,6 +6,8 @@ import {
   limit,
   getDocs,
   startAfter,
+  doc,
+  getDoc,
   type DocumentData,
   QueryDocumentSnapshot,
 } from "firebase/firestore";
@@ -26,6 +28,7 @@ interface ChatState {
   hasMore: boolean;
   fetchChats: (userId: string) => Promise<void>;
   loadMoreChats: (userId: string) => Promise<void>;
+  getChatById: (userId: string, chatId: string) => Promise<Chat | null>;
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
@@ -54,14 +57,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
         const data = doc.data();
         const title = data.jobDetails?.title || "Untitled Chat";
-
-        // Validate timestamp (if needed)
         const timestamp = data.timestamp?.toDate?.();
 
         chats.push({
           id: doc.id,
           title,
-          ...(timestamp && { timestamp }), // Optional: include if exists
+          ...(timestamp && { timestamp }),
         });
       });
 
@@ -71,7 +72,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         chats,
         isLoading: false,
         lastVisible: newLastVisible,
-        hasMore: querySnapshot.docs.length === 5, // If we got 5, there might be more
+        hasMore: querySnapshot.docs.length === 5,
       });
     } catch (error) {
       console.error("Error fetching chats:", error);
@@ -95,7 +96,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         historyRef,
         orderBy("timestamp", "desc"),
         startAfter(lastVisible),
-        limit(5) // Next batch size
+        limit(5)
       );
       const querySnapshot = await getDocs(q);
 
@@ -105,10 +106,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
         const data = doc.data();
         const title = data.jobDetails?.title || "Untitled Chat";
+        const timestamp = data.timestamp?.toDate?.();
 
         newChats.push({
           id: doc.id,
           title,
+          ...(timestamp && { timestamp }),
         });
       });
 
@@ -118,7 +121,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         chats: [...state.chats, ...newChats],
         isFetchingMore: false,
         lastVisible: newLastVisible,
-        hasMore: querySnapshot.docs.length === 5, // If we got 5, there might be more
+        hasMore: querySnapshot.docs.length === 5,
       }));
     } catch (error) {
       console.error("Error loading more chats:", error);
@@ -126,6 +129,39 @@ export const useChatStore = create<ChatState>((set, get) => ({
         error: "Failed to load more chats",
         isFetchingMore: false,
       });
+    }
+  },
+
+  getChatById: async (userId: string, chatId: string) => {
+    const { chats } = get();
+
+    const existingChat = chats.find((chat) => chat.id === chatId);
+    if (existingChat) return existingChat;
+
+    try {
+      const chatRef = doc(db, "Users", userId, "History", chatId);
+      const chatSnap = await getDoc(chatRef);
+
+      if (!chatSnap.exists()) return null;
+
+      const data = chatSnap.data();
+      const title = data.jobDetails?.title || "Untitled Chat";
+      const timestamp = data.timestamp?.toDate?.();
+
+      const chat: Chat = {
+        id: chatSnap.id,
+        title,
+        ...(timestamp && { timestamp }),
+      };
+
+      set((state) => ({
+        chats: [...state.chats, chat],
+      }));
+
+      return chat;
+    } catch (error) {
+      console.error("Error fetching chat by ID:", error);
+      return null;
     }
   },
 }));
