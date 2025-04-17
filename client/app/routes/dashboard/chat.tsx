@@ -33,7 +33,13 @@ export interface HistoryData {
 
 const LoadingState = () => <HistoryDetailSkeleton />;
 
-const ErrorState = ({ error, onRetry }: { error: string; onRetry: () => void }) => (
+const ErrorState = ({
+  error,
+  onRetry,
+}: {
+  error: string;
+  onRetry: () => void;
+}) => (
   <div className="flex flex-col items-center justify-center h-64">
     <h2 className="text-2xl font-bold text-gray-800 mb-4">
       {error || "Unable to load history data"}
@@ -50,25 +56,29 @@ const JobDetailsCard = ({ historyData }: { historyData: HistoryData }) => (
       <CardTitle>Job Details</CardTitle>
     </CardHeader>
     <CardContent className="space-y-4">
-      <DetailItem 
+      <DetailItem
         icon={<Briefcase className="h-5 w-5 text-gray-500 mt-0.5" />}
         label="Company"
         value={historyData.jobDetails.company || "Not specified"}
       />
-      
-      <DetailItem 
+
+      <DetailItem
         icon={<Globe className="h-5 w-5 text-gray-500 mt-0.5" />}
         label="Source"
         value={historyData.original.jobLink || "Not specified"}
       />
-      
-      <DetailItem 
+
+      <DetailItem
         icon={<Calendar className="h-5 w-5 text-gray-500 mt-0.5" />}
         label="Applied On"
-        value={historyData.timestamp ? format(historyData.timestamp, "PPP") : "Unknown date"}
+        value={
+          historyData.timestamp
+            ? format(historyData.timestamp, "PPP")
+            : "Unknown date"
+        }
       />
-      
-      <DetailItem 
+
+      <DetailItem
         icon={<Clock className="h-5 w-5 text-gray-500 mt-0.5" />}
         label="Status"
         value={historyData.status}
@@ -76,7 +86,11 @@ const JobDetailsCard = ({ historyData }: { historyData: HistoryData }) => (
 
       {historyData.original.jobLink && (
         <Button className="w-full mt-4" asChild>
-          <a href={historyData.original.jobLink} target="_blank" rel="noopener noreferrer">
+          <a
+            href={historyData.original.jobLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             View Original Job Posting
           </a>
         </Button>
@@ -85,7 +99,15 @@ const JobDetailsCard = ({ historyData }: { historyData: HistoryData }) => (
   </Card>
 );
 
-const DetailItem = ({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) => (
+const DetailItem = ({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) => (
   <div className="flex items-start gap-3">
     {icon}
     <div>
@@ -100,7 +122,8 @@ const ProcessingState = () => (
     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
     <p className="text-lg font-medium">Processing your application...</p>
     <p className="text-gray-500 text-center">
-      We're generating your customized resume and cover letter. This may take a few minutes.
+      We're generating your customized resume and cover letter. This may take a
+      few minutes.
     </p>
   </div>
 );
@@ -114,7 +137,9 @@ const FailedState = ({ onRetry }: { onRetry: () => void }) => (
     <p className="text-gray-500 text-center">
       We encountered an issue while generating your documents. Please try again.
     </p>
-    <Button variant="outline" onClick={onRetry}>Retry Generation</Button>
+    <Button variant="outline" onClick={onRetry}>
+      Retry Generation
+    </Button>
   </div>
 );
 
@@ -189,7 +214,13 @@ export default function ChatHistory() {
   };
 
   if (loading) return <LoadingState />;
-  if (error || !historyData) return <ErrorState error={error || "Unknown error"} onRetry={() => window.location.reload()} />;
+  if (error || !historyData)
+    return (
+      <ErrorState
+        error={error || "Unknown error"}
+        onRetry={() => window.location.reload()}
+      />
+    );
 
   return (
     <div className="space-y-6">
