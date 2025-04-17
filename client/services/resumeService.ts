@@ -2,13 +2,14 @@
 interface GeneratedDocuments {
   resume: string
   coverLetter: string
+  userId?: string
 }
 
-export async function generateTailoredDocuments(resumeFile: File, jobUrl: string): Promise<GeneratedDocuments> {
+export async function generateTailoredDocuments(resumeFile: File, jobUrl: string, userId: string): Promise<GeneratedDocuments> {
   const formData = new FormData()
   formData.append("file", resumeFile)
   formData.append("weblink", jobUrl)
-  formData.append("weblink", jobUrl)
+  formData.append("userId", userId)
 
   // console.log(resumeFile,jobUrl)
 

@@ -1,5 +1,6 @@
 import { create } from "zustand"
 import { generateTailoredDocuments } from "@/services/resumeService"
+import { useProfileStore } from "./profile-store"
 
 interface ResumeState {
   // File states
@@ -69,10 +70,16 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
 
     if (!resumeFile || !jobUrl) return
 
+    const userId = useProfileStore.getState().user?.uid
+    if (!userId) {
+      console.error("User ID is not available. Please ensure the user is authenticated.")
+      return
+    }
+
     set({ isGenerating: true, activeTab: "preview" })
 
     try {
-      const { resume, coverLetter } = await generateTailoredDocuments(resumeFile, jobUrl)
+      const { resume, coverLetter } = await generateTailoredDocuments(resumeFile, jobUrl, userId)
 
       set({
         generatedResume: resume,
