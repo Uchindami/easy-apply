@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
+	"time"
 
 	"easy-apply/constants"
 
@@ -13,41 +15,111 @@ import (
 	"github.com/openai/openai-go/option"
 )
 
+const (
+	openAIDefaultTimeout = 30 * time.Second
+	nebiusDefaultTimeout = 45 * time.Second
+	maxRetries           = 3
+	retryDelay           = 500 * time.Millisecond
+	cacheTTL             = 5 * time.Minute
+)
+
+var (
+	openAIOnce   sync.Once
+	openAIClient *openai.Client
+	nebiusOnce   sync.Once
+	nebiusClient *openai.Client
+)
+
 // OpenAIProcessor handles OpenAI API interactions
 type OpenAIProcessor struct {
-	client *openai.Client
+	openAIClient *openai.Client
+	nebiusClient *openai.Client
+	cache        sync.Map // Simple in-memory cache
 }
 
-// NewOpenAIProcessor creates a new OpenAI processor
+type cacheItem struct {
+	value      string
+	expiration time.Time
+}
+
+// NewOpenAIProcessor creates a new OpenAI processor with singleton clients
 func NewOpenAIProcessor() *OpenAIProcessor {
-
-	err := godotenv.Load() // loads .env file
-	if err != nil {
-		log.Println("No .env file found or error loading it")
-	}
-	apiKey := os.Getenv("OPENAI_API_KEY")
-	if apiKey == "" {
-		fmt.Println("Warning: OPENAI_API_KEY environment variable not set")
+	// Load .env file once
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found or error loading it:", err)
 	}
 
-	client := openai.NewClient(
-		option.WithAPIKey(apiKey),
-	)
+	// Initialize clients using sync.Once for thread safety
+	openAIOnce.Do(func() {
+		apiKey := os.Getenv("OPENAI_API_KEY")
+		if apiKey == "" {
+			log.Println("Warning: OPENAI_API_KEY environment variable not set")
+		}
+		client := openai.NewClient(
+			option.WithAPIKey(apiKey),
+			option.WithRequestTimeout(openAIDefaultTimeout),
+		)
+		openAIClient = &client
+	})
+
+	nebiusOnce.Do(func() {
+		nebiusKey := os.Getenv("NEBIUS_API_KEY")
+		if nebiusKey != "" {
+			client := openai.NewClient(
+				option.WithAPIKey(nebiusKey),
+				option.WithBaseURL("https://api.studio.nebius.com/v1/"),
+				option.WithRequestTimeout(nebiusDefaultTimeout),
+			)
+			nebiusClient = &client
+		}
+	})
 
 	return &OpenAIProcessor{
-		client: &client,
+		openAIClient: openAIClient,
+		nebiusClient: nebiusClient,
 	}
 }
 
-// ProcessText sends the job description and resume to OpenAI API and returns the HTML response
+// ProcessText sends the job description and resume to OpenAI API with retries and caching
 func (o *OpenAIProcessor) ProcessText(text string) (string, error) {
-	ctx := context.Background()
+	if cached, ok := o.getFromCache(text); ok {
+		return cached, nil
+	}
 
-	// Create the chat completion request
-	chatCompletion, err := o.client.Chat.Completions.New(
+	var result string
+	var err error
+
+	// Retry logic
+	for attempt := 0; attempt < maxRetries; attempt++ {
+		if attempt > 0 {
+			time.Sleep(retryDelay)
+		}
+
+		result, err = o.processResume(text)
+		if err == nil {
+			// Cache successful response
+			o.setInCache(text, result)
+			return result, nil
+		}
+
+		log.Printf("Attempt %d failed: %v", attempt+1, err)
+	}
+
+	return "", fmt.Errorf("after %d attempts: %w", maxRetries, err)
+}
+
+func (o *OpenAIProcessor) processResume(text string) (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), openAIDefaultTimeout)
+	defer cancel()
+
+	if o.openAIClient == nil {
+		return "", fmt.Errorf("OpenAI client not initialized")
+	}
+
+	chatCompletion, err := o.openAIClient.Chat.Completions.New(
 		ctx,
 		openai.ChatCompletionNewParams{
-			Model: "gpt-4o",
+			Model: constants.ResumeGenModel,
 			Messages: []openai.ChatCompletionMessageParamUnion{
 				{
 					OfSystem: &openai.ChatCompletionSystemMessageParam{
@@ -70,88 +142,114 @@ func (o *OpenAIProcessor) ProcessText(text string) (string, error) {
 		},
 	)
 	if err != nil {
-		return "", fmt.Errorf("error creating chat completion: %v", err)
+		return "", fmt.Errorf("error creating chat completion: %w", err)
 	}
 
-	// Extract the response content
 	if len(chatCompletion.Choices) == 0 {
 		return "", fmt.Errorf("no response choices available")
 	}
 
 	content := chatCompletion.Choices[0].Message.Content
 	if content == "" {
-		return "", fmt.Errorf("no content in response")
+		return "", fmt.Errorf("empty response content")
 	}
 
 	return content, nil
 }
 
-// GenerateSubjectName generates a brief subject name based on job details using Nebius API
+// GenerateSubjectName generates a brief subject name with retries and caching
 func (o *OpenAIProcessor) GenerateSubjectName(jobDetails string) (string, error) {
-    nebiusKey := os.Getenv("NEBIUS_API_KEY")
-    if nebiusKey == "" {
-        return "", fmt.Errorf("NEBIUS_API_KEY environment variable not set")
-    }
+	// Check cache first
+	if cached, ok := o.getFromCache("subject:" + jobDetails); ok {
+		return cached, nil
+	}
 
-    // Create a new client for Nebius API
-    client := openai.NewClient(
-        option.WithAPIKey(nebiusKey),
-        option.WithBaseURL("https://api.studio.nebius.com/v1/"),
-    )
+	if o.nebiusClient == nil {
+		return "", fmt.Errorf("nebius client not initialized")
+	}
 
-    ctx := context.Background()
+	var result string
+	var err error
 
-    systemContent := `Generate a brief, descriptive subject name for this chat (max 24 characters). Base it on the key topic, tone, or purpose of the conversation. Examples: 'Project Alpha', 'Travel Plans', 'Quick Q&A', 'Bug Fixing'. Keep it clear and concise.
+	// Retry logic
+	for attempt := 0; attempt < maxRetries; attempt++ {
+		if attempt > 0 {
+			time.Sleep(retryDelay)
+		}
 
-Tips for shorter subjects:
+		result, err = o.generateSubjectNameWithContext(jobDetails)
+		if err == nil {
+			// Cache successful response
+			o.setInCache("subject:"+jobDetails, result)
+			return result, nil
+		}
 
-Use abbreviations (e.g., "MtgNotes" for "Meeting Notes").
+		log.Printf("Attempt %d failed: %v", attempt+1, err)
+	}
 
-Focus on keywords (e.g., "BudgetReview", "QA_Updates").
+	return "", fmt.Errorf("after %d attempts: %w", maxRetries, err)
+}
 
-Avoid filler words (e.g., "Team" → "DevTeam").
+func (o *OpenAIProcessor) generateSubjectNameWithContext(jobDetails string) (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), nebiusDefaultTimeout)
+	defer cancel()
 
-provide only subject with no paranthesis`
+	chatCompletion, err := o.nebiusClient.Chat.Completions.New(
+		ctx,
+		openai.ChatCompletionNewParams{
+			Model: constants.SubjectGenModel,
+			Messages: []openai.ChatCompletionMessageParamUnion{
+				{
+					OfSystem: &openai.ChatCompletionSystemMessageParam{
+						Content: openai.ChatCompletionSystemMessageParamContentUnion{
+							OfString: openai.String(constants.SubjectGenInstruction),
+						},
+					},
+				},
+				{
+					OfUser: &openai.ChatCompletionUserMessageParam{
+						Content: openai.ChatCompletionUserMessageParamContentUnion{
+							OfString: openai.String(jobDetails),
+						},
+					},
+				},
+			},
+			Temperature: openai.Float(0.6),
+			MaxTokens:   openai.Int(64),
+			TopP:        openai.Float(0.9),
+		},
+	)
+	if err != nil {
+		return "", fmt.Errorf("error creating chat completion: %w", err)
+	}
 
-    // Create the chat completion request
-    chatCompletion, err := client.Chat.Completions.New(
-        ctx,
-        openai.ChatCompletionNewParams{
-            Model: "meta-llama/Meta-Llama-3.1-70B-Instruct-fast",
-            Messages: []openai.ChatCompletionMessageParamUnion{
-                {
-                    OfSystem: &openai.ChatCompletionSystemMessageParam{
-                        Content: openai.ChatCompletionSystemMessageParamContentUnion{
-                            OfString: openai.String(systemContent),
-                        },
-                    },
-                },
-                {
-                    OfUser: &openai.ChatCompletionUserMessageParam{
-                        Content: openai.ChatCompletionUserMessageParamContentUnion{
-                            OfString: openai.String(jobDetails),
-                        },
-                    },
-                },
-            },
-            Temperature: openai.Float(0.6),
-            MaxTokens:   openai.Int(512),
-            TopP:        openai.Float(0.9),
-            // Note: top_k is not included as openai-go does not support extra_body
-        },
-    )
-    if err != nil {
-        return "", fmt.Errorf("error creating chat completion: %v", err)
-    }
+	if len(chatCompletion.Choices) == 0 {
+		return "", fmt.Errorf("no response choices available")
+	}
 
-    if len(chatCompletion.Choices) == 0 {
-        return "", fmt.Errorf("no response choices available")
-    }
+	content := chatCompletion.Choices[0].Message.Content
+	if content == "" {
+		return "", fmt.Errorf("empty response content")
+	}
 
-    content := chatCompletion.Choices[0].Message.Content
-    if content == "" {
-        return "", fmt.Errorf("no content in response")
-    }
+	return content, nil
+}
 
-    return content, nil
+// Cache helper methods
+func (o *OpenAIProcessor) setInCache(key, value string) {
+	o.cache.Store(key, cacheItem{
+		value:      value,
+		expiration: time.Now().Add(cacheTTL),
+	})
+}
+
+func (o *OpenAIProcessor) getFromCache(key string) (string, bool) {
+	if val, ok := o.cache.Load(key); ok {
+		item := val.(cacheItem)
+		if time.Now().Before(item.expiration) {
+			return item.value, true
+		}
+		o.cache.Delete(key) // Remove expired item
+	}
+	return "", false
 }

@@ -12,9 +12,11 @@ import (
 	"sync"
 	"time"
 
+	"easy-apply/constants"
+	"easy-apply/processors"
+
 	"cloud.google.com/go/firestore"
 	"github.com/google/uuid"
-	"easy-apply/processors"
 )
 
 const (
@@ -192,7 +194,7 @@ func sendOpenAIAnalysis(w http.ResponseWriter, jobPosting, extractedResume, sour
 		logger.Printf("OpenAI analysis completed in %v", time.Since(analysisStart))
 	}()
 
-	content := fmt.Sprintf("APPLY FOR THIS JOB```%s``` WITH THIS RESUME ```%s```", jobPosting, extractedResume)
+	content := fmt.Sprintf("%s\n\n--- %s ---\n \n\n--- %s---\n",constants.UserInstructionPrefix, jobPosting, extractedResume)
 
 	var (
 		processedResume    string
