@@ -25,7 +25,7 @@ jobs:
         server: ftp-easyapply.alwaysdata.net
         username: easyapply_ftp
         password: ${{ secrets.SSH_PASSWORD }}
-        local-dir: ./client/
+        local-dir: ./client/build
         protocol: ftps
         port: 21 # 
         exclude: |

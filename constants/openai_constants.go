@@ -17,5 +17,5 @@ Output must be a full HTML document, ready for PDF conversion.`
 
 // For subject generation: respond with nothing but the subject line (no quotes, no punctuation).
 const SubjectGenInstruction = `You are a title generator. In 1–3 words (max 24 characters), summarize this conversation topic.
-Respond with the title only, no punctuation or commentary.`
+Respond with the title only, no punctuation or commentary. include company name.`
 
