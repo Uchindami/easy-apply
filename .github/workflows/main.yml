@@ -22,10 +22,11 @@ jobs:
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
-        server: ftp-easyapply.alwaysdata.net
-        username: easyapply_ftp
+        server:  ftp-uchindami.alwaysdata.net
+        username: uchindami
         password: ${{ secrets.SSH_PASSWORD }}
         local-dir: ./client/
+        server-dir: /home/uchindami/frontend/
         protocol: ftps
         port: 21 # 
         exclude: |
