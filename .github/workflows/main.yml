@@ -27,7 +27,7 @@ jobs:
         password: ${{ secrets.SSH_PASSWORD }}
         local-dir: ./client/
         server-dir: /home/uchindami/frontend/
-        protocol: ftps
+        protocol: ftp
         port: 21 # 
         exclude: |
           **/.git*
