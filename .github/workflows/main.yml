@@ -18,6 +18,7 @@ jobs:
         server-dir: /home/uchindami/frontend/
         protocol: ftps
         port: 990 # 
+        timeout: 120
         exclude: |
           **/.git*
           **/.git*/**
