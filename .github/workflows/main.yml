@@ -26,9 +26,9 @@ jobs:
         username: uchindami
         password: ${{ secrets.SSH_PASSWORD }}
         local-dir: ./client/build/
-        server-dir: /home/uchindami/frontend/
+        server-dir: /home/uchindami/easyapply/client
         protocol: ftps
-        port: 990
+        port: 21
         exclude: |
           **/.git*
           **/.git*/**
