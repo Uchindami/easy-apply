@@ -8,19 +8,28 @@ jobs:
     - name: 🚚 Get latest code
       uses: actions/checkout@v4
 
+    - name: Use Node.js 22
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: 🔨 Build Project
+      run: |
+        cd client
+        npm install
+        npm run build
+
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
-        server:  ftp-uchindami.alwaysdata.net
+        server: ftp-uchindami.alwaysdata.net
         username: uchindami
         password: ${{ secrets.SSH_PASSWORD }}
-        local-dir: ./client/
+        local-dir: ./client/build/
         server-dir: /home/uchindami/frontend/
         protocol: ftps
-        port: 990 # 
-        timeout: 120
+        port: 990
         exclude: |
           **/.git*
           **/.git*/**
           **/node_modules/**
-          
