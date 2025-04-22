@@ -9,17 +9,17 @@ require (
 	cloud.google.com/go/auth v0.7.2 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
-	cloud.google.com/go/firestore v1.16.0 // indirect
+	cloud.google.com/go/firestore v1.16.0
 	cloud.google.com/go/iam v1.1.12 // indirect
 	cloud.google.com/go/longrunning v0.5.11 // indirect
-	cloud.google.com/go/storage v1.43.0 // indirect
+	cloud.google.com/go/storage v1.43.0
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/s2a-go v0.1.7 // indirect
-	github.com/google/uuid v1.6.0 // indirect
+	github.com/google/uuid v1.6.0
 	github.com/googleapis/enterprise-certificate-proxy v0.3.6 // indirect
 	github.com/googleapis/gax-go/v2 v2.13.0 // indirect
 	github.com/ledongthuc/pdf v0.0.0-20240201131950-da5b75280b06
@@ -47,6 +47,7 @@ require (
 
 require (
 	github.com/joho/godotenv v1.5.1
+	github.com/nguyenthenguyen/docx v0.0.0-20230621112118-9c8e795a11db
 	github.com/openai/openai-go v0.1.0-beta.6
 )
 

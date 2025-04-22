@@ -1,57 +1,68 @@
 package processors
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
+	"mime/multipart"
+	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/ledongthuc/pdf"
+	docx "github.com/nguyenthenguyen/docx"
 )
 
-// PDFProcessor handles PDF file processing
-type PDFProcessor struct {
-	UploadDir string
+const (
+	ocrSpaceAPIURL  = "https://api.ocr.space/parse/image"
+	minTextLength   = 100 // Minimum characters to consider extraction successful
+)
+
+// FileProcessor handles various file types processing
+type FileProcessor struct{}
+
+// NewFileProcessor creates a new file processor
+func NewFileProcessor() *FileProcessor {
+	return &FileProcessor{}
 }
 
-// NewPDFProcessor creates a new PDF processor
-func NewPDFProcessor(uploadDir string) *PDFProcessor {
-	return &PDFProcessor{
-		UploadDir: uploadDir,
+// ProcessFileBuffer extracts text from a file buffer based on its type
+func (p *FileProcessor) ProcessFileBuffer(fileBuffer []byte, fileExt string) (string, error) {
+	switch strings.ToLower(fileExt) {
+	case ".pdf":
+		return p.processPDFBuffer(fileBuffer)
+	case ".docx":
+		return p.processDOCXBuffer(fileBuffer)
+	case ".txt":
+		return string(fileBuffer), nil
+	default:
+		return "", fmt.Errorf("unsupported file format: %s", fileExt)
 	}
 }
 
-// ProcessPDF extracts text from a PDF file and saves it as a text file
-func (p *PDFProcessor) ProcessPDF(pdfPath string) (string, error) {
-	// Check if file exists and has .pdf extension
-	if !fileExists(pdfPath) {
-		return "", fmt.Errorf("file '%s' does not exist", pdfPath)
-	}
-
-	if filepath.Ext(strings.ToLower(pdfPath)) != ".pdf" {
-		return "", fmt.Errorf("file '%s' is not a PDF file", pdfPath)
-	}
-
-	text, err := p.extractTextFromPDF(pdfPath)
+// processPDFBuffer handles PDF files with standard extraction and OCR fallback
+func (p *FileProcessor) processPDFBuffer(pdfBuffer []byte) (string, error) {
+	// First try standard extraction
+	text, err := p.extractTextFromPDFBuffer(pdfBuffer)
 	if err != nil {
-		return "", fmt.Errorf("error extracting text: %v", err)
+		return "", fmt.Errorf("PDF extraction failed: %v", err)
 	}
 
-	// Create output text file path
-	txtPath := strings.TrimSuffix(pdfPath, filepath.Ext(pdfPath)) + ".txt"
-
-	// Write text to output file
-	err = os.WriteFile(txtPath, []byte(text), 0644)
-	if err != nil {
-		return "", fmt.Errorf("error writing to output file: %v", err)
+	// If text is too short, try OCR
+	if len(text) < minTextLength {
+		ocrText, ocrErr := p.extractTextWithOCRSpace(pdfBuffer)
+		if ocrErr != nil {
+			return text, fmt.Errorf("standard extraction returned minimal text, OCR also failed: %v", ocrErr)
+		}
+		return ocrText, nil
 	}
 
-	return txtPath, nil
+	return text, nil
 }
 
-// ProcessPDFBuffer extracts text from a PDF buffer and returns the text content
-func (p *PDFProcessor) ProcessPDFBuffer(pdfBuffer []byte) (string, error) {
-	// Create a temporary file to read from buffer
+// extractTextFromPDFBuffer extracts text from PDF buffer using standard method
+func (p *FileProcessor) extractTextFromPDFBuffer(pdfBuffer []byte) (string, error) {
 	tmpFile, err := os.CreateTemp("", "pdf-*.pdf")
 	if err != nil {
 		return "", fmt.Errorf("error creating temp file: %v", err)
@@ -70,11 +81,8 @@ func (p *PDFProcessor) ProcessPDFBuffer(pdfBuffer []byte) (string, error) {
 	defer f.Close()
 
 	var textBuilder strings.Builder
-
-	// Get total number of pages
 	totalPages := r.NumPage()
 
-	// Extract text from each page
 	for pageIndex := 1; pageIndex <= totalPages; pageIndex++ {
 		p := r.Page(pageIndex)
 		if p.V.IsNull() {
@@ -94,41 +102,73 @@ func (p *PDFProcessor) ProcessPDFBuffer(pdfBuffer []byte) (string, error) {
 	return textBuilder.String(), nil
 }
 
-// extractTextFromPDF extracts text content from a PDF file
-func (p *PDFProcessor) extractTextFromPDF(path string) (string, error) {
-	f, r, err := pdf.Open(path)
+// processDOCXBuffer handles DOCX files
+func (p *FileProcessor) processDOCXBuffer(docxBuffer []byte) (string, error) {
+	tmpFile, err := os.CreateTemp("", "docx-*.docx")
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("error creating temp file: %v", err)
 	}
-	defer f.Close()
+	defer os.Remove(tmpFile.Name())
+	defer tmpFile.Close()
 
-	var textBuilder strings.Builder
-
-	// Get total number of pages
-	totalPages := r.NumPage()
-
-	// Extract text from each page
-	for pageIndex := 1; pageIndex <= totalPages; pageIndex++ {
-		p := r.Page(pageIndex)
-		if p.V.IsNull() {
-			continue
-		}
-
-		text, err := p.GetPlainText(nil)
-		if err != nil {
-			return "", err
-		}
-
-		textBuilder.WriteString(fmt.Sprintf("--- Page %d ---\n", pageIndex))
-		textBuilder.WriteString(text)
-		textBuilder.WriteString("\n\n")
+	if _, err := tmpFile.Write(docxBuffer); err != nil {
+		return "", fmt.Errorf("error writing to temp file: %v", err)
 	}
 
-	return textBuilder.String(), nil
+	doc, err := docx.ReadDocxFile(tmpFile.Name())
+	if err != nil {
+		return "", fmt.Errorf("error reading DOCX file: %v", err)
+	}
+	defer doc.Close()
+
+	return doc.Editable().GetContent(), nil
 }
 
-// Helper function to check if file exists
-func fileExists(path string) bool {
-	_, err := os.Stat(path)
-	return !os.IsNotExist(err)
+// extractTextWithOCRSpace uses OCR.Space API for image-based content
+func (p *FileProcessor) extractTextWithOCRSpace(fileBuffer []byte) (string, error) {
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	
+	part, err := writer.CreateFormFile("file", "document.pdf")
+	if err != nil {
+		return "", fmt.Errorf("failed to create form file: %v", err)
+	}
+	
+	if _, err := io.Copy(part, bytes.NewReader(fileBuffer)); err != nil {
+		return "", fmt.Errorf("failed to copy file data: %v", err)
+	}
+	writer.Close()
+
+	req, err := http.NewRequest("POST", ocrSpaceAPIURL, body)
+	if err != nil {
+		return "", fmt.Errorf("failed to create request: %v", err)
+	}
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.Header.Set("apikey", os.Getenv("OCRSPACE_API_KEY"))
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("API request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("API returned non-200 status: %d", resp.StatusCode)
+	}
+
+	var result struct {
+		ParsedResults []struct {
+			ParsedText string `json:"ParsedText"`
+		} `json:"ParsedResults"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return "", fmt.Errorf("failed to decode API response: %v", err)
+	}
+
+	if len(result.ParsedResults) == 0 {
+		return "", fmt.Errorf("no text found in OCR result")
+	}
+
+	return result.ParsedResults[0].ParsedText, nil
 }

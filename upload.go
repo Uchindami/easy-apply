@@ -27,14 +27,14 @@ const (
 )
 
 var (
-	processorsOnce     sync.Once
-	pdfProcessor       *processors.PDFProcessor
-	webProcessor       *processors.WebProcessor
-	openAIProcessor    *processors.OpenAIProcessor
-	supportedJobSites  = map[string]string{
-		"jobsearchmalawi.com":  "JobSearch Malawi",
-		"careersmw.com":    "Careers MW",
-		"glassdoor.com": "Glassdoor",
+	processorsOnce    sync.Once
+	fileProcessor     *processors.FileProcessor
+	webProcessor      *processors.WebProcessor
+	openAIProcessor   *processors.OpenAIProcessor
+	supportedJobSites = map[string]string{
+		"jobsearchmalawi.com": "JobSearch Malawi",
+		"careersmw.com":       "Careers MW",
+		"glassdoor.com":       "Glassdoor",
 	}
 	logger = log.New(log.Writer(), "APPLICATION: ", log.LstdFlags|log.Lshortfile)
 )
@@ -43,7 +43,7 @@ func initProcessors() {
 	processorsOnce.Do(func() {
 		logger.Println("Initializing processors...")
 		startTime := time.Now()
-		pdfProcessor = processors.NewPDFProcessor("")
+		fileProcessor = processors.NewFileProcessor()
 		webProcessor = processors.NewWebProcessor("")
 		openAIProcessor = processors.NewOpenAIProcessor()
 		logger.Printf("Processors initialized in %v", time.Since(startTime))
@@ -101,12 +101,13 @@ func handleFileUpload(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	if ext := strings.ToLower(getFileExt(handler.Filename)); ext != ".pdf" {
-		logger.Printf("Invalid file type attempted: %s", ext)
-		handleError(w, "Only PDF files are supported", http.StatusBadRequest, nil)
+	fileExt := strings.ToLower(getFileExt(handler.Filename)) // Initialize fileExt
+	if fileExt != ".pdf" && fileExt != ".docx" && fileExt != ".txt" {
+		logger.Printf("Invalid file type attempted: %s", fileExt)
+		handleError(w, "Only PDF, DOCX, and TXT files are supported", http.StatusBadRequest, nil)
 		return
 	}
-	logger.Printf("Processing PDF file: %s", handler.Filename)
+	logger.Printf("Processing file: %s", handler.Filename)
 
 	logger.Println("Reading file content")
 	var buf bytes.Buffer
@@ -142,24 +143,24 @@ func handleFileUpload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var (
-		extractedResume      string
+		extractedResume       string
 		scrappedWebJobPosting string
-		processErr           error
-		wg                   sync.WaitGroup
+		processErr            error
+		wg                    sync.WaitGroup
 	)
 
-	logger.Println("Starting concurrent processing of PDF and web link")
+	logger.Println("Starting concurrent processing of file and web link")
 	wg.Add(2)
 	go func() {
 		defer wg.Done()
-		logger.Println("Starting PDF processing")
-		pdfStart := time.Now()
-		extractedResume, err = pdfProcessor.ProcessPDFBuffer(buf.Bytes())
+		logger.Println("Starting file processing")
+		fileStart := time.Now()
+		extractedResume, err = fileProcessor.ProcessFileBuffer(buf.Bytes(), fileExt)
 		if err != nil {
-			processErr = fmt.Errorf("PDF processing failed: %w", err)
-			logger.Printf("PDF processing failed after %v: %v", time.Since(pdfStart), err)
+			processErr = fmt.Errorf("file processing failed: %w", err)
+			logger.Printf("File processing failed after %v: %v", time.Since(fileStart), err)
 		} else {
-			logger.Printf("PDF processing completed in %v", time.Since(pdfStart))
+			logger.Printf("File processing completed in %v", time.Since(fileStart))
 		}
 	}()
 
@@ -194,13 +195,13 @@ func sendOpenAIAnalysis(w http.ResponseWriter, jobPosting, extractedResume, sour
 		logger.Printf("OpenAI analysis completed in %v", time.Since(analysisStart))
 	}()
 
-	content := fmt.Sprintf("%s\n\n--- %s ---\n \n\n--- %s---\n",constants.UserInstructionPrefix, jobPosting, extractedResume)
+	content := fmt.Sprintf("%s\n\n--- %s ---\n \n\n--- %s---\n", constants.UserInstructionPrefix, jobPosting, extractedResume)
 
 	var (
-		processedResume    string
-		processedJobTitle  string
-		openAIErr          error
-		wg                 sync.WaitGroup
+		processedResume   string
+		processedJobTitle string
+		openAIErr         error
+		wg                sync.WaitGroup
 	)
 
 	logger.Println("Starting concurrent OpenAI processing")
@@ -264,10 +265,10 @@ func sendOpenAIAnalysis(w http.ResponseWriter, jobPosting, extractedResume, sour
 	}
 
 	response := map[string]interface{}{
-		"success":      true,
-		"resume":       processedResume,
-		"coverLetter":  "",
-		"historyId":    historyRef.ID,
+		"success":     true,
+		"resume":      processedResume,
+		"coverLetter": "",
+		"historyId":   historyRef.ID,
 	}
 
 	logger.Println("Sending successful response to client")

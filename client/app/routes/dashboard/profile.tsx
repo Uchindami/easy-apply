@@ -32,8 +32,7 @@ import {
 import { Header } from "@/components/Header";
 import { useProfileStore } from "@/store/profile-store";
 import { db } from "@/lib/firebase";
-import { toast } from "sonner"
-
+import { toast } from "sonner";
 
 export default function ProfileManagement() {
   // Get values and actions from the profile store
@@ -50,18 +49,18 @@ export default function ProfileManagement() {
     toggleWebPushNotifications,
     toggleEmailNotifications,
     setLoading,
-    setError
+    setError,
   } = useProfileStore();
 
   // Local state for form management
   const [localUsername, setLocalUsername] = useState(username);
-  
+
   // Initialize local state when store values change
   useEffect(() => {
     if (user) {
       // If user has a displayName, use it, otherwise use store username
       setLocalUsername(user.displayName || username);
-      
+
       // Fetch additional user data from Firestore
       fetchUserProfile();
     }
@@ -70,39 +69,47 @@ export default function ProfileManagement() {
   // Function to fetch user profile from Firestore
   const fetchUserProfile = async () => {
     if (!user) return;
-    
+
     setLoading(true);
-    
+
     try {
-      const userDocRef = doc(db, 'users', user.uid);
+      const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);
-      
+
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        
+
         // Update store with user data from Firestore
         setUsername(userData.username || user.displayName || "");
-        
+
         // Update local username state
         setLocalUsername(userData.username || user.displayName || "");
-        
+
         // Sync social accounts if they exist in the document
         if (userData.socialAccounts) {
-          userData.socialAccounts.forEach((account: any)=> {
-            if (account.connected !== socialAccounts.find(a => a.platform === account.platform)?.connected) {
+          userData.socialAccounts.forEach((account: any) => {
+            if (
+              account.connected !==
+              socialAccounts.find((a) => a.platform === account.platform)
+                ?.connected
+            ) {
               toggleSocialConnection(account.platform);
             }
           });
         }
-        
+
         // Sync notification preferences
-        if (userData.webPushNotifications !== undefined && 
-            userData.webPushNotifications !== webPushNotifications) {
+        if (
+          userData.webPushNotifications !== undefined &&
+          userData.webPushNotifications !== webPushNotifications
+        ) {
           toggleWebPushNotifications();
         }
-        
-        if (userData.emailNotifications !== undefined && 
-            userData.emailNotifications !== emailNotifications) {
+
+        if (
+          userData.emailNotifications !== undefined &&
+          userData.emailNotifications !== emailNotifications
+        ) {
           toggleEmailNotifications();
         }
       } else {
@@ -112,13 +119,15 @@ export default function ProfileManagement() {
           socialAccounts,
           webPushNotifications,
           emailNotifications,
-          country: "Malawi"
+          country: "Malawi",
         });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch profile data");
-      toast("Error",{
-        description: "Failed to load profile data"
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch profile data"
+      );
+      toast("Error", {
+        description: "Failed to load profile data",
       });
     } finally {
       setLoading(false);
@@ -127,39 +136,43 @@ export default function ProfileManagement() {
 
   const handleSave = async () => {
     if (!user) {
-      toast("Error",{
-        description: "You must be logged in to update your profile"
+      toast("Error", {
+        description: "You must be logged in to update your profile",
       });
       return;
     }
-    
+
     setLoading(true);
-    
+
     try {
       // Update Firebase Auth displayName
       await updateProfile(user, {
-        displayName: localUsername
+        displayName: localUsername,
       });
-      
+
       // Update username in store
       setUsername(localUsername);
-      
+
       // Update Firestore document
-      const userDocRef = doc(db, 'users', user.uid);
-      await setDoc(userDocRef, {
-        username: localUsername,
-        socialAccounts,
-        webPushNotifications,
-        emailNotifications,
-        country: "Malawi"
-      }, { merge: true });
-      
-      toast("Success",{
-        description: "Profile updated successfully"
+      const userDocRef = doc(db, "users", user.uid);
+      await setDoc(
+        userDocRef,
+        {
+          username: localUsername,
+          socialAccounts,
+          webPushNotifications,
+          emailNotifications,
+          country: "Malawi",
+        },
+        { merge: true }
+      );
+
+      toast("Success", {
+        description: "Profile updated successfully",
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update profile");
-      toast("Error",{
+      toast("Error", {
         description: "Failed to update profile",
       });
     } finally {
@@ -168,7 +181,7 @@ export default function ProfileManagement() {
   };
   // Helper function to check if a social account is connected
   const isSocialConnected = (platform: string): boolean => {
-    const account = socialAccounts.find(acc => acc.platform === platform);
+    const account = socialAccounts.find((acc) => acc.platform === platform);
     return account ? account.connected : false;
   };
 
@@ -189,7 +202,7 @@ export default function ProfileManagement() {
             {error}
           </div>
         )}
-        
+
         <Tabs defaultValue="profile" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="profile">Profile</TabsTrigger>
@@ -303,10 +316,11 @@ export default function ProfileManagement() {
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center space-x-4">
                       <Facebook
-                        className={`h-6 w-6 ${isSocialConnected("facebook")
+                        className={`h-6 w-6 ${
+                          isSocialConnected("facebook")
                             ? "text-blue-600"
                             : "text-gray-300"
-                          }`}
+                        }`}
                       />
                       <div>
                         <p className="font-medium">Facebook</p>
@@ -319,7 +333,9 @@ export default function ProfileManagement() {
                     </div>
                     <Button
                       variant={
-                        isSocialConnected("facebook") ? "destructive" : "outline"
+                        isSocialConnected("facebook")
+                          ? "destructive"
+                          : "outline"
                       }
                       onClick={() => toggleSocialConnection("facebook")}
                       disabled={isLoading}
@@ -331,10 +347,11 @@ export default function ProfileManagement() {
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center space-x-4">
                       <Twitter
-                        className={`h-6 w-6 ${isSocialConnected("twitter")
+                        className={`h-6 w-6 ${
+                          isSocialConnected("twitter")
                             ? "text-blue-400"
                             : "text-gray-300"
-                          }`}
+                        }`}
                       />
                       <div>
                         <p className="font-medium">Twitter</p>
@@ -359,10 +376,11 @@ export default function ProfileManagement() {
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center space-x-4">
                       <Instagram
-                        className={`h-6 w-6 ${isSocialConnected("instagram")
+                        className={`h-6 w-6 ${
+                          isSocialConnected("instagram")
                             ? "text-pink-500"
                             : "text-gray-300"
-                          }`}
+                        }`}
                       />
                       <div>
                         <p className="font-medium">Instagram</p>
@@ -375,22 +393,27 @@ export default function ProfileManagement() {
                     </div>
                     <Button
                       variant={
-                        isSocialConnected("instagram") ? "destructive" : "outline"
+                        isSocialConnected("instagram")
+                          ? "destructive"
+                          : "outline"
                       }
                       onClick={() => toggleSocialConnection("instagram")}
                       disabled={isLoading}
                     >
-                      {isSocialConnected("instagram") ? "Disconnect" : "Connect"}
+                      {isSocialConnected("instagram")
+                        ? "Disconnect"
+                        : "Connect"}
                     </Button>
                   </div>
 
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center space-x-4">
                       <Linkedin
-                        className={`h-6 w-6 ${isSocialConnected("linkedin")
+                        className={`h-6 w-6 ${
+                          isSocialConnected("linkedin")
                             ? "text-blue-700"
                             : "text-gray-300"
-                          }`}
+                        }`}
                       />
                       <div>
                         <p className="font-medium">LinkedIn</p>
@@ -403,7 +426,9 @@ export default function ProfileManagement() {
                     </div>
                     <Button
                       variant={
-                        isSocialConnected("linkedin") ? "destructive" : "outline"
+                        isSocialConnected("linkedin")
+                          ? "destructive"
+                          : "outline"
                       }
                       onClick={() => toggleSocialConnection("linkedin")}
                       disabled={isLoading}
