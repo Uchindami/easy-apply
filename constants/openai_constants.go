@@ -3,7 +3,7 @@ package constants
 
 const (
 	ResumeGenModel  = "gpt-4o"
-	SubjectGenModel = "meta-llama/Meta-Llama-3.1-70B-Instruct-fast"
+	SubjectGenModel = "microsoft/Phi-3.5-mini-instruct"
 )
 
 // Chat prompt roles
@@ -17,5 +17,14 @@ const UserInstructionPrefix = `Optimize the resume to match the job posting belo
 Preserve all original links and content; add any relevant skills/technologies.`
 
 // For subject generation: respond with nothing but the subject line (no quotes, no punctuation).
-const SubjectGenInstruction = `You are a title generator. In 1–4 words (max 40 characters), summarize this conversation topic.
-Respond with the title only, no punctuation or commentary. include company name and job title`
+const SubjectGenInstruction = `You are a concise title generator and company name extractor.  
+For a given conversation, produce:
+
+1. A brief title (1–4 words, max 40 characters) that summarizes the topic, incorporating the job title and company name.  
+2. A JSON object with two keys:
+   • title  
+   • company_name  
+
+Respond with the title text only (no punctuation, no commentary), then output the JSON.`
+
+const SubjectGenAssistantInstruction = `"""{\"title\":\"Data Scientist Acme Corp\",\"company_name\":\"Acme Corp\"}"""`

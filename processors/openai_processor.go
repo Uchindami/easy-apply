@@ -206,6 +206,13 @@ func (o *OpenAIProcessor) generateSubjectNameWithContext(jobDetails string) (str
 						},
 					},
 				},
+                {
+                    OfAssistant: &openai.ChatCompletionAssistantMessageParam{
+                        Content: openai.ChatCompletionAssistantMessageParamContentUnion{
+                            OfString: openai.String(constants.SubjectGenAssistantInstruction),
+                        },
+                    },
+                },
 				{
 					OfUser: &openai.ChatCompletionUserMessageParam{
 						Content: openai.ChatCompletionUserMessageParamContentUnion{
@@ -214,7 +221,7 @@ func (o *OpenAIProcessor) generateSubjectNameWithContext(jobDetails string) (str
 					},
 				},
 			},
-			Temperature: openai.Float(0.6),
+			Temperature: openai.Float(0.7),
 			MaxTokens:   openai.Int(64),
 			TopP:        openai.Float(0.9),
 		},

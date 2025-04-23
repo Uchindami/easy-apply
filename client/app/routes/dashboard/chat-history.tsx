@@ -37,9 +37,7 @@ const DetailItem = ({
               {value}
             </p>
           </TooltipTrigger>
-          {/* <TooltipContent>
-            <p className="max-w-xs break-all">{value}</p>
-          </TooltipContent> */}
+
         </Tooltip>
       </TooltipProvider>
     </div>

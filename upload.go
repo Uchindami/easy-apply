@@ -198,10 +198,13 @@ func sendOpenAIAnalysis(w http.ResponseWriter, jobPosting, extractedResume, sour
 	content := fmt.Sprintf("%s\n\n--- %s ---\n \n\n--- %s---\n", constants.UserInstructionPrefix, jobPosting, extractedResume)
 
 	var (
-		processedResume   string
-		processedJobTitle string
-		openAIErr         error
-		wg                sync.WaitGroup
+		processedResume string
+		openAIErr       error
+		jobDetails      struct {
+			Title   string `json:"title"`
+			Company string `json:"company_name"`
+		}
+		wg sync.WaitGroup
 	)
 
 	logger.Println("Starting concurrent OpenAI processing")
@@ -222,11 +225,16 @@ func sendOpenAIAnalysis(w http.ResponseWriter, jobPosting, extractedResume, sour
 		defer wg.Done()
 		logger.Println("Starting job title generation with OpenAI")
 		titleStart := time.Now()
-		processedJobTitle, openAIErr = openAIProcessor.GenerateSubjectName(jobPosting)
+		var jobDetailsJSON string
+		jobDetailsJSON, openAIErr = openAIProcessor.GenerateSubjectName(jobPosting)
 		if openAIErr != nil {
 			logger.Printf("OpenAI title generation failed after %v: %v", time.Since(titleStart), openAIErr)
-		} else {
-			logger.Printf("OpenAI title generation completed in %v", time.Since(titleStart))
+			return
+		}
+		logger.Printf("OpenAI title generation completed in %v", time.Since(titleStart))
+		if err := json.Unmarshal([]byte(jobDetailsJSON), &jobDetails); err != nil {
+			openAIErr = err
+			logger.Printf("Failed to parse job details JSON: %v", err)
 		}
 	}()
 
@@ -246,8 +254,8 @@ func sendOpenAIAnalysis(w http.ResponseWriter, jobPosting, extractedResume, sour
 			"coverLetterPath": "generatedCLPath",
 		},
 		"jobDetails": map[string]interface{}{
-			"title":   processedJobTitle,
-			"company": "Extracted Company",
+			"title":   jobDetails.Title,
+			"company": jobDetails.Company,
 		},
 		"completedAt": firestore.ServerTimestamp,
 	}
