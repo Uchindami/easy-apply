@@ -81,8 +81,8 @@ func NewOpenAIProcessor() *OpenAIProcessor {
 }
 
 // ProcessText sends the job description and resume to OpenAI API with retries and caching
-func (o *OpenAIProcessor) ProcessText(text string) (string, error) {
-	if cached, ok := o.getFromCache(text); ok {
+func (o *OpenAIProcessor) ProcesseDocuments(documents string) (string, error) {
+	if cached, ok := o.getFromCache(documents); ok {
 		return cached, nil
 	}
 
@@ -95,10 +95,10 @@ func (o *OpenAIProcessor) ProcessText(text string) (string, error) {
 			time.Sleep(retryDelay)
 		}
 
-		result, err = o.processResume(text)
+		result, err = o.generateResumeAndCoverLetter(documents)
 		if err == nil {
 			// Cache successful response
-			o.setInCache(text, result)
+			o.setInCache(documents, result)
 			return result, nil
 		}
 
@@ -108,7 +108,7 @@ func (o *OpenAIProcessor) ProcessText(text string) (string, error) {
 	return "", fmt.Errorf("after %d attempts: %w", maxRetries, err)
 }
 
-func (o *OpenAIProcessor) processResume(text string) (string, error) {
+func (o *OpenAIProcessor) generateResumeAndCoverLetter(text string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), openAIDefaultTimeout)
 	defer cancel()
 
@@ -125,6 +125,13 @@ func (o *OpenAIProcessor) processResume(text string) (string, error) {
 					OfSystem: &openai.ChatCompletionSystemMessageParam{
 						Content: openai.ChatCompletionSystemMessageParamContentUnion{
 							OfString: openai.String(constants.OpenAIInstruction),
+						},
+					},
+				},
+				{
+					OfAssistant: &openai.ChatCompletionAssistantMessageParam{
+						Content: openai.ChatCompletionAssistantMessageParamContentUnion{
+							OfString: openai.String(constants.AssistantResumeExample),
 						},
 					},
 				},
@@ -154,19 +161,22 @@ func (o *OpenAIProcessor) processResume(text string) (string, error) {
 		return "", fmt.Errorf("empty response content")
 	}
 
+	// Log the content with color (cyan)
+	// log.Printf("\033[36mOpenAI response:\033[0m %s", content)
 	return content, nil
 }
 
 // GenerateSubjectName generates a brief subject name with retries and caching
-func (o *OpenAIProcessor) GenerateSubjectName(jobDetails string) (string, error) {
+func (o *OpenAIProcessor) GenerateSubjectName(jobDescription string) (string, error) {
 	// Check cache first
-	if cached, ok := o.getFromCache("subject:" + jobDetails); ok {
-		return cached, nil
-	}
+	// if cached, ok := o.getFromCache("subject:" + jobDescription); ok {
+	// 	fmt.Printf("\023[33mJob Posting: %s\023[0m\n", "returning cached response")
+	// 	return cached, nil
+	// }
 
-	if o.nebiusClient == nil {
-		return "", fmt.Errorf("nebius client not initialized")
-	}
+	// if o.nebiusClient == nil {
+	// 	return "", fmt.Errorf("nebius client not initialized")
+	// }
 
 	var result string
 	var err error
@@ -177,10 +187,10 @@ func (o *OpenAIProcessor) GenerateSubjectName(jobDetails string) (string, error)
 			time.Sleep(retryDelay)
 		}
 
-		result, err = o.generateSubjectNameWithContext(jobDetails)
+		result, err = o.generateSubjectNameWithContext(jobDescription)
 		if err == nil {
 			// Cache successful response
-			o.setInCache("subject:"+jobDetails, result)
+			// o.setInCache("subject:"+jobDescription, result)
 			return result, nil
 		}
 
@@ -238,6 +248,7 @@ func (o *OpenAIProcessor) generateSubjectNameWithContext(jobDetails string) (str
 	if content == "" {
 		return "", fmt.Errorf("empty response content")
 	}
+	log.Printf("\033[31mOpenAI response:\033[0m %s", content)
 
 	return content, nil
 }

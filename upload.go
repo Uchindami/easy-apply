@@ -12,7 +12,6 @@ import (
 	"sync"
 	"time"
 
-	"easy-apply/constants"
 	"easy-apply/processors"
 
 	"cloud.google.com/go/firestore"
@@ -195,12 +194,15 @@ func sendOpenAIAnalysis(w http.ResponseWriter, jobPosting, extractedResume, sour
 		logger.Printf("OpenAI analysis completed in %v", time.Since(analysisStart))
 	}()
 
-	content := fmt.Sprintf("%s\n\n--- %s ---\n \n\n--- %s---\n", constants.UserInstructionPrefix, jobPosting, extractedResume)
+	documents := fmt.Sprintf(`"job_description:"""--- %s ---""" resume:"""--- %s ---"""`, jobPosting, extractedResume)
 
 	var (
-		processedResume string
-		openAIErr       error
-		jobDetails      struct {
+		processedDocuments struct {
+			ProcessedResume      string `json:"generated_resume"`
+			ProcessedCoverLetter string `json:"generated_cover_letter"`
+		}
+		openAIErr  error
+		jobDetails struct {
 			Title   string `json:"title"`
 			Company string `json:"company_name"`
 		}
@@ -211,27 +213,41 @@ func sendOpenAIAnalysis(w http.ResponseWriter, jobPosting, extractedResume, sour
 	wg.Add(2)
 	go func() {
 		defer wg.Done()
-		logger.Println("Starting resume processing with OpenAI")
+		logger.Println("Starting resume and coverLetter processing with OpenAI")
 		resumeStart := time.Now()
-		processedResume, openAIErr = openAIProcessor.ProcessText(content)
+		var processedDocumentsJSON string
+		processedDocumentsJSON, openAIErr = openAIProcessor.ProcesseDocuments(documents)
 		if openAIErr != nil {
-			logger.Printf("OpenAI resume processing failed after %v: %v", time.Since(resumeStart), openAIErr)
+			logger.Printf("OpenAI resume and coverLetter processing failed after %v: %v", time.Since(resumeStart), openAIErr)
 		} else {
-			logger.Printf("OpenAI resume processing completed in %v", time.Since(resumeStart))
+			logger.Printf("OpenAI resume and coverLetter processing completed in %v", time.Since(resumeStart))
+			logger.Printf("Raw JSON: %s", processedDocumentsJSON)
+			if err := json.Unmarshal([]byte(processedDocumentsJSON), &processedDocuments); err != nil {
+				openAIErr = err
+				logger.Printf("Failed to parse processed documents JSON: %v", err)
+			}
+			// var rawData map[string]interface{}
+			// if err := json.Unmarshal([]byte(processedDocumentsJSON), &rawData); err != nil {
+			// 	logger.Printf("Failed to unmarshal into map: %v", err)
+			// } else {
+			// 	logger.Printf("Raw data: %+v", rawData)
+			// }
 		}
 	}()
 
 	go func() {
 		defer wg.Done()
-		logger.Println("Starting job title generation with OpenAI")
+		logger.Println("Starting Job Details processing with Nebius")
+		//
+		fmt.Printf("\033[33mJob Posting: %s\033[0m\n", jobPosting)
 		titleStart := time.Now()
 		var jobDetailsJSON string
 		jobDetailsJSON, openAIErr = openAIProcessor.GenerateSubjectName(jobPosting)
 		if openAIErr != nil {
-			logger.Printf("OpenAI title generation failed after %v: %v", time.Since(titleStart), openAIErr)
+			logger.Printf("Job Details processing failed after %v: %v", time.Since(titleStart), openAIErr)
 			return
 		}
-		logger.Printf("OpenAI title generation completed in %v", time.Since(titleStart))
+		logger.Printf("Job Details processing completed in %v", time.Since(titleStart))
 		if err := json.Unmarshal([]byte(jobDetailsJSON), &jobDetails); err != nil {
 			openAIErr = err
 			logger.Printf("Failed to parse job details JSON: %v", err)
@@ -250,8 +266,8 @@ func sendOpenAIAnalysis(w http.ResponseWriter, jobPosting, extractedResume, sour
 		"status":              statusCompleted,
 		"original.resumePath": extractedResume,
 		"generated": map[string]interface{}{
-			"resumePath":      processedResume,
-			"coverLetterPath": "generatedCLPath",
+			"resumePath":      processedDocuments.ProcessedResume,
+			"coverLetterPath": processedDocuments.ProcessedCoverLetter,
 		},
 		"jobDetails": map[string]interface{}{
 			"title":   jobDetails.Title,
@@ -274,8 +290,8 @@ func sendOpenAIAnalysis(w http.ResponseWriter, jobPosting, extractedResume, sour
 
 	response := map[string]interface{}{
 		"success":     true,
-		"resume":      processedResume,
-		"coverLetter": "",
+		"resume":      processedDocuments.ProcessedResume,
+		"coverLetter": processedDocuments.ProcessedCoverLetter,
 		"historyId":   historyRef.ID,
 	}
 

@@ -1,20 +1,24 @@
-"use client"
-
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Download, Edit, Eye, FileText, Mail } from "lucide-react"
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Download, Edit, Eye, FileText, Mail } from "lucide-react";
 
 interface DocumentPreviewProps {
-  generatedResume: string
-  generatedCoverLetter: string
-  onResumeChange: (content: string) => void
-  onCoverLetterChange: (content: string) => void
-  onDownload: (type: "resume" | "coverLetter") => void
+  generatedResume: string;
+  generatedCoverLetter: string;
+  onResumeChange: (content: string) => void;
+  onCoverLetterChange: (content: string) => void;
+  onDownload: (type: "resume" | "coverLetter") => void;
 }
 
 export function DocumentPreview({
@@ -24,8 +28,8 @@ export function DocumentPreview({
   onCoverLetterChange,
   onDownload,
 }: DocumentPreviewProps) {
-  const [activeDocTab, setActiveDocTab] = useState<string>("resume")
-  const [editMode, setEditMode] = useState<boolean>(false)
+  const [activeDocTab, setActiveDocTab] = useState<string>("resume");
+  const [editMode, setEditMode] = useState<boolean>(false);
 
   return (
     <Card>
@@ -33,10 +37,16 @@ export function DocumentPreview({
         <div className="flex items-center justify-between">
           <div>
             <CardTitle>Your Tailored Documents</CardTitle>
-            <CardDescription>Review and edit your tailored resume and cover letter</CardDescription>
+            <CardDescription>
+              Review and edit your tailored resume and cover letter
+            </CardDescription>
           </div>
           <div className="flex items-center space-x-2">
-            <Switch id="edit-mode" checked={editMode} onCheckedChange={setEditMode} />
+            <Switch
+              id="edit-mode"
+              checked={editMode}
+              onCheckedChange={setEditMode}
+            />
             <Label htmlFor="edit-mode" className="flex items-center">
               {editMode ? (
                 <>
@@ -52,7 +62,11 @@ export function DocumentPreview({
         </div>
       </CardHeader>
       <CardContent>
-        <Tabs value={activeDocTab} onValueChange={setActiveDocTab} className="w-full">
+        <Tabs
+          value={activeDocTab}
+          onValueChange={setActiveDocTab}
+          className="w-full"
+        >
           <TabsList className="grid w-full grid-cols-2 mb-4">
             <TabsTrigger value="resume" className="flex items-center">
               <FileText className="mr-2 h-4 w-4" />
@@ -73,12 +87,15 @@ export function DocumentPreview({
               />
             ) : (
               <div
-                className="border rounded-md p-4 min-h-[500px] overflow-auto bg-white"
+                className="border rounded-md p-4 min-h-[500px] overflow-x-hidden overflow-y-scroll bg-white"
                 dangerouslySetInnerHTML={{ __html: generatedResume }}
               />
             )}
             <div className="flex justify-end">
-              <Button onClick={() => onDownload("resume")} className="flex items-center">
+              <Button
+                onClick={() => onDownload("resume")}
+                className="flex items-center"
+              >
                 <Download className="mr-2 h-4 w-4" />
                 Download Resume
               </Button>
@@ -94,12 +111,15 @@ export function DocumentPreview({
               />
             ) : (
               <div
-                className="border rounded-md p-4 min-h-[500px] overflow-auto bg-white"
+                className="border rounded-md p-4 min-h-[500px] overflow-y-scroll overflow-x-hidden bg-white"
                 dangerouslySetInnerHTML={{ __html: generatedCoverLetter }}
               />
             )}
             <div className="flex justify-end">
-              <Button onClick={() => onDownload("coverLetter")} className="flex items-center">
+              <Button
+                onClick={() => onDownload("coverLetter")}
+                className="flex items-center"
+              >
                 <Download className="mr-2 h-4 w-4" />
                 Download Cover Letter
               </Button>
@@ -108,5 +128,5 @@ export function DocumentPreview({
         </Tabs>
       </CardContent>
     </Card>
-  )
+  );
 }
