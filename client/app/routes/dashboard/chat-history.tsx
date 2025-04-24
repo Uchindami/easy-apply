@@ -1,21 +1,31 @@
 import type React from "react";
 import { format } from "date-fns";
-import { Briefcase, Globe, Calendar, Clock } from "lucide-react";
+import {
+  Briefcase,
+  Globe,
+  Calendar,
+  Clock,
+  ChevronRight,
+  ChevronLeft,
+} from "lucide-react";
 import { Link, useParams } from "react-router";
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import DocumentViewer from "@/components/chats/document-viewer";
 import HistoryDetailSkeleton from "@/components/chats/history-detail-skeleton";
 import { useChatHistory } from "@/hooks/use-chat-history";
 import type { HistoryData } from "../../types/history";
-import { Link as LinkIcon } from 'lucide-react';
+import { Link as LinkIcon } from "lucide-react";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 import {
   Tooltip,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import CoverLetterViewer from "@/components/chats/cover-letter-viewer";
+import ResumeViewer from "@/components/chats/resume-viewer";
 
 const DetailItem = ({
   icon,
@@ -28,16 +38,15 @@ const DetailItem = ({
 }) => (
   <div className="flex items-start gap-3">
     <div className="flex-shrink-0">{icon}</div>
-    <div className="space-y-1 w-full overflow-hidden">
+    <div className="space-y-1 min-w-0">
       <p className="text-sm font-medium text-gray-500">{label}</p>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <p className="text-sm truncate max-w-full" title={value}>
+            <p className="text-sm truncate" title={value}>
               {value}
             </p>
           </TooltipTrigger>
-
         </Tooltip>
       </TooltipProvider>
     </div>
@@ -45,8 +54,8 @@ const DetailItem = ({
 );
 
 const JobDetailsCard = ({ historyData }: { historyData: HistoryData }) => (
-  <Card className="md:col-span-1 max-w-md ">
-    <CardHeader>
+  <Card className="max-w-sm">
+    <CardHeader className="items-center">
       <CardTitle>Job Details</CardTitle>
     </CardHeader>
     <CardContent className="space-y-4">
@@ -59,7 +68,7 @@ const JobDetailsCard = ({ historyData }: { historyData: HistoryData }) => (
       <DetailItem
         icon={<LinkIcon className="h-5 w-5 text-gray-500 mt-0.5" />}
         label="Source"
-        value={historyData.original.jobLink || "Not specified"}  
+        value={historyData.original.jobLink || "Not specified"}
       />
 
       <DetailItem
@@ -93,25 +102,46 @@ const JobDetailsCard = ({ historyData }: { historyData: HistoryData }) => (
   </Card>
 );
 
-const DocumentsViewer = ({ historyData }: { historyData: HistoryData }) => (
-  <Tabs defaultValue="resume" className="w-full">
-    <TabsList className="grid w-full grid-cols-2">
-      <TabsTrigger value="resume">Resume</TabsTrigger>
-      <TabsTrigger value="coverLetter">Cover Letter</TabsTrigger>
-    </TabsList>
-    <TabsContent value="resume" className="mt-4">
-      <DocumentViewer
-        document={historyData.generated.resumePath}
-        documentType="resume"
-      />
-    </TabsContent>
-    <TabsContent value="coverLetter" className="mt-4">
-      <DocumentViewer
-        document={historyData.generated.coverLetterPath}
-        documentType="coverLetter"
-      />
-    </TabsContent>
-  </Tabs>
+const DocumentsViewer = ({
+  historyData,
+  isJobDetailsCollapsed,
+  onToggleJobDetails,
+}: {
+  historyData: HistoryData;
+  isJobDetailsCollapsed: boolean;
+  onToggleJobDetails: () => void;
+}) => (
+  <Card className="flex transition-all duration-300 ">
+    <CardHeader className="flex flex-row items-center">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onToggleJobDetails}
+        className=" hidden md:flex"
+      >
+        {isJobDetailsCollapsed ? (
+          <ChevronRight className="h-4 w-4" />
+        ) : (
+          <ChevronLeft className="h-4 w-4" />
+        )}
+      </Button>
+      <CardTitle>Generated Documents</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <Tabs defaultValue="resume" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="resume">Resume</TabsTrigger>
+          <TabsTrigger value="coverLetter">Cover Letter</TabsTrigger>
+        </TabsList>
+        <TabsContent value="resume" className="mt-4">
+          <ResumeViewer documentHTML={historyData.generated.resumePath} />
+        </TabsContent>
+        <TabsContent value="coverLetter" className="mt-4">
+          <CoverLetterViewer document={historyData.generated.coverLetterPath} />
+        </TabsContent>
+      </Tabs>
+    </CardContent>
+  </Card>
 );
 
 const ErrorState = ({
@@ -141,6 +171,8 @@ export default function ChatHistoryDetail() {
     error: string | null;
     retry: () => void;
   };
+  const [isJobDetailsCollapsed, setIsJobDetailsCollapsed] =
+    useState<boolean>(false);
 
   if (loading) return <HistoryDetailSkeleton />;
   if (error || !historyData) {
@@ -148,20 +180,18 @@ export default function ChatHistoryDetail() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="">
       <Header title={historyData.jobDetails.title || "Job Application"} />
+      <div className="flex flex-col md:flex-row md:gap-4 p-6 ">
+        <div>
+        {!isJobDetailsCollapsed && <JobDetailsCard historyData={historyData} />}
+        </div>
+        <DocumentsViewer
+          historyData={historyData}
+          isJobDetailsCollapsed={isJobDetailsCollapsed}
+          onToggleJobDetails={() => setIsJobDetailsCollapsed((prev) => !prev)}
+        />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <JobDetailsCard historyData={historyData} />
-
-        <Card className="md:col-span-2 ">
-          <CardHeader>
-            <CardTitle>Generated Documents</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DocumentsViewer historyData={historyData} />
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
