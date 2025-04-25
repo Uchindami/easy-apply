@@ -4,6 +4,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Download, Edit, Save } from "lucide-react";
 import RichTextEditor from "@/components/chats/rich-text-editor";
+import { Textarea } from "../ui/textarea";
 
 interface CoverLetterViewerProps {
   document: string;
@@ -13,7 +14,7 @@ export default function CoverLetterViewer({
   document,
 }: CoverLetterViewerProps) {
   const [loading, setLoading] = useState<boolean>(true);
-  const [isEditing, setIsEditing] = useState<boolean>(true);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const handleEditorChange = (newContent: string): void => {};
 
@@ -86,10 +87,14 @@ export default function CoverLetterViewer({
           </div>
         </div>
       ) : (
-        <div
-          className="font-serif leading-relaxed prose max-w-none dark:prose-invert"
-          dangerouslySetInnerHTML={{ __html: document }}
-        />
+        // <div
+        //   className="font-serif leading-relaxed prose max-w-none dark:prose-invert"
+        //   dangerouslySetInnerHTML={{ __html: document }}
+        // />
+        <Textarea
+        value={document}
+        className="min-h-[500px] font-serif text-md"
+      />
       )}
     </div>
   );

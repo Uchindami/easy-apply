@@ -4,13 +4,14 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Download, Edit, Save } from "lucide-react";
 import RichTextEditor from "@/components/chats/rich-text-editor";
+import ResumeImageRenderer from "@/components/chats/resume-image-renderer";
 
 interface ResumeViewerProps {
   documentHTML: string;
 }
 
 export default function ResumeViewer({ documentHTML }: ResumeViewerProps) {
-  const [isEditing, setIsEditing] = useState<boolean>(true);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const handleEditorChange = (newContent: string): void => {};
 
@@ -62,10 +63,7 @@ export default function ResumeViewer({ documentHTML }: ResumeViewerProps) {
           </div>
         </div>
       ) : (
-        <div
-          className="prose max-w-none dark:prose-invert overflow-hidden"
-          dangerouslySetInnerHTML={{ __html: documentHTML }}
-        />
+        <ResumeImageRenderer htmlContent={documentHTML} />
       )}
     </div>
   );

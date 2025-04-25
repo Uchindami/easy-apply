@@ -12,6 +12,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Download, Edit, Eye, FileText, Mail } from "lucide-react";
+import RichTextEditor from "@/components/chats/rich-text-editor";
+import ResumeImageRenderer from "@/components/chats/resume-image-renderer";
 
 interface DocumentPreviewProps {
   generatedResume: string;
@@ -80,18 +82,23 @@ export function DocumentPreview({
 
           <TabsContent value="resume" className="space-y-4">
             {editMode ? (
-              <Textarea
-                value={generatedResume}
-                onChange={(e) => onResumeChange(e.target.value)}
-                className="min-h-[500px] font-mono text-sm"
+              <RichTextEditor
+                content={generatedResume}
+                onChange={() => { }}
               />
+              // <Textarea
+              //   value={generatedResume}
+              //   onChange={(e) => onResumeChange(e.target.value)}
+              //   className="min-h-[500px] font-mono text-sm"
+              // />
             ) : (
-              <div
-                className="border rounded-md p-4 min-h-[500px] overflow-x-hidden overflow-y-scroll bg-white"
-                dangerouslySetInnerHTML={{ __html: generatedResume }}
-              />
+              <ResumeImageRenderer htmlContent={generatedResume} />
+              // <div
+              //   className="border rounded-md p-4 min-h-[500px] overflow-x-hidden overflow-y-scroll bg-white"
+              //   dangerouslySetInnerHTML={{ __html: generatedResume }}
+              // />
             )}
-            <div className="flex justify-end">
+            <div className="flex jus@/components/y-end">
               <Button
                 onClick={() => onDownload("resume")}
                 className="flex items-center"

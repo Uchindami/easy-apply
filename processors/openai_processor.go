@@ -144,7 +144,7 @@ func (o *OpenAIProcessor) generateResumeAndCoverLetter(text string) (string, err
 				},
 			},
 			Temperature: openai.Float(0.7),
-			MaxTokens:   openai.Int(2048),
+			MaxTokens:   openai.Int(4000),
 			TopP:        openai.Float(1),
 		},
 	)

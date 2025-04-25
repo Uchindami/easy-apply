@@ -37,7 +37,7 @@ Cover Letter Instructions (generated_cover_letter):
 	• Value proposition: Highlight one or two measurable achievements or future opportunities they bring.
 	• Forward-facing ending: Express enthusiasm and invite further conversation.
 - Keep it to 3–5 paragraphs, professional and personable.
-- Use plain text format, no HTML.
+- Format as letter in docx, no HTML.
 
 Do NOT use triple backticks or triple quotes for the JSON output.
 `
