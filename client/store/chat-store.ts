@@ -11,9 +11,12 @@ import {
   type DocumentData,
   type QueryDocumentSnapshot,
 } from "firebase/firestore"
+import { historyService } from "@/services/history-service"
 import { create } from "zustand"
 
+// =====================
 // Types
+// =====================
 export interface Chat {
   id: string
   title: string
@@ -48,9 +51,19 @@ interface ChatState {
   fetchChats: (userId: string) => Promise<void>
   loadMoreChats: (userId: string) => Promise<void>
   getChatById: (userId: string, chatId: string) => Promise<Chat | null>
+
+  createChat: (userId: string, data: Omit<HistoryData, "id" | "timestamp">) => Promise<void>;
+  updateChat: (userId: string, historyId: string, data: Partial<HistoryData>) => Promise<void>;
+  deleteChat: (userId: string, historyId: string) => Promise<void>;
 }
 
-// Helper functions
+// =====================
+// Helper Functions
+// =====================
+
+/**
+ * Transforms a Firestore document into a Chat object.
+ */
 const transformChatData = (doc: QueryDocumentSnapshot<DocumentData>): Chat => {
   const data = doc.data()
   return {
@@ -60,6 +73,30 @@ const transformChatData = (doc: QueryDocumentSnapshot<DocumentData>): Chat => {
   }
 }
 
+/**
+ * Handles errors by logging and updating state.
+ */
+const handleError = (set: any, message: string, error: unknown, loadingKey: 'isLoading' | 'isFetchingMore') => {
+  console.error(message, error)
+  set({ error: message, [loadingKey]: false })
+}
+
+/**
+ * Removes duplicate chats by id.
+ */
+function dedupeChats(chats: Chat[]): Chat[] {
+  const seen = new Set<string>()
+  return chats.filter(chat => {
+    if (seen.has(chat.id)) return false
+    seen.add(chat.id)
+    return true
+  })
+}
+
+// =====================
+// Zustand Store
+// =====================
+
 export const useChatStore = create<ChatState>((set, get) => ({
   chats: [],
   isLoading: true,
@@ -68,70 +105,109 @@ export const useChatStore = create<ChatState>((set, get) => ({
   lastVisible: null,
   hasMore: true,
 
+  /**
+   * Fetches the initial batch of chats for a user.
+   */
   fetchChats: async (userId: string) => {
     set({ isLoading: true, error: null })
-
     try {
       const historyRef = collection(db, "Users", userId, "History")
       const q = query(historyRef, orderBy("timestamp", "desc"), limit(5))
       const querySnapshot = await getDocs(q)
-
       const chats = querySnapshot.docs.filter((doc) => doc.exists()).map(transformChatData)
-
       set({
-        chats,
+        chats: dedupeChats(chats),
         isLoading: false,
         lastVisible: querySnapshot.docs[querySnapshot.docs.length - 1] || null,
         hasMore: querySnapshot.docs.length === 5,
       })
     } catch (error) {
-      console.error("Error fetching chats:", error)
-      set({ error: "Failed to load chat history", isLoading: false })
+      handleError(set, "Failed to load chat history", error, 'isLoading')
     }
   },
 
+  /**
+   * Loads more chats for pagination.
+   */
   loadMoreChats: async (userId: string) => {
-    const { lastVisible, isFetchingMore, hasMore } = get()
+    const { lastVisible, isFetchingMore, hasMore, chats: currentChats } = get()
     if (!lastVisible || isFetchingMore || !hasMore) return
-
     set({ isFetchingMore: true })
-
     try {
       const historyRef = collection(db, "Users", userId, "History")
       const q = query(historyRef, orderBy("timestamp", "desc"), startAfter(lastVisible), limit(5))
       const querySnapshot = await getDocs(q)
-
       const newChats = querySnapshot.docs.filter((doc) => doc.exists()).map(transformChatData)
-
       set((state) => ({
-        chats: [...state.chats, ...newChats],
+        chats: dedupeChats([...state.chats, ...newChats]),
         isFetchingMore: false,
         lastVisible: querySnapshot.docs[querySnapshot.docs.length - 1] || null,
         hasMore: querySnapshot.docs.length === 5,
       }))
     } catch (error) {
-      console.error("Error loading more chats:", error)
-      set({ error: "Failed to load more chats", isFetchingMore: false })
+      handleError(set, "Failed to load more chats", error, 'isFetchingMore')
     }
   },
 
+  /**
+   * Gets a chat by its ID, fetching from Firestore if not already in state.
+   */
   getChatById: async (userId: string, chatId: string) => {
     const { chats } = get()
     const existingChat = chats.find((chat) => chat.id === chatId)
     if (existingChat) return existingChat
-
     try {
       const chatRef = doc(db, "Users", userId, "History", chatId)
       const chatSnap = await getDoc(chatRef)
-
       if (!chatSnap.exists()) return null
-
       const chat = transformChatData(chatSnap as QueryDocumentSnapshot<DocumentData>)
-      set((state) => ({ chats: [...state.chats, chat] }))
+      set((state) => ({ chats: dedupeChats([...state.chats, chat]) }))
       return chat
     } catch (error) {
       console.error("Error fetching chat by ID:", error)
       return null
     }
   },
+
+  createChat: async (userId, data) => {
+    try {
+      const newHistory = await historyService.createHistory(userId, data);
+      set(state => ({
+        chats: dedupeChats([transformToChat(newHistory), ...state.chats]),
+      }));
+    } catch (error) {
+      handleError(set, "Failed to create chat", error, "isLoading");
+    }
+  },
+
+  updateChat: async (userId, historyId, data) => {
+    try {
+      const updatedHistory = await historyService.updateHistory(userId, historyId, data);
+      set(state => ({
+        chats: state.chats.map(chat =>
+          chat.id === historyId ? transformToChat(updatedHistory) : chat
+        ),
+      }));
+    } catch (error) {
+      handleError(set, "Failed to update chat", error, "isLoading");
+    }
+  },
+
+  deleteChat: async (userId, historyId) => {
+    try {
+      await historyService.deleteHistory(userId, historyId);
+      set(state => ({
+        chats: state.chats.filter(chat => chat.id !== historyId),
+      }));
+    } catch (error) {
+      handleError(set, "Failed to delete chat", error, "isLoading");
+    }
+  }
+
 }))
+
+const transformToChat = (history: HistoryData): Chat => ({
+  id: history.id,
+  title: history.jobDetails?.title || "Untitled Chat",
+  timestamp: history.timestamp,
+});

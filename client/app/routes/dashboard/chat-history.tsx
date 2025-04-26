@@ -2,7 +2,6 @@ import type React from "react";
 import { format } from "date-fns";
 import {
   Briefcase,
-  Globe,
   Calendar,
   Clock,
   ChevronRight,
@@ -15,27 +14,41 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import HistoryDetailSkeleton from "@/components/chats/history-detail-skeleton";
 import { useChatHistory } from "@/hooks/use-chat-history";
-import type { HistoryData } from "../../types/history";
+import type { HistoryData } from "../../../types/history";
 import { Link as LinkIcon } from "lucide-react";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 import {
   Tooltip,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import CoverLetterViewer from "@/components/chats/cover-letter-viewer";
-import ResumeViewer from "@/components/chats/resume-viewer";
+import DocumentViewer from "@/components/chats/resume-viewer";
 
-const DetailItem = ({
-  icon,
-  label,
-  value,
-}: {
+// --- Types ---
+interface DetailItemProps {
   icon: React.ReactNode;
   label: string;
   value: string;
-}) => (
+}
+
+interface JobDetailsCardProps {
+  historyData: HistoryData;
+}
+
+interface DocumentsViewerProps {
+  historyData: HistoryData;
+  isJobDetailsCollapsed: boolean;
+  onToggleJobDetails: () => void;
+}
+
+interface ErrorStateProps {
+  error: string;
+  onRetry: () => void;
+}
+
+// --- Components ---
+const DetailItem: React.FC<DetailItemProps> = ({ icon, label, value }) => (
   <div className="flex items-start gap-3">
     <div className="flex-shrink-0">{icon}</div>
     <div className="space-y-1 min-w-0">
@@ -53,7 +66,7 @@ const DetailItem = ({
   </div>
 );
 
-const JobDetailsCard = ({ historyData }: { historyData: HistoryData }) => (
+const JobDetailsCard: React.FC<JobDetailsCardProps> = ({ historyData }) => (
   <Card className="max-w-sm">
     <CardHeader className="items-center">
       <CardTitle>Job Details</CardTitle>
@@ -64,13 +77,11 @@ const JobDetailsCard = ({ historyData }: { historyData: HistoryData }) => (
         label="Company"
         value={historyData.jobDetails.company || "Not specified"}
       />
-
       <DetailItem
         icon={<LinkIcon className="h-5 w-5 text-gray-500 mt-0.5" />}
         label="Source"
         value={historyData.original.jobLink || "Not specified"}
       />
-
       <DetailItem
         icon={<Calendar className="h-5 w-5 text-gray-500 mt-0.5" />}
         label="Applied On"
@@ -80,13 +91,11 @@ const JobDetailsCard = ({ historyData }: { historyData: HistoryData }) => (
             : "Unknown date"
         }
       />
-
       <DetailItem
         icon={<Clock className="h-5 w-5 text-gray-500 mt-0.5" />}
         label="Status"
-        value={historyData.status}
+        value={historyData.status || "Unknown"}
       />
-
       {historyData.original.jobLink && (
         <Button className="w-full mt-4" asChild>
           <a
@@ -102,22 +111,18 @@ const JobDetailsCard = ({ historyData }: { historyData: HistoryData }) => (
   </Card>
 );
 
-const DocumentsViewer = ({
+const DocumentsViewer: React.FC<DocumentsViewerProps> = ({
   historyData,
   isJobDetailsCollapsed,
   onToggleJobDetails,
-}: {
-  historyData: HistoryData;
-  isJobDetailsCollapsed: boolean;
-  onToggleJobDetails: () => void;
 }) => (
-  <Card className="flex transition-all duration-300 ">
+  <Card className="flex transition-all duration-300 overflow-hidden">
     <CardHeader className="flex flex-row items-center">
       <Button
         variant="ghost"
         size="icon"
         onClick={onToggleJobDetails}
-        className=" hidden md:flex"
+        className="hidden md:flex"
       >
         {isJobDetailsCollapsed ? (
           <ChevronRight className="h-4 w-4" />
@@ -133,8 +138,8 @@ const DocumentsViewer = ({
           <TabsTrigger value="resume">Resume</TabsTrigger>
           <TabsTrigger value="coverLetter">Cover Letter</TabsTrigger>
         </TabsList>
-        <TabsContent value="resume" className="mt-4">
-          <ResumeViewer documentHTML={historyData.generated.resumePath} />
+        <TabsContent value="resume" className="mt-4 flex">
+          <DocumentViewer documentHTML={historyData.generated.resumePath} />
         </TabsContent>
         <TabsContent value="coverLetter" className="mt-4">
           <CoverLetterViewer document={historyData.generated.coverLetterPath} />
@@ -144,13 +149,7 @@ const DocumentsViewer = ({
   </Card>
 );
 
-const ErrorState = ({
-  error,
-  onRetry,
-}: {
-  error: string;
-  onRetry: () => void;
-}) => (
+const ErrorState: React.FC<ErrorStateProps> = ({ error, onRetry }) => (
   <div className="flex flex-col items-center justify-center h-64">
     <h2 className="text-2xl font-bold text-gray-800 mb-4">
       {error || "Unable to load history data"}
@@ -161,6 +160,7 @@ const ErrorState = ({
   </div>
 );
 
+// --- Main Page Component ---
 export default function ChatHistoryDetail() {
   const { chatHistoryId } = useParams<{ chatHistoryId: string }>();
   const { historyData, loading, error, retry } = useChatHistory(
@@ -180,18 +180,17 @@ export default function ChatHistoryDetail() {
   }
 
   return (
-    <div className="">
+    <div>
       <Header title={historyData.jobDetails.title || "Job Application"} />
-      <div className="flex flex-col md:flex-row md:gap-4 p-6 ">
+      <div className="flex flex-col md:flex-row md:gap-4 p-6">
         <div>
-        {!isJobDetailsCollapsed && <JobDetailsCard historyData={historyData} />}
+          {!isJobDetailsCollapsed && <JobDetailsCard historyData={historyData} />}
         </div>
         <DocumentsViewer
           historyData={historyData}
           isJobDetailsCollapsed={isJobDetailsCollapsed}
           onToggleJobDetails={() => setIsJobDetailsCollapsed((prev) => !prev)}
         />
-
       </div>
     </div>
   );

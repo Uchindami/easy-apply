@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 export default function HistoryDetailSkeleton() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:pt-10">
       <div className="flex items-center gap-4">
         <Skeleton className="h-10 w-10 rounded-md" />
         <Skeleton className="h-10 w-64" />

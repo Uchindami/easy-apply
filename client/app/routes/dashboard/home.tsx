@@ -6,9 +6,9 @@ import { Header } from "@/components/Header";
 import { ResumeUploader } from "@/components/resume-generator/ResumeUploader";
 import { JobDetails } from "@/components/resume-generator/JobDetails";
 import { DocumentPreview } from "@/components/resume-generator/DocumentPreview";
-import { useResumeStore } from "@/store/useResumeStore";
+import { useDocumentStore } from "@/store/useResumeStore";
 
-export default function ResumeGenerator() {
+export default function DocumentGenerator() {
   const {
     resumeFile,
     jobUrl,
@@ -24,23 +24,10 @@ export default function ResumeGenerator() {
     setGeneratedCoverLetter,
     generateDocuments,
     resetForm,
-  } = useResumeStore();
+  } = useDocumentStore();
 
   const handleDownload = (type: "resume" | "coverLetter") => {
-    const content = type === "resume" ? generatedResume : generatedCoverLetter;
-    const fileName =
-      type === "resume" ? "tailored-resume.html" : "cover-letter.html";
-    const mimeType = "text/html";
 
-    const blob = new Blob([content], { type: mimeType });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   };
 
   return (

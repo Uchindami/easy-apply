@@ -6,24 +6,23 @@ import { Download, Edit, Save } from "lucide-react";
 import RichTextEditor from "@/components/chats/rich-text-editor";
 import ResumeImageRenderer from "@/components/chats/resume-image-renderer";
 
-interface ResumeViewerProps {
+interface DocumentViewerProps {
   documentHTML: string;
 }
 
-export default function ResumeViewer({ documentHTML }: ResumeViewerProps) {
+export default function DocumentViewer({ documentHTML }: DocumentViewerProps) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const handleEditorChange = (newContent: string): void => {};
+  const handleEditorChange = (newContent: string): void => { };
 
   const handleSave = (): void => {
-    // In a real app, you would convert HTML back to markdown or store as HTML
-    setIsEditing(false);
+
   };
 
-  const handleDownloadPDF = (): void => {};
+  const handleDownloadPDF = (): void => { };
 
   return (
-    <div className="space-y-4 overflow-hidden">
+    <div className="space-y-4 overflow-hidden flex-1">
       <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
         <div className="flex items-center space-x-2">
           <Switch

@@ -1,6 +1,7 @@
 import { create } from "zustand"
 import { generateTailoredDocuments } from "@/services/resumeService"
 import { useProfileStore } from "./profile-store"
+import { useChatStore } from "./chat-store"
 
 interface ResumeState {
   // File states
@@ -29,7 +30,7 @@ interface ResumeState {
   resetForm: () => void
 }
 
-export const useResumeStore = create<ResumeState>((set, get) => ({
+export const useDocumentStore = create<ResumeState>((set, get) => ({
   // Initial states
   resumeFile: null,
   originalResume: "",
@@ -91,6 +92,9 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
       // You might want to set an error state here
     } finally {
       set({ isGenerating: false })
+      if (userId) {
+        await useChatStore.getState().fetchChats(userId)
+      }
     }
   },
 

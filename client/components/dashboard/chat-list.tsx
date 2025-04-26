@@ -1,5 +1,4 @@
-
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, type FC } from "react"
 import { useNavigate } from "react-router";
 import { BookOpen, MoreHorizontal, Trash2 } from "lucide-react";
 import {
@@ -28,6 +27,58 @@ interface ChatListProps {
   isActive: (path: string) => boolean;
   searchQuery: string
 }
+
+const ChatListSkeleton: FC = () => (
+  <>
+    {Array.from({ length: 5 }).map((_, index) => (
+      <SidebarMenuItem key={`skeleton-${index}`}>
+        <SidebarMenuSkeleton showIcon />
+      </SidebarMenuItem>
+    ))}
+  </>
+);
+
+interface ChatMenuProps {
+  chat: any;
+  isActive: boolean;
+  onOpen: () => void;
+  onDelete: () => void;
+}
+
+const ChatMenu: FC<ChatMenuProps> = ({ chat, isActive, onOpen, onDelete }) => (
+  <SidebarMenuItem key={chat.id}>
+    <SidebarMenuButton
+      tooltip={chat.title}
+      isActive={isActive}
+      onClick={onOpen}
+    >
+      <BookOpen className="mr-2" />
+      <span>{chat.title}</span>
+    </SidebarMenuButton>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <SidebarMenuAction showOnHover>
+          <MoreHorizontal />
+          <span className="sr-only">Chat options</span>
+        </SidebarMenuAction>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent side="right" align="start">
+        <DropdownMenuItem onClick={onOpen}>
+          <BookOpen className="mr-2 h-4 w-4" />
+          <span>Open</span>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="text-destructive focus:text-destructive"
+          onClick={onDelete}
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          <span>Delete</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  </SidebarMenuItem>
+);
 
 export function ChatList({ isActive, searchQuery }: ChatListProps) {
   const navigate = useNavigate();
@@ -74,72 +125,46 @@ export function ChatList({ isActive, searchQuery }: ChatListProps) {
   }, [chats, searchQuery]);
 
   const currentChatId = useMemo(() => {
-    const match = location.pathname.match(/\/dashboard\/chat\/(.+)/);
-    return match ? match[1] : undefined;
+    const match = location.pathname.match(/\/dashboard\/(chat|chatHistory)\/(.+)/);
+    return match ? match[2] : undefined;
   }, [location.pathname]);
+
+  let content;
+  if (isLoading) {
+    content = <ChatListSkeleton />;
+  } else if (filteredChats.length > 0) {
+    content = filteredChats.map((chat) => (
+      <ChatMenu
+        key={chat.id}
+        chat={chat}
+        isActive={currentChatId === chat.id}
+        onOpen={() => navigate(`/dashboard/chatHistory/${chat.id}`)}
+        onDelete={() => handleDeleteChat(chat.id)}
+      />
+    ));
+  } else if (searchQuery) {
+    content = (
+      <SidebarMenuItem>
+        <span className="px-2 py-1.5 text-sm text-sidebar-foreground/70">
+          No chats matching "{searchQuery}"
+        </span>
+      </SidebarMenuItem>
+    );
+  } else {
+    content = (
+      <SidebarMenuItem>
+        <span className="px-2 py-1.5 text-sm text-sidebar-foreground/70">
+          No recent chats
+        </span>
+      </SidebarMenuItem>
+    );
+  }
 
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Recent Applications</SidebarGroupLabel>
       <SidebarGroupContent>
-        <SidebarMenu>
-          {isLoading ? (
-            Array.from({ length: 5 }).map((_, index) => (
-              <SidebarMenuItem key={`skeleton-${index}`}>
-                <SidebarMenuSkeleton showIcon />
-              </SidebarMenuItem>
-            ))
-          ) : filteredChats.length > 0 ? (
-            filteredChats.map((chat) => (
-              <SidebarMenuItem key={chat.id}>
-                <SidebarMenuButton
-                  tooltip={chat.title}
-                  isActive={currentChatId === chat.id}
-                  onClick={() => navigate(`/dashboard/chatHistory/${chat.id}`)}
-                >
-                  <BookOpen className="mr-2" />
-                  <span>{chat.title}</span>
-                </SidebarMenuButton>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <SidebarMenuAction showOnHover>
-                      <MoreHorizontal />
-                      <span className="sr-only">Chat options</span>
-                    </SidebarMenuAction>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent side="right" align="start">
-                    <DropdownMenuItem
-                      onClick={() => navigate(`/dashboard/chatHistory/${chat.id}`)}
-                    >
-                      <BookOpen className="mr-2 h-4 w-4" />
-                      <span>Open</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      className="text-destructive focus:text-destructive"
-                      onClick={() => handleDeleteChat(chat.id)}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      <span>Delete</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </SidebarMenuItem>
-            ))
-          ) : searchQuery ? (
-            <SidebarMenuItem>
-              <span className="px-2 py-1.5 text-sm text-sidebar-foreground/70">
-                No chats matching "{searchQuery}"
-              </span>
-            </SidebarMenuItem>
-          ) : (
-            <SidebarMenuItem>
-              <span className="px-2 py-1.5 text-sm text-sidebar-foreground/70">
-                No recent chats
-              </span>
-            </SidebarMenuItem>
-          )}
-        </SidebarMenu>
+        <SidebarMenu>{content}</SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
   );

@@ -42,8 +42,10 @@ export function DocumentPreview({
             <CardDescription>
               Review and edit your tailored resume and cover letter
             </CardDescription>
+            
           </div>
           <div className="flex items-center space-x-2">
+            
             <Switch
               id="edit-mode"
               checked={editMode}
@@ -86,19 +88,11 @@ export function DocumentPreview({
                 content={generatedResume}
                 onChange={() => { }}
               />
-              // <Textarea
-              //   value={generatedResume}
-              //   onChange={(e) => onResumeChange(e.target.value)}
-              //   className="min-h-[500px] font-mono text-sm"
-              // />
             ) : (
               <ResumeImageRenderer htmlContent={generatedResume} />
-              // <div
-              //   className="border rounded-md p-4 min-h-[500px] overflow-x-hidden overflow-y-scroll bg-white"
-              //   dangerouslySetInnerHTML={{ __html: generatedResume }}
-              // />
+
             )}
-            <div className="flex jus@/components/y-end">
+            <div className="flex justify-end">
               <Button
                 onClick={() => onDownload("resume")}
                 className="flex items-center"
@@ -111,26 +105,18 @@ export function DocumentPreview({
 
           <TabsContent value="coverLetter" className="space-y-4">
             {editMode ? (
+              <div
+                className="border rounded-md p-4 min-h-[500px] overflow-y-scroll overflow-x-hidden bg-white"
+                dangerouslySetInnerHTML={{ __html: generatedCoverLetter }}
+              />
+            ) : (
               <Textarea
                 value={generatedCoverLetter}
                 onChange={(e) => onCoverLetterChange(e.target.value)}
                 className="min-h-[500px] font-mono text-sm"
               />
-            ) : (
-              <div
-                className="border rounded-md p-4 min-h-[500px] overflow-y-scroll overflow-x-hidden bg-white"
-                dangerouslySetInnerHTML={{ __html: generatedCoverLetter }}
-              />
             )}
-            <div className="flex justify-end">
-              <Button
-                onClick={() => onDownload("coverLetter")}
-                className="flex items-center"
-              >
-                <Download className="mr-2 h-4 w-4" />
-                Download Cover Letter
-              </Button>
-            </div>
+
           </TabsContent>
         </Tabs>
       </CardContent>
