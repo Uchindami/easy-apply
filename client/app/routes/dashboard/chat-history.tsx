@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/tooltip";
 import CoverLetterViewer from "@/components/chats/cover-letter-viewer";
 import DocumentViewer from "@/components/chats/resume-viewer";
+import { DocumentPreview } from "@/components/resume-generator/DocumentPreview";
 
 // --- Types ---
 interface DetailItemProps {
@@ -134,12 +135,12 @@ const DocumentsViewer: React.FC<DocumentsViewerProps> = ({
     </CardHeader>
     <CardContent>
       <Tabs defaultValue="resume" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-2 s">
           <TabsTrigger value="resume">Resume</TabsTrigger>
           <TabsTrigger value="coverLetter">Cover Letter</TabsTrigger>
         </TabsList>
         <TabsContent value="resume" className="mt-4 flex">
-          <DocumentViewer documentHTML={historyData.generated.resumePath} />
+          <DocumentViewer documentHTML={historyData.generated.resumePath} historyId={useParams<{ chatHistoryId: string }>().chatHistoryId!} />
         </TabsContent>
         <TabsContent value="coverLetter" className="mt-4">
           <CoverLetterViewer document={historyData.generated.coverLetterPath} />
@@ -173,7 +174,7 @@ export default function ChatHistoryDetail() {
   };
   const [isJobDetailsCollapsed, setIsJobDetailsCollapsed] =
     useState<boolean>(false);
-
+  
   if (loading) return <HistoryDetailSkeleton />;
   if (error || !historyData) {
     return <ErrorState error={error || "Unknown error"} onRetry={retry} />;
@@ -182,10 +183,17 @@ export default function ChatHistoryDetail() {
   return (
     <div>
       <Header title={historyData.jobDetails.title || "Job Application"} />
-      <div className="flex flex-col md:flex-row md:gap-4 p-6">
+      <div className="flex space-y-5 flex-col md:flex-row md:gap-4 p-6">
         <div>
           {!isJobDetailsCollapsed && <JobDetailsCard historyData={historyData} />}
         </div>
+        {/* <DocumentPreview
+                  generatedResume={historyData.generated.resumePath}
+                  generatedCoverLetter={historyData.generated.coverLetterPath}
+                  onResumeChange={()=>{}}
+                  onCoverLetterChange={()=>{}}
+                  onDownload={()=>{}}
+                /> */}
         <DocumentsViewer
           historyData={historyData}
           isJobDetailsCollapsed={isJobDetailsCollapsed}

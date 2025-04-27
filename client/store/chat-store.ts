@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore"
 import { historyService } from "@/services/history-service"
 import { create } from "zustand"
+import type { HistoryData } from "@/types/history"
 
 // =====================
 // Types
@@ -21,24 +22,6 @@ export interface Chat {
   id: string
   title: string
   timestamp?: Date
-}
-
-export interface HistoryData {
-  timestamp: Date
-  status: "processing" | "completed" | "failed"
-  original: {
-    resumePath: string
-    jobLink: string
-  }
-  generated: {
-    resumePath: string
-    coverLetterPath: string
-  }
-  jobDetails: {
-    title: string
-    company: string
-    source: string
-  }
 }
 
 interface ChatState {
@@ -52,9 +35,8 @@ interface ChatState {
   loadMoreChats: (userId: string) => Promise<void>
   getChatById: (userId: string, chatId: string) => Promise<Chat | null>
 
-  createChat: (userId: string, data: Omit<HistoryData, "id" | "timestamp">) => Promise<void>;
-  updateChat: (userId: string, historyId: string, data: Partial<HistoryData>) => Promise<void>;
-  deleteChat: (userId: string, historyId: string) => Promise<void>;
+  updateChat: (userId: string, historyId: string, data:any) => Promise<void>;
+  // deleteChat: (userId: string, historyId: string) => Promise<void>;
 }
 
 // =====================
@@ -169,23 +151,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
 
-  createChat: async (userId, data) => {
-    try {
-      const newHistory = await historyService.createHistory(userId, data);
-      set(state => ({
-        chats: dedupeChats([transformToChat(newHistory), ...state.chats]),
-      }));
-    } catch (error) {
-      handleError(set, "Failed to create chat", error, "isLoading");
-    }
-  },
-
   updateChat: async (userId, historyId, data) => {
     try {
       const updatedHistory = await historyService.updateHistory(userId, historyId, data);
       set(state => ({
         chats: state.chats.map(chat =>
-          chat.id === historyId ? transformToChat(updatedHistory) : chat
+          chat.id === historyId ? transformToChat(updatedHistory, historyId) : chat
         ),
       }));
     } catch (error) {
@@ -193,21 +164,21 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
 
-  deleteChat: async (userId, historyId) => {
-    try {
-      await historyService.deleteHistory(userId, historyId);
-      set(state => ({
-        chats: state.chats.filter(chat => chat.id !== historyId),
-      }));
-    } catch (error) {
-      handleError(set, "Failed to delete chat", error, "isLoading");
-    }
-  }
+  // deleteChat: async (userId, historyId) => {
+  //   try {
+  //     await historyService.deleteHistory(userId, historyId);
+  //     set(state => ({
+  //       chats: state.chats.filter(chat => chat.id !== historyId),
+  //     }));
+  //   } catch (error) {
+  //     handleError(set, "Failed to delete chat", error, "isLoading");
+  //   }
+  // }
 
 }))
 
-const transformToChat = (history: HistoryData): Chat => ({
-  id: history.id,
+const transformToChat = (history: HistoryData, id: string): Chat => ({
+  id,
   title: history.jobDetails?.title || "Untitled Chat",
   timestamp: history.timestamp,
 });

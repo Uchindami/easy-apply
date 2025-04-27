@@ -38,26 +38,28 @@ const convertTimestamp = (data: any): any => {
 // =====================
 
 export const historyService = {
-  createHistory: async (userId: string, data: Omit<HistoryData, "id" | "timestamp">) => {
-    try {
-      const historyRef = collection(db, "Users", userId, "History");
-      const docRef = await addDoc(historyRef, {
-        ...data,
-        timestamp: serverTimestamp(),
-      });
-      const newDoc = await getDoc(docRef);
-      return { id: docRef.id, ...convertTimestamp(newDoc.data()) } as HistoryData;
-    } catch (error) {
-      console.error("Error creating history:", error);
-      throw error;
-    }
-  },
+  // createHistory: async (userId: string, data: Omit<HistoryData, "id" | "timestamp">) => {
+  //   try {
+  //     const historyRef = collection(db, "Users", userId, "History");
+  //     const docRef = await addDoc(historyRef, {
+  //       ...data,
+  //       timestamp: serverTimestamp(),
+  //     });
+  //     const newDoc = await getDoc(docRef);
+  //     return { id: docRef.id, ...convertTimestamp(newDoc.data()) } as HistoryData;
+  //   } catch (error) {
+  //     console.error("Error creating history:", error);
+  //     throw error;
+  //   }
+  // },
 
-  updateHistory: async (userId: string, historyId: string, data: Partial<HistoryData>) => {
+  updateHistory: async (userId: string, historyId: string, data:any) => {
+    console.log(data)
     try {
       const docRef = doc(db, "Users", userId, "History", historyId);
       await updateDoc(docRef, data);
       const updatedDoc = await getDoc(docRef);
+
       return { id: historyId, ...convertTimestamp(updatedDoc.data()) } as HistoryData;
     } catch (error) {
       console.error("Error updating history:", error);
@@ -65,44 +67,44 @@ export const historyService = {
     }
   },
 
-  deleteHistory: async (userId: string, historyId: string) => {
-    try {
-      const docRef = doc(db, "Users", userId, "History", historyId);
-      await deleteDoc(docRef);
-    } catch (error) {
-      console.error("Error deleting history:", error);
-      throw error;
-    }
-  },
+  // deleteHistory: async (userId: string, historyId: string) => {
+  //   try {
+  //     const docRef = doc(db, "Users", userId, "History", historyId);
+  //     await deleteDoc(docRef);
+  //   } catch (error) {
+  //     console.error("Error deleting history:", error);
+  //     throw error;
+  //   }
+  // },
 
-  getPaginatedHistory: async (
-    userId: string,
-    pageSize: number,
-    lastVisible?: QueryDocumentSnapshot<DocumentData>
-  ) => {
-    try {
-      let q = query(
-        collection(db, "Users", userId, "History"),
-        orderBy("timestamp", "desc"),
-        limit(pageSize)
-      );
+  // getPaginatedHistory: async (
+  //   userId: string,
+  //   pageSize: number,
+  //   lastVisible?: QueryDocumentSnapshot<DocumentData>
+  // ) => {
+  //   try {
+  //     let q = query(
+  //       collection(db, "Users", userId, "History"),
+  //       orderBy("timestamp", "desc"),
+  //       limit(pageSize)
+  //     );
       
-      if (lastVisible) q = query(q, startAfter(lastVisible));
+  //     if (lastVisible) q = query(q, startAfter(lastVisible));
 
-      const snapshot = await getDocs(q);
-      const results = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...convertTimestamp(doc.data())
-      })) as HistoryData[];
+  //     const snapshot = await getDocs(q);
+  //     const results = snapshot.docs.map(doc => ({
+  //       id: doc.id,
+  //       ...convertTimestamp(doc.data())
+  //     })) as HistoryData[];
 
-      return {
-        results,
-        lastVisible: snapshot.docs[snapshot.docs.length - 1] || null,
-        hasMore: snapshot.docs.length === pageSize,
-      };
-    } catch (error) {
-      console.error("Error fetching history:", error);
-      throw error;
-    }
-  }
+  //     return {
+  //       results,
+  //       lastVisible: snapshot.docs[snapshot.docs.length - 1] || null,
+  //       hasMore: snapshot.docs.length === pageSize,
+  //     };
+  //   } catch (error) {
+  //     console.error("Error fetching history:", error);
+  //     throw error;
+  //   }
+  // }
 };

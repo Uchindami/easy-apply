@@ -16,3 +16,9 @@ export interface HistoryData {
     }
   }
   
+  export interface UpdateResume {
+    generated: {
+      resumePath: string
+    }
+  }
+  
