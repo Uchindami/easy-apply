@@ -22,7 +22,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import CoverLetterViewer from "@/components/chats/cover-letter-viewer";
 import DocumentViewer from "@/components/chats/resume-viewer";
 import { DocumentPreview } from "@/components/resume-generator/DocumentPreview";
 
@@ -140,10 +139,16 @@ const DocumentsViewer: React.FC<DocumentsViewerProps> = ({
           <TabsTrigger value="coverLetter">Cover Letter</TabsTrigger>
         </TabsList>
         <TabsContent value="resume" className="mt-4 flex">
-          <DocumentViewer documentHTML={historyData.generated.resumePath} historyId={useParams<{ chatHistoryId: string }>().chatHistoryId!} />
+          <DocumentViewer
+            documentHTML={historyData.generated.resumePath}
+            historyId={useParams<{ chatHistoryId: string; }>().chatHistoryId!}
+            documentType={"resume"} jobTitle={historyData.jobDetails.title}          />
         </TabsContent>
         <TabsContent value="coverLetter" className="mt-4">
-          <CoverLetterViewer document={historyData.generated.coverLetterPath} />
+          <DocumentViewer
+            documentHTML={historyData.generated.coverLetterPath}
+            historyId={useParams<{ chatHistoryId: string; }>().chatHistoryId!}
+            documentType={"coverLetter"} jobTitle={historyData.jobDetails.title}          />
         </TabsContent>
       </Tabs>
     </CardContent>
@@ -174,7 +179,7 @@ export default function ChatHistoryDetail() {
   };
   const [isJobDetailsCollapsed, setIsJobDetailsCollapsed] =
     useState<boolean>(false);
-  
+
   if (loading) return <HistoryDetailSkeleton />;
   if (error || !historyData) {
     return <ErrorState error={error || "Unknown error"} onRetry={retry} />;
@@ -185,7 +190,9 @@ export default function ChatHistoryDetail() {
       <Header title={historyData.jobDetails.title || "Job Application"} />
       <div className="flex space-y-5 flex-col md:flex-row md:gap-4 p-6">
         <div>
-          {!isJobDetailsCollapsed && <JobDetailsCard historyData={historyData} />}
+          {!isJobDetailsCollapsed && (
+            <JobDetailsCard historyData={historyData} />
+          )}
         </div>
         {/* <DocumentPreview
                   generatedResume={historyData.generated.resumePath}

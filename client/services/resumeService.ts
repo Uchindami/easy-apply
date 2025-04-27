@@ -1,12 +1,16 @@
+import { Document, Packer, Paragraph } from "docx";
+
 interface GeneratedDocuments {
   resume: string
   coverLetter: string
   userId?: string
+  historyId: string
 }
 
 interface ApiResponse {
   resume: string
   coverLetter: string
+  historyId: string
 }
 
 /**
@@ -40,10 +44,56 @@ export async function generateTailoredDocuments(resumeFile: File, jobUrl: string
     return {
       resume: data.resume,
       coverLetter: data.coverLetter,
+      historyId: data.historyId,
       userId,
     }
   } catch (error) {
     console.error("Failed to generate documents:", error)
     throw error
   }
+}
+
+/**
+ * Converts HTML content to PDF via backend.
+ * @param htmlContent - The HTML string to convert.
+ * @returns A Blob representing the PDF file.
+ */
+export async function convertHtmlToPdf(htmlContent: string): Promise<Blob> {
+  const response = await fetch("http://localhost:8080/convert-pdf", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ html: htmlContent }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to convert HTML to PDF. Status: ${response.status}`);
+  }
+
+  return await response.blob();
+}
+
+
+/**
+ * Converts HTML content to a DOCX Blob using the docx package.
+ * @param htmlContent - The HTML string to convert.
+ * @returns A Blob representing the DOCX file.
+ */
+export async function convertHtmlToDocx(htmlContent: string): Promise<Blob> {
+  // Simple HTML to text conversion (for demo; for full HTML support, use a parser)
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = htmlContent;
+  const text = tempDiv.innerText || tempDiv.textContent || "";
+
+  const doc = new Document({
+    sections: [
+      {
+        properties: {},
+        children: [
+          new Paragraph({ text }),
+        ],
+      },
+    ],
+  });
+  const buffer = await Packer.toBlob(doc);
+  return buffer;
 }

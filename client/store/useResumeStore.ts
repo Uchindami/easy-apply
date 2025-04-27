@@ -5,6 +5,7 @@ import { useChatStore } from "./chat-store"
 
 interface ResumeState {
   // File states
+  chatId: string | null
   resumeFile: File | null
   originalResume: string
 
@@ -32,6 +33,7 @@ interface ResumeState {
 
 export const useDocumentStore = create<ResumeState>((set, get) => ({
   // Initial states
+  chatId: null,
   resumeFile: null,
   originalResume: "",
   jobUrl: "",
@@ -80,11 +82,12 @@ export const useDocumentStore = create<ResumeState>((set, get) => ({
     set({ isGenerating: true, activeTab: "preview" })
 
     try {
-      const { resume, coverLetter } = await generateTailoredDocuments(resumeFile, jobUrl, userId)
+      const {historyId, resume, coverLetter } = await generateTailoredDocuments(resumeFile, jobUrl, userId)
 
       set({
         generatedResume: resume,
         generatedCoverLetter: coverLetter,
+        chatId: historyId,
         isComplete: true,
       })
     } catch (error) {

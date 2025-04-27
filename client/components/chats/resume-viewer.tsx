@@ -7,19 +7,30 @@ import RichTextEditor from "@/components/chats/rich-text-editor";
 import ResumeImageRenderer from "@/components/chats/resume-image-renderer";
 import { useChatStore } from "@/store/chat-store";
 import { useProfileStore } from "@/store/profile-store";
-// import HTMLtoDOCX from "@turbodocx/html-to-docx"
+import { convertHtmlToDocx, convertHtmlToPdf } from "@/services/resumeService";
+import { Textarea } from "../ui/textarea";
+import { underscore } from "@/utils/underscore";
 
 interface DocumentViewerProps {
   documentHTML: string;
-  historyId: string;
+  historyId: string | null;
+  jobTitle: string;
+  documentType: "resume" | "coverLetter";
 }
 
-export default function DocumentViewer({ documentHTML, historyId, }: DocumentViewerProps) {
+export default function DocumentViewer({
+  documentHTML,
+  historyId,
+  documentType,
+  jobTitle,
+}: DocumentViewerProps) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editorContent, setEditorContent] = useState<string>(documentHTML);
   const updateChat = useChatStore((state) => state.updateChat);
   const userId = useProfileStore((state) => state.user?.uid);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDownloadingDocx, setIsDownloadingDocx] = useState(false);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
   const handleEditorChange = (newContent: string): void => {
     setEditorContent(newContent);
@@ -28,38 +39,77 @@ export default function DocumentViewer({ documentHTML, historyId, }: DocumentVie
   const handleSave = async (): Promise<void> => {
     if (!userId || !historyId) return;
     setIsSaving(true);
-    try {
-      await updateChat(userId, historyId, {
-        "generated.resumePath": editorContent,
-      });
-      setIsEditing(false);
-    } catch (e) {
-      // Optionally handle error
-    } finally {
-      setIsSaving(false);
+    if (documentType === "coverLetter") {
+      try {
+        await updateChat(userId, historyId, {
+          "generated.coverLetterPath": editorContent,
+        });
+        setIsEditing(false);
+      } catch (e) {
+        // Optionally handle error
+      } finally {
+        setIsSaving(false);
+      }
+    } else if (documentType === "resume") {
+      try {
+        await updateChat(userId, historyId, {
+          "generated.resumePath": editorContent,
+        });
+        setIsEditing(false);
+      } catch (e) {
+        // Optionally handle error
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
   const handleDownloadDOCX = async (): Promise<void> => {
-    // try {
-    //   // Convert HTML to DOCX (returns a Blob in browser)
-    //   const docxBlob = await HTMLtoDOCX(editorContent, "", { title: "Resume" }, "");
-    //   // Create a download link
-    //   const url = URL.createObjectURL(docxBlob);
-    //   const a = document.createElement("a");
-    //   a.href = url;
-    //   a.download = "Resume.docx";
-    //   document.body.appendChild(a);
-    //   a.click();
-    //   document.body.removeChild(a);
-    //   URL.revokeObjectURL(url);
-    // } catch (error) {
-    //   // Optionally handle error (e.g., show a toast)
-    //   console.error("Failed to generate DOCX:", error);
-    // }
+    setIsDownloadingDocx(true);
+    try {
+      const docxBlob = await convertHtmlToDocx(editorContent);
+      const url = window.URL.createObjectURL(docxBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${
+        documentType === "resume"
+          ? `${underscore(jobTitle)}_resume`
+          : `${underscore(jobTitle)}_letter`
+      }.docx`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("DOCX download failed:", error);
+    } finally {
+      setIsDownloadingDocx(false);
+    }
   };
 
-  const handleDownloadPDF = (): void => { };
+  const handleDownloadPDF = async (): Promise<void> => {
+    setIsDownloadingPdf(true);
+    try {
+      const pdfBlob = await convertHtmlToPdf(editorContent);
+      const url = window.URL.createObjectURL(pdfBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${
+        documentType === "resume"
+          ? `${underscore(jobTitle)}_resume`
+          : `${underscore(jobTitle)}_letter`
+      }.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      // Optionally handle error, e.g., show a toast
+      console.error("PDF download failed:", error);
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  };
 
   return (
     <div className="space-y-4 overflow-hidden flex-1">
@@ -77,13 +127,25 @@ export default function DocumentViewer({ documentHTML, historyId, }: DocumentVie
         </div>
 
         <div className="flex md:flex-row space-x-2 overflow-x-auto">
-          <Button variant="outline" size="sm" onClick={handleDownloadDOCX}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDownloadDOCX}
+            disabled={isDownloadingDocx}
+          >
             <Download className="md:h-4 md:w-4 mr-1" />
-            <span>Download docx</span>
+            <span>
+              {isDownloadingDocx ? "Downloading..." : "Download docx"}
+            </span>
           </Button>
-          <Button variant="default" size="sm" onClick={handleDownloadPDF}>
+          <Button
+            variant="default"
+            size="sm"
+            onClick={handleDownloadPDF}
+            disabled={isDownloadingPdf}
+          >
             <Download className="md:h-4 md:w-4 mr-1" />
-            <span>Download PDF</span>
+            <span>{isDownloadingPdf ? "Downloading..." : "Download PDF"}</span>
           </Button>
         </div>
       </div>
@@ -101,6 +163,11 @@ export default function DocumentViewer({ documentHTML, historyId, }: DocumentVie
             </Button>
           </div>
         </div>
+      ) : documentType === "coverLetter" ? (
+        <Textarea
+          value={editorContent}
+          className="min-h-[500px] font-serif text-md"
+        />
       ) : (
         <ResumeImageRenderer htmlContent={editorContent} />
       )}

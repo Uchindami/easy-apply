@@ -49,6 +49,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/nguyenthenguyen/docx v0.0.0-20230621112118-9c8e795a11db
 	github.com/openai/openai-go v0.1.0-beta.6
+	github.com/thecodingmachine/gotenberg-go-client/v7 v7.2.0
 )
 
 require (

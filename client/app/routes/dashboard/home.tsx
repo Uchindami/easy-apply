@@ -7,6 +7,7 @@ import { ResumeUploader } from "@/components/resume-generator/ResumeUploader";
 import { JobDetails } from "@/components/resume-generator/JobDetails";
 import { DocumentPreview } from "@/components/resume-generator/DocumentPreview";
 import { useDocumentStore } from "@/store/useResumeStore";
+import DocumentViewer from "@/components/chats/resume-viewer";
 
 export default function DocumentGenerator() {
   const {
@@ -16,6 +17,7 @@ export default function DocumentGenerator() {
     isComplete,
     activeTab,
     generatedResume,
+    chatId,
     generatedCoverLetter,
     setResumeFile,
     setJobUrl,
@@ -26,9 +28,7 @@ export default function DocumentGenerator() {
     resetForm,
   } = useDocumentStore();
 
-  const handleDownload = (type: "resume" | "coverLetter") => {
-
-  };
+  const handleDownload = (type: "resume" | "coverLetter") => {};
 
   return (
     <main className="flex-1 flex flex-col h-full w-full overflow-hidden bg-gray-50 dark:bg-gray-900">
@@ -86,14 +86,35 @@ export default function DocumentGenerator() {
               </Card>
             ) : (
               <>
-                <DocumentPreview
+                {/* <DocumentPreview
                   generatedResume={generatedResume}
                   generatedCoverLetter={generatedCoverLetter}
                   onResumeChange={setGeneratedResume}
                   onCoverLetterChange={setGeneratedCoverLetter}
                   onDownload={handleDownload}
-                />
-
+                /> */}
+                <Tabs defaultValue="resume" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 s">
+                    <TabsTrigger value="resume">Resume</TabsTrigger>
+                    <TabsTrigger value="coverLetter">Cover Letter</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="resume" className="mt-4 flex">
+                    <DocumentViewer
+                      documentHTML={generatedResume}
+                      historyId={chatId}
+                      documentType={"resume"}
+                      jobTitle={""}
+                    />
+                  </TabsContent>
+                  <TabsContent value="coverLetter" className="mt-4">
+                    <DocumentViewer
+                      documentHTML={generatedCoverLetter}
+                      historyId={chatId}
+                      documentType={"coverLetter"}
+                      jobTitle={""}
+                    />
+                  </TabsContent>
+                </Tabs>
                 <div className="flex justify-center">
                   <Button
                     onClick={resetForm}
