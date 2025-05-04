@@ -1,18 +1,17 @@
 import {
-    type RouteConfig,
-    route,
-    index,
-    layout,
-    prefix,
-  } from "@react-router/dev/routes";
+  type RouteConfig,
+  route,
+  index,
+} from "@react-router/dev/routes";
 
 export default [
-    index("routes/home.tsx"),
-    route("login", "routes/login.tsx"),
-    route("signup", "routes/signup.tsx"),
+  index("routes/home.tsx"),
+  route("login", "routes/login.tsx"),
+  route("signup", "routes/signup.tsx"),
 
-    // Dashboard routes
-    route("dashboard", "routes/dashboard/index.tsx", [
+  // Dashboard routes
+  route("dashboard", "routes/dashboard/protected.tsx", [
+    route("", "routes/dashboard/index.tsx", [
         index("routes/dashboard/home.tsx"),
         route("profile", "routes/dashboard/profile.tsx"),
         route("settings", "routes/dashboard/settings.tsx"),
@@ -20,6 +19,6 @@ export default [
         route("suggestions", "routes/dashboard/suggestions.tsx"),
         route("chatHistory/:chatHistoryId", "routes/dashboard/chat-history.tsx"),
         // route("jobs", "routes/dashboard/jobs.tsx"),
-    ]),
+    ])
+  ])
 ] satisfies RouteConfig;
-    
