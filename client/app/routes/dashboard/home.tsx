@@ -31,7 +31,7 @@ export default function DocumentGenerator() {
   const handleDownload = (type: "resume" | "coverLetter") => {};
 
   return (
-    <main className="flex-1 flex flex-col h-full w-full overflow-hidden bg-gray-50 dark:bg-gray-900">
+    <main className="flex-1 flex flex-col h-full w-full overflow-hidden ">
       <Header
         title="Resume tailoring tool"
         onReset={resetForm}
@@ -86,13 +86,6 @@ export default function DocumentGenerator() {
               </Card>
             ) : (
               <>
-                {/* <DocumentPreview
-                  generatedResume={generatedResume}
-                  generatedCoverLetter={generatedCoverLetter}
-                  onResumeChange={setGeneratedResume}
-                  onCoverLetterChange={setGeneratedCoverLetter}
-                  onDownload={handleDownload}
-                /> */}
                 <Tabs defaultValue="resume" className="w-full">
                   <TabsList className="grid w-full grid-cols-2 s">
                     <TabsTrigger value="resume">Resume</TabsTrigger>

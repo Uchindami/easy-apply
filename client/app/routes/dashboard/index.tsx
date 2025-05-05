@@ -1,5 +1,11 @@
-import { Outlet, useNavigate, useLocation } from "react-router";
-import { useState } from "react";
+import {
+  Outlet,
+  useNavigate,
+  useLocation,
+  redirect,
+  Navigate,
+} from "react-router";
+import { useEffect, useState } from "react";
 import {
   SidebarProvider,
   Sidebar,
@@ -21,7 +27,7 @@ import { SidebarMainNav } from "@/components/dashboard/sidebar-main-nav";
 export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useProfileStore();
+  const { user, isLoading } = useProfileStore();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -66,49 +72,63 @@ export default function Dashboard() {
     );
   };
 
-  return (
-    <div className="flex min-h-screen">
-      <SidebarProvider>
-        <div className="flex h-screen w-full bg-background">
-          <Sidebar variant="floating" collapsible="icon">
-            <SidebarHeader className="space-y-2">
-              {/* Profile section */}
-              <SidebarProfile user={user} />
+  useEffect(() => {
+    if (isLoading) return; // Wait for loading to finish
 
-              {/* Search input */}
-              <SidebarSearch
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-              />
+    if (!user) {
+      toast({
+        title: "Unauthorized",
+        description: "You need to log in to access this page",
+      });
+      navigate("/login", { replace: true });
+    }
+  }, [user, isLoading, navigate, toast]);
 
-              {/* Main navigation */}
-              <SidebarMainNav isActive={isActive} onNewChat={handleNewChat} />
-            </SidebarHeader>
+  if (user) {
+    return (
+      <div className="flex min-h-screen">
+        <SidebarProvider>
+          <div className="flex h-screen w-full bg-background dark:bg-background-dark">
+            <Sidebar variant="floating" collapsible="icon">
+              <SidebarHeader className="space-y-2">
+                {/* Profile section */}
+                <SidebarProfile user={user} />
 
-            <SidebarContent className="overflow-hidden">
-              {/* Chat list */}
-              <ChatList isActive={isActive} searchQuery={searchQuery} />
+                {/* Search input */}
+                <SidebarSearch
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                />
 
-              <SidebarSeparator />
+                {/* Main navigation */}
+                <SidebarMainNav isActive={isActive} onNewChat={handleNewChat} />
+              </SidebarHeader>
 
-              {/* Tools section */}
-              <SidebarTools isActive={isActive} />
-            </SidebarContent>
+              <SidebarContent className="overflow-hidden">
+                {/* Chat list */}
+                <ChatList isActive={isActive} searchQuery={searchQuery} />
 
-            <SidebarFooter>
-              <SidebarSeparator />
-              {/* Footer navigation */}
-              <SidebarFooterNav isActive={isActive} onLogout={handleLogout} />
-            </SidebarFooter>
-          </Sidebar>
+                <SidebarSeparator />
 
-          <SidebarInset>
-            <main className="flex-1 overflow-auto">
-              <Outlet />
-            </main>
-          </SidebarInset>
-        </div>
-      </SidebarProvider>
-    </div>
-  );
+                {/* Tools section */}
+                <SidebarTools isActive={isActive} />
+              </SidebarContent>
+
+              <SidebarFooter>
+                <SidebarSeparator />
+                {/* Footer navigation */}
+                <SidebarFooterNav isActive={isActive} onLogout={handleLogout} />
+              </SidebarFooter>
+            </Sidebar>
+
+            <SidebarInset>
+              <main className="flex-1 overflow-auto">
+                <Outlet />
+              </main>
+            </SidebarInset>
+          </div>
+        </SidebarProvider>
+      </div>
+    );
+  }
 }

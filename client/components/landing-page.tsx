@@ -1,11 +1,11 @@
-import { ExternalLink, FileEdit, Briefcase } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
-import { Link } from "react-router"
+import { ExternalLink, FileEdit, Briefcase } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Link } from "react-router";
 
 const LandingPage = () => {
   return (
-    <section className="min-h-screen bg-zinc-50/50 dark:bg-background relative flex flex-col">
+    <section className="min-h-screen bg-background dark:bg-background relative flex flex-col">
       {/* Background pattern - absolute positioned */}
       <div className="absolute inset-0 pointer-events-none">
         <img
@@ -30,49 +30,76 @@ const LandingPage = () => {
             {/* Heading and description */}
             <div>
               <h1 className="mb-6 text-2xl font-bold tracking-tight text-pretty lg:text-5xl">
-                Land your dream job with <span className="text-primary">EasyApply</span>
+                Land your dream job with{" "}
+                <span className="text-primary">EasyApply</span>
               </h1>
               <p className="mx-auto max-w-3xl text-muted-foreground lg:text-xl">
-                Tailor your resume in seconds, not hours. Our AI-powered platform matches your skills to job
-                descriptions, helping you stand out from the crowd and apply with confidence.
+                Tailor your resume in seconds, not hours. Our AI-powered
+                platform matches your skills to job descriptions, helping you
+                stand out from the crowd and apply with confidence.
               </p>
             </div>
 
             {/* CTA buttons */}
             <div className="mt-6 flex justify-center gap-3">
               <Link to="/signup">
-                <Button className="shadow-sm transition-shadow hover:shadow">Try it, it's Free</Button>
+                <Button className="shadow-sm transition-shadow hover:shadow">
+                  Try it, it's Free
+                </Button>
               </Link>
               <Link to="/signup">
                 <Button variant="outline" className="group">
-                  Sign Up <ExternalLink className="ml-2 h-4 transition-transform group-hover:translate-x-0.5" />
+                  Sign Up{" "}
+                  <ExternalLink className="ml-2 h-4 transition-transform group-hover:translate-x-0.5" />
                 </Button>
               </Link>
             </div>
 
             {/* Trust badges */}
             <div className="mt-20 flex flex-col items-center gap-5">
-              <p className="font-medium text-muted-foreground lg:text-left">Trusted by job seekers worldwide</p>
+              <p className="font-medium text-muted-foreground lg:text-left">
+                Trusted by job seekers worldwide
+              </p>
               <div className="flex flex-wrap items-center justify-center gap-4">
                 <div
-                  className={cn(buttonVariants({ variant: "outline" }), "group flex items-center justify-center p-2")}
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "group flex items-center justify-center p-2"
+                  )}
                 >
-                  <span className="text-sm font-medium">93% interview rate</span>
+                  <span className="text-sm font-medium">
+                    93% interview rate
+                  </span>
                 </div>
                 <div
-                  className={cn(buttonVariants({ variant: "outline" }), "group flex items-center justify-center p-2")}
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "group flex items-center justify-center p-2"
+                  )}
                 >
-                  <span className="text-sm font-medium">2x faster applications</span>
+                  <span className="text-sm font-medium">
+                    2x faster applications
+                  </span>
                 </div>
                 <div
-                  className={cn(buttonVariants({ variant: "outline" }), "group flex items-center justify-center p-2")}
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "group flex items-center justify-center p-2"
+                  )}
                 >
-                  <span className="text-sm font-medium">AI-powered matching</span>
+                  <span className="text-sm font-medium">
+                    AI-powered matching
+                  </span>
                 </div>
                 <div
-                  className={cn(buttonVariants({ variant: "outline" }), "group flex items-center justify-center p-2")}
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "group flex items-center justify-center p-2"
+                  )}
                 >
-                  <span className="text-sm font-medium">ATS-friendly templates</span>
+                  <span className="text-sm font-medium">
+                    ATS-friendly templates
+                  </span>
                 </div>
               </div>
             </div>
@@ -80,7 +107,7 @@ const LandingPage = () => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export { LandingPage }
+export { LandingPage };
