@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
@@ -73,7 +74,7 @@ export default function ProfileManagement() {
     setLoading(true);
 
     try {
-      const userDocRef = doc(db, "users", user.uid);
+      const userDocRef = doc(db, "Users", user.uid);
       const userDoc = await getDoc(userDocRef);
 
       if (userDoc.exists()) {
@@ -154,7 +155,7 @@ export default function ProfileManagement() {
       setUsername(localUsername);
 
       // Update Firestore document
-      const userDocRef = doc(db, "users", user.uid);
+      const userDocRef = doc(db, "Users", user.uid);
       await setDoc(
         userDocRef,
         {

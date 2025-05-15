@@ -14,6 +14,7 @@ export default [
   route("dashboard", "routes/dashboard/index.tsx", [
       index("routes/dashboard/home.tsx"),
       route("profile", "routes/dashboard/profile.tsx"),
+      route("jobs", "routes/dashboard/jobs.tsx"),
       route("settings", "routes/dashboard/settings.tsx"),
       route("search", "routes/dashboard/search.tsx"),
       route("suggestions", "routes/dashboard/suggestions.tsx"),

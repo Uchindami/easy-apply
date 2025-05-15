@@ -7,14 +7,16 @@ import (
 )
 
 func main() {
-
-	initFirebase() // Initialize Firebase
-	setupRoutes()  // Register Routes
+	initFirebase()   // Initialize Firebase
+	setupRoutes()    // Register Routes
+	go launchScraper() // Start the scraper concurrently
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080" // Default port if not set
 	}
+
 	fmt.Printf("Server running on port %s\n", port)
 	http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 }
+

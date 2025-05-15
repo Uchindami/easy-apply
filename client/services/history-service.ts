@@ -37,6 +37,11 @@ const convertTimestamp = (data: any): any => {
 // CRUD Operations
 // =====================
 
+/**
+ * Service for managing user history in Firestore database.
+ * @namespace historyService
+ * @description Provides methods for CRUD operations on user history records
+ */
 export const historyService = {
   // createHistory: async (userId: string, data: Omit<HistoryData, "id" | "timestamp">) => {
   //   try {
@@ -53,14 +58,17 @@ export const historyService = {
   //   }
   // },
 
-  updateHistory: async (userId: string, historyId: string, data:any) => {
-    console.log(data)
+  updateHistory: async (userId: string, historyId: string, data: any) => {
+    // console.log(data)
     try {
       const docRef = doc(db, "Users", userId, "History", historyId);
       await updateDoc(docRef, data);
       const updatedDoc = await getDoc(docRef);
 
-      return { id: historyId, ...convertTimestamp(updatedDoc.data()) } as HistoryData;
+      return {
+        id: historyId,
+        ...convertTimestamp(updatedDoc.data()),
+      } as HistoryData;
     } catch (error) {
       console.error("Error updating history:", error);
       throw error;
@@ -88,7 +96,7 @@ export const historyService = {
   //       orderBy("timestamp", "desc"),
   //       limit(pageSize)
   //     );
-      
+
   //     if (lastVisible) q = query(q, startAfter(lastVisible));
 
   //     const snapshot = await getDocs(q);

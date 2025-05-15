@@ -25,12 +25,12 @@ export function SidebarTools({ isActive }: SidebarToolsProps) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={() => navigate("/dashboard/search")}
-              tooltip="Search"
-              isActive={isActive("/dashboard/search")}
+              onClick={() => navigate("/dashboard/jobs")}
+              tooltip="Jobs"
+              isActive={isActive("/dashboard/jobs")}
             >
               <Search className="mr-2" />
-              <span>Search</span>
+              <span>Jobs</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>

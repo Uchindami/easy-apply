@@ -11,4 +11,7 @@ func setupRoutes() {
 	http.HandleFunc("/auth", middleware.WithCORS(authHandler))
 	http.HandleFunc("/upload", middleware.WithCORS(uploadHandler))
 	http.HandleFunc("/convert-pdf", middleware.WithCORS(convertPDFHandler))
+
+	//test route
+	http.HandleFunc("/test", middleware.WithCORS(testHandler))
 }

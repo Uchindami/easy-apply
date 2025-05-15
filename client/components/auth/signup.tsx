@@ -13,6 +13,7 @@ import {
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useProfileStore } from "@/store/profile-store";
+import GoogleIcon from "@/assets/GoogleIcon";
 
 interface SignupProps {
   heading?: string;
@@ -98,7 +99,7 @@ const Signup = ({
       </div>
 
       <div className="flex h-full items-center justify-center">
-        <div className="flex w-full max-w-sm flex-col items-center gap-y-8">
+        <div className="flex w-full max-w-sm flex-col items-center gap-y-8 ">
           {/* Logo and heading */}
           <div className="flex flex-col items-center gap-y-2">
             <div className="flex items-center gap-2 lg:justify-start">
@@ -168,6 +169,7 @@ const Signup = ({
                     disabled={loading}
                   >
                     {googleText}
+                    <GoogleIcon/>
                   </Button>
                 </div>
               </div>

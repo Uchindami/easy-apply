@@ -13,6 +13,7 @@ import {
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useProfileStore } from "@/store/profile-store";
+import GoogleIcon from "@/assets/GoogleIcon";
 
 interface LoginProps {
   heading?: string;
@@ -172,6 +173,7 @@ const Login = ({
                 disabled={loading}
               >
                 {googleText}
+                <GoogleIcon/>
               </Button>
             </div>
 

@@ -24,6 +24,8 @@ body {
   --radius-xl: calc(var(--radius) + 4px);
   --color-background: var(--background);
   --color-foreground: #00917d;
+  --color-accent-text: var(--accent-text);
+  --color-third: var(--third);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
@@ -58,6 +60,8 @@ body {
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
+  --accent-text: #008243;
+  --third: #ffa17a;
   --foreground: var(--color-zinc-50);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.141 0.005 285.823);
@@ -91,6 +95,8 @@ body {
 }
 
 .dark {
+  --accent: #008243;
+  --third: #ffa17a;
   --background: var(--color-zinc-900);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.21 0.006 285.885);
