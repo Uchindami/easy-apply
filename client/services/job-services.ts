@@ -1,4 +1,4 @@
-import { db } from "@/lib/firebase"
+import { db } from "@/lib/firebase";
 import {
   collection,
   query,
@@ -8,9 +8,9 @@ import {
   type QuerySnapshot,
   type DocumentData,
   type Unsubscribe,
-} from "firebase/firestore"
-import { updateSourceBucket } from "@/store/job-store"
-import type { Job } from "@/types/job"
+} from "firebase/firestore";
+import { updateSourceBucket } from "@/store/job-store";
+import type { Job } from "@/types/job";
 
 const sources = [
   { id: "careersmw", title: "Careers Malawi" },
@@ -18,26 +18,26 @@ const sources = [
   { id: "ntchito", title: "Nchito" },
   { id: "unicef-careers", title: "UNICEF Careers" },
   { id: "opportunitiesforyouth", title: "Opportunities for Youth" },
-]
+];
 
 /**
  * Start real-time listeners for each job source
  * @returns A function to unsubscribe from all listeners
  */
 export function listenToJobListings(): () => void {
-  const unsubscribers: Unsubscribe[] = []
+  const unsubscribers: Unsubscribe[] = [];
 
   try {
     sources.forEach(({ id, title }) => {
-      const listingsRef = collection(db, "jobs", id, "listings")
-      const q = query(listingsRef, orderBy("uploadedAt", "desc"), limit(12))
+      const listingsRef = collection(db, "jobs", id, "listings");
+      const q = query(listingsRef, orderBy("datePosted", "desc"), limit(20));
 
       const unsubscribe = onSnapshot(
         q,
         (snapshot: QuerySnapshot<DocumentData>) => {
           try {
             const jobs: Job[] = snapshot.docs.map((doc) => {
-              const data = doc.data()
+              const data = doc.data();
               return {
                 link: data.link || "",
                 companyLogo: data.companyLogo || "",
@@ -48,51 +48,51 @@ export function listenToJobListings(): () => void {
                 datePosted: data.datePosted || "",
                 applicationDeadline: data.applicationDeadline || "",
                 source: data.source || id,
-              }
-            })
+              };
+            });
 
             updateSourceBucket({
               id,
               title,
               jobs,
-            })
+            });
           } catch (error) {
-            console.error(`Error processing jobs for source "${id}":`, error)
+            console.error(`Error processing jobs for source "${id}":`, error);
             // Update with empty jobs array to prevent UI from waiting indefinitely
             updateSourceBucket({
               id,
               title,
               jobs: [],
-            })
+            });
           }
         },
         (error) => {
-          console.error(`Error listening to jobs for source "${id}":`, error)
+          console.error(`Error listening to jobs for source "${id}":`, error);
           // Update with empty jobs array on error
           updateSourceBucket({
             id,
             title,
             jobs: [],
-          })
-        },
-      )
+          });
+        }
+      );
 
-      unsubscribers.push(unsubscribe)
-    })
+      unsubscribers.push(unsubscribe);
+    });
   } catch (error) {
-    console.error("Error setting up job listeners:", error)
+    console.error("Error setting up job listeners:", error);
   }
 
   // Return a cleanup function that unsubscribes from all listeners
   return () => {
     unsubscribers.forEach((unsubscribe) => {
       try {
-        unsubscribe()
+        unsubscribe();
       } catch (error) {
-        console.error("Error unsubscribing from job listener:", error)
+        console.error("Error unsubscribing from job listener:", error);
       }
-    })
-  }
+    });
+  };
 }
 
 /**
@@ -102,21 +102,25 @@ export function listenToJobListings(): () => void {
  */
 export function listenToSourceJobs(sourceId: string): Unsubscribe | undefined {
   try {
-    const source = sources.find((s) => s.id === sourceId)
+    const source = sources.find((s) => s.id === sourceId);
     if (!source) {
-      console.error(`Source with ID "${sourceId}" not found`)
-      return undefined
+      console.error(`Source with ID "${sourceId}" not found`);
+      return undefined;
     }
 
-    const listingsRef = collection(db, "jobs", sourceId, "listings")
-    const q = query(listingsRef, orderBy("uploadedAt", "desc"), limit(12))
+    const listingsRef = collection(db, "jobs", sourceId, "listings");
+    const q = query(
+      listingsRef,
+      orderBy("applicationDeadline", "desc"),
+      limit(1)
+    );
 
     return onSnapshot(
       q,
       (snapshot: QuerySnapshot<DocumentData>) => {
         try {
           const jobs: Job[] = snapshot.docs.map((doc) => {
-            const data = doc.data()
+            const data = doc.data();
             return {
               link: data.link || "",
               companyLogo: data.companyLogo || "",
@@ -127,35 +131,41 @@ export function listenToSourceJobs(sourceId: string): Unsubscribe | undefined {
               datePosted: data.datePosted || "",
               applicationDeadline: data.applicationDeadline || "",
               source: data.source || sourceId,
-            }
-          })
+            };
+          });
 
           updateSourceBucket({
             id: sourceId,
             title: source.title,
             jobs,
-          })
+          });
         } catch (error) {
-          console.error(`Error processing jobs for source "${sourceId}":`, error)
+          console.error(
+            `Error processing jobs for source "${sourceId}":`,
+            error
+          );
           updateSourceBucket({
             id: sourceId,
             title: source.title,
             jobs: [],
-          })
+          });
         }
       },
       (error) => {
-        console.error(`Error listening to jobs for source "${sourceId}":`, error)
+        console.error(
+          `Error listening to jobs for source "${sourceId}":`,
+          error
+        );
         updateSourceBucket({
           id: sourceId,
           title: source.title,
           jobs: [],
-        })
-      },
-    )
+        });
+      }
+    );
   } catch (error) {
-    console.error(`Error setting up listener for source "${sourceId}":`, error)
-    return undefined
+    console.error(`Error setting up listener for source "${sourceId}":`, error);
+    return undefined;
   }
 }
 
@@ -163,5 +173,5 @@ export function listenToSourceJobs(sourceId: string): Unsubscribe | undefined {
  * Get all available job sources
  */
 export function getJobSources(): { id: string; title: string }[] {
-  return [...sources]
+  return [...sources];
 }

@@ -216,13 +216,13 @@ func (o *OpenAIProcessor) generateSubjectNameWithContext(jobDetails string) (str
 						},
 					},
 				},
-                {
-                    OfAssistant: &openai.ChatCompletionAssistantMessageParam{
-                        Content: openai.ChatCompletionAssistantMessageParamContentUnion{
-                            OfString: openai.String(constants.SubjectGenAssistantInstruction),
-                        },
-                    },
-                },
+				{
+					OfAssistant: &openai.ChatCompletionAssistantMessageParam{
+						Content: openai.ChatCompletionAssistantMessageParamContentUnion{
+							OfString: openai.String(constants.SubjectGenAssistantInstruction),
+						},
+					},
+				},
 				{
 					OfUser: &openai.ChatCompletionUserMessageParam{
 						Content: openai.ChatCompletionUserMessageParamContentUnion{

@@ -30,7 +30,7 @@ export function SidebarTools({ isActive }: SidebarToolsProps) {
               isActive={isActive("/dashboard/jobs")}
             >
               <Search className="mr-2" />
-              <span>Jobs</span>
+              <span> Find Jobs</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
@@ -40,7 +40,7 @@ export function SidebarTools({ isActive }: SidebarToolsProps) {
               isActive={isActive("/dashboard/suggestions")}
             >
               <LightbulbIcon className="mr-2" />
-              <span>Suggestions</span>
+              <span>Smart Suggestions</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

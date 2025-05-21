@@ -1,339 +1,152 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
+import { ChevronLeft, ChevronRight, Bookmark } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
 import { Header } from "@/components/Header";
 import { useJobStore } from "@/store/job-store";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Building,
-  MapPin,
-  Clock,
-  ExternalLink,
-  Tag,
-  Bookmark,
-  X,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { formatRelativeTime } from "@/utils/date-utils";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { listenToJobListings } from "@/services/job-services";
+import { useSwipe } from "@/hooks/use-swipe";
+import { ErrorBoundary } from "@/components/error-boundary";
+import { JobCard } from "@/components/job-card";
+import { SavedJobsDrawer } from "@/components/saved-jobs-drawer";
+import { useSavedJobsStore } from "@/store/saved-jobs-store";
+import { Toaster } from "@/components/toaster";
 
-// Define job tag types
-const jobTags = [
-  "Remote",
-  "Full-time",
-  "Part-time",
-  "Contract",
-  "Internship",
-  "Engineering",
-  "Design",
-  "Marketing",
-  "Sales",
-  "Customer Support",
-  "Product",
-  "Data Science",
-  "Finance",
-  "HR",
-  "Legal",
-  "Operations",
-] as const;
-
-type JobTag = (typeof jobTags)[number];
-
-export default function SuggestedJobsPage() {
+export default function SmartSuggestions() {
+  const sourceBuckets = useJobStore((state) => state.sourceBuckets);
+  const hasInitialized = useJobStore((state) => state.hasInitialized);
+  const savedJobs = useSavedJobsStore((state) => state.savedJobs);
+  const isLoadingSavedJobs = useSavedJobsStore((state) => state.isLoading);
+  const fetchSavedJobs = useSavedJobsStore((state) => state.fetchSavedJobs);
+  const [activeTab, setActiveTab] = useState(0); // For mobile view
+  const [activeSources, setActiveSources] = useState<number[]>([]); // For desktop view
   const isMobile = useIsMobile();
-  const { sourceBuckets } = useJobStore();
-  const [selectedTags, setSelectedTags] = useState<JobTag[]>([]);
-  const [viewMode, setViewMode] = useState<"suggested" | "saved">("suggested");
-  const [savedJobs, setSavedJobs] = useState<any[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [savedJobsDrawerOpen, setSavedJobsDrawerOpen] = useState(false);
+  const [savedJobsInitialized, setSavedJobsInitialized] = useState(false);
 
-  // Simulate loading suggested jobs based on selected tags
-  const suggestedJobs = sourceBuckets.flatMap((bucket) =>
-    bucket.jobs.filter(
-      (job) =>
-        selectedTags.length === 0 ||
-        selectedTags.some(
-          (tag) => job.jobType.includes(tag) || job.position.includes(tag)
-        )
-    )
-  );
-
-  // Load saved jobs from localStorage on component mount
+  // Initialize active sources with first two sources when data is loaded
   useEffect(() => {
-    const savedJobsFromStorage = localStorage.getItem("savedJobs");
-    if (savedJobsFromStorage) {
-      setSavedJobs(JSON.parse(savedJobsFromStorage));
+    if (sourceBuckets.length > 0 && activeSources.length === 0) {
+      // Default to showing first two sources
+      setActiveSources([0, 1].slice(0, Math.min(2, sourceBuckets.length)));
     }
+
+    // Set loading state based on initialization
+    if (hasInitialized) {
+      setIsLoading(false);
+    }
+  }, [sourceBuckets, activeSources.length, hasInitialized]);
+
+  // Fetch saved jobs as early as possible
+  useEffect(() => {
+    // Load saved jobs from Firebase
+    fetchSavedJobs()
+      .then(() => {
+        setSavedJobsInitialized(true);
+      })
+      .catch((error) => {
+        console.error("Error fetching saved jobs:", error);
+        setSavedJobsInitialized(true); // Still mark as initialized even on error
+      });
+  }, [fetchSavedJobs]);
+
+  // Listen to Firestore job updates
+  useEffect(() => {
+    const unsubscribe = listenToJobListings();
+
+    // Set a timeout to stop showing loading state even if no data arrives
+    const loadingTimeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000);
+
+    return () => {
+      // Cleanup subscription and timeout when component unmounts
+      unsubscribe();
+      clearTimeout(loadingTimeout);
+    };
   }, []);
 
-  // Save jobs to localStorage when savedJobs changes
-  useEffect(() => {
-    localStorage.setItem("savedJobs", JSON.stringify(savedJobs));
-  }, [savedJobs]);
+  const handlePrevTab = () => {
+    setActiveTab((prev) => (prev > 0 ? prev - 1 : sourceBuckets.length - 1));
+  };
 
-  const toggleTag = (tag: JobTag) => {
-    if (selectedTags.includes(tag)) {
-      setSelectedTags(selectedTags.filter((t) => t !== tag));
-    } else {
-      setSelectedTags([...selectedTags, tag]);
+  const handleNextTab = () => {
+    setActiveTab((prev) => (prev < sourceBuckets.length - 1 ? prev + 1 : 0));
+  };
+
+  // Use the custom swipe hook
+  const { touchHandlers, swipeState } = useSwipe(handleNextTab, handlePrevTab);
+  const { swiping, swipeDirection } = swipeState;
+
+  const toggleSource = (index: number) => {
+    setActiveSources((prev) => {
+      if (prev.includes(index)) {
+        // Remove the source if it's already active
+        return prev.filter((i) => i !== index);
+      } else {
+        // Add the source if it's not active
+        return [...prev, index];
+      }
+    });
+  };
+
+  // Get the appropriate grid columns class based on active sources
+  const getGridColsClass = () => {
+    switch (Math.min(activeSources.length || 1, 5)) {
+      case 1:
+        return "grid-cols-1";
+      case 2:
+        return "grid-cols-2";
+      case 3:
+        return "grid-cols-3";
+      case 4:
+        return "grid-cols-4";
+      case 5:
+        return "grid-cols-5";
+      default:
+        return "grid-cols-1";
     }
   };
 
-  const clearTags = () => {
-    setSelectedTags([]);
-  };
-
-  const toggleSaveJob = (job: any) => {
-    const isJobSaved = savedJobs.some((savedJob) => savedJob.link === job.link);
-
-    if (isJobSaved) {
-      setSavedJobs(savedJobs.filter((savedJob) => savedJob.link !== job.link));
-    } else {
-      setSavedJobs([...savedJobs, job]);
-    }
-  };
-
-  const isJobSaved = (job: any) => {
-    return savedJobs.some((savedJob) => savedJob.link === job.link);
-  };
+  // If there are no sources yet, show loading state
+  if (isLoading) {
+    return (
+      <ErrorBoundary>
+        <>
+          <Header title="Jobs from across the web in real time" />
+          <div className="flex items-center justify-center h-64">
+            <p className="text-gray-500">Loading job listings...</p>
+          </div>
+          <Toaster />
+        </>
+      </ErrorBoundary>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header title="Your Suggested Jobs" />
+    <ErrorBoundary>
+      <>
+        <Header
+          title="Jobs from across the web in real time"
+          savedJobsButtonProps={{
+            onClick: () => setSavedJobsDrawerOpen(true),
+            isLoadingSavedJobs,
+            savedJobsCount: savedJobs.length,
+          }}
+        />
 
-      <div className="container mx-auto px-4 py-6">
-        <Tabs defaultValue="suggested" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger
-              value="suggested"
-              onClick={() => setViewMode("suggested")}
-              className="text-sm sm:text-base"
-            >
-              Suggested Jobs
-            </TabsTrigger>
-            <TabsTrigger
-              value="saved"
-              onClick={() => setViewMode("saved")}
-              className="text-sm sm:text-base"
-            >
-              Saved Jobs ({savedJobs.length})
-            </TabsTrigger>
-          </TabsList>
+        {/* Saved Jobs Drawer (instead of Sidebar) */}
+        <SavedJobsDrawer
+          open={savedJobsDrawerOpen}
+          onOpenChange={setSavedJobsDrawerOpen}
+        />
 
-          <TabsContent value="suggested" className="space-y-6">
-            <div className="bg-white rounded-lg shadow-sm p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-medium flex items-center">
-                  <Tag className="h-5 w-5 mr-2" />
-                  Job Tags
-                </h2>
-                {selectedTags.length > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={clearTags}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    Clear All
-                  </Button>
-                )}
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {jobTags.map((tag) => (
-                  <Badge
-                    key={tag}
-                    variant={selectedTags.includes(tag) ? "default" : "outline"}
-                    className={cn(
-                      "cursor-pointer transition-all",
-                      selectedTags.includes(tag)
-                        ? "bg-foreground text-white"
-                        : "hover:bg-foreground/10"
-                    )}
-                    onClick={() => toggleTag(tag)}
-                  >
-                    {tag}
-                    {selectedTags.includes(tag) && (
-                      <X className="ml-1 h-3 w-3" />
-                    )}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold">
-                  {selectedTags.length > 0
-                    ? `Jobs matching your tags (${suggestedJobs.length})`
-                    : `All suggested jobs (${suggestedJobs.length})`}
-                </h2>
-              </div>
-
-              {suggestedJobs.length === 0 ? (
-                <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-                  <p className="text-gray-500">
-                    {selectedTags.length > 0
-                      ? "No jobs match your selected tags. Try selecting different tags."
-                      : "No suggested jobs available at the moment."}
-                  </p>
-                </div>
-              ) : (
-                <div
-                  className={cn(
-                    "grid gap-4",
-                    isMobile ? "grid-cols-1" : "grid-cols-2 lg:grid-cols-3"
-                  )}
-                >
-                  {suggestedJobs.map((job, index) => (
-                    <JobCard
-                      key={`${job.link}-${index}`}
-                      job={job}
-                      isSaved={isJobSaved(job)}
-                      onToggleSave={() => toggleSaveJob(job)}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="saved" className="space-y-6">
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold">
-                Your Saved Jobs ({savedJobs.length})
-              </h2>
-
-              {savedJobs.length === 0 ? (
-                <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-                  <p className="text-gray-500">
-                    You haven't saved any jobs yet. Browse suggested jobs and
-                    click the bookmark icon to save them.
-                  </p>
-                </div>
-              ) : (
-                <div
-                  className={cn(
-                    "grid gap-4",
-                    isMobile ? "grid-cols-1" : "grid-cols-2 lg:grid-cols-3"
-                  )}
-                >
-                  {savedJobs.map((job, index) => (
-                    <JobCard
-                      key={`${job.link}-${index}`}
-                      job={job}
-                      isSaved={true}
-                      onToggleSave={() => toggleSaveJob(job)}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
-  );
-}
-
-function JobCard({
-  job,
-  isSaved,
-  onToggleSave,
-}: {
-  job: any;
-  isSaved: boolean;
-  onToggleSave: () => void;
-}) {
-  return (
-    <Card className="overflow-hidden transition-all duration-200 hover:shadow-md group h-full">
-      <div className="p-4 flex flex-col h-full">
-        <div className="flex items-start justify-between">
-          <div className="flex items-start space-x-3">
-            <div className="h-10 w-10 min-w-[40px] rounded-md bg-gray-100 flex items-center justify-center overflow-hidden">
-              <img
-                src={job.companyLogo || "/placeholder.svg?height=40&width=40"}
-                alt={`${job.companyName} logo`}
-                className="h-full w-full object-contain"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    "/placeholder.svg?height=40&width=40";
-                }}
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3
-                className="font-medium group-hover:text-primary transition-colors truncate"
-                title={job.position}
-              >
-                {job.position}
-              </h3>
-              <p className="text-sm text-gray-600 flex items-center">
-                <Building className="h-3 w-3 min-w-[12px] mr-1" />
-                <span className="truncate" title={job.companyName}>
-                  {job.companyName}
-                </span>
-              </p>
-            </div>
-          </div>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "h-8 w-8 rounded-full",
-              isSaved ? "text-primary" : "text-gray-400"
-            )}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onToggleSave();
-            }}
-            aria-label={isSaved ? "Unsave job" : "Save job"}
-          >
-            <Bookmark className={cn("h-5 w-5", isSaved && "fill-primary")} />
-          </Button>
-        </div>
-
-        <div className="mt-3 flex flex-wrap gap-2">
-          <Badge
-            variant="default"
-            className="bg-foreground/50 text-primary/90 hover:bg-primary/20 border-none max-w-full"
-          >
-            <span className="truncate" title={job.jobType}>
-              {job.jobType}
-            </span>
-          </Badge>
-        </div>
-
-        <div className="mt-3 pt-3 border-t flex justify-between items-center">
-          <div className="flex items-center text-xs text-gray-500 min-w-0 max-w-[60%]">
-            <MapPin className="h-3 w-3 min-w-[12px] mr-1" />
-            <span className="truncate" title={job.location}>
-              {job.location}
-            </span>
-          </div>
-          <div className="flex items-center text-xs text-gray-500 ml-2">
-            <Clock className="h-3 w-3 min-w-[12px] mr-1" />
-            <span className="truncate" title={job.datePosted}>
-              {formatRelativeTime(job.datePosted)}
-            </span>
-          </div>
-        </div>
-
-        <div className="pt-2 mt-auto">
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full group-hover:bg-primary/5 transition-colors"
-            onClick={() => window.open(job.link, "_blank")}
-          >
-            View Job <ExternalLink className="ml-2 h-3 w-3" />
-          </Button>
-        </div>
-      </div>
-    </Card>
+        {/* Toast notifications */}
+        <Toaster />
+      </>
+    </ErrorBoundary>
   );
 }

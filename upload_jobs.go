@@ -7,21 +7,87 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
+	"time"
 
 	"cloud.google.com/go/firestore"
 )
 
 type JobListing struct {
-	Link                string `json:"link"`
-	CompanyLogo         string `json:"companyLogo"`
-	Position            string `json:"position"`
-	CompanyName         string `json:"companyName"`
-	Location            string `json:"location"`
-	JobType             string `json:"jobType"`
-	DatePosted          string `json:"datePosted"`
-	ApplicationDeadline string `json:"applicationDeadline"`
-	Source              string `json:"source"`
+	Link                   string   `json:"link"`
+	CompanyLogo            string   `json:"companyLogo"`
+	Position               string   `json:"position"`
+	CompanyName            string   `json:"companyName"`
+	Location               string   `json:"location"`
+	JobType                string   `json:"jobType"`
+	DatePosted             string   `json:"datePosted"`
+	ApplicationDeadline    string   `json:"applicationDeadline"`
+	JobDescription         string   `json:"jobDescription"`
+	Source                 string   `json:"source"`
+
+
+	Grade                  interface{} `json:"grade"` // could be string or N/A
+	ReportingTo            string      `json:"reportingTo"`
+	ResponsibleFor         interface{} `json:"responsibleFor,omitempty"` // could be string or []string
+	Department             string      `json:"department"`
+	Purpose                string      `json:"purpose"`
+	KeyResponsibilities    []string    `json:"keyResponsibilities"`
+	RequiredQualifications []string    `json:"requiredQualifications"`
+	RequiredExperience     interface{} `json:"requiredExperience"`  // could be string, []string, or object
+	RequiredMemberships    interface{} `json:"requiredMemberships"` // could be string, []string, or N/A
+	ContactDetails         interface{} `json:"contactDetails"` // could be string or object
+	AdditionalNotes        string      `json:"additionalNotes"`
+	Tags                   []string    `json:"tags"`
+	Industry               string      `json:"industry"`
+	Domain                 string      `json:"domain"`           // Domain
+}
+
+// parseTimeStringFlexible attempts to parse a date string in multiple common formats
+func parseTimeString(dateStr string) (time.Time, error) {
+	// Handle empty or "N/A" cases
+	dateStr = strings.TrimSpace(dateStr)
+	if dateStr == "" || strings.EqualFold(dateStr, "N/A") {
+		return time.Time{}, nil
+	}
+
+	// List of common date formats to try (in order of likelihood)
+	formats := []string{
+		"2006-01-02",              // YYYY-MM-DD (ISO 8601)
+		"January 2, 2006",         // "May 30, 2025"
+		"Jan 2, 2006",             // "May 30, 2025" (abbreviated month)
+		"02/01/2006",              // DD/MM/YYYY (common European format)
+		"01/02/2006",              // MM/DD/YYYY (common US format)
+		time.RFC3339,              // Full RFC3339 format
+		"2006-01-02T15:04:05",     // ISO 8601 with time
+		"02-01-2006",              // DD-MM-YYYY
+		"01-02-2006",              // MM-DD-YYYY
+		"2006-01-02",              // "2025-05-16"
+		"02 Jan 2006",             // "30 May 2025"
+		"Jan 02, 2006",            // "May 30, 2025"
+		"January 2, 2006",         // "May 30, 2025"
+		"2 January 2006",          // "30 May 2025"
+		"01/02/2006",              // "05/30/2025"
+		"02/01/2006",              // "30/05/2025"
+		"2 January 2006 03:04 PM", // "30 May 2025 03:04 PM"
+		"2 January 2006 15:04",    // "30 May 2025 15:04"
+		"2006-01-02 15:04:05",     // "2025-05-16 14:30:00"
+		"2006-01-02 03:04 PM",     // "2025-05-16 02:30 PM"
+		"2006-01-02 15:04",        // "2025-05-16 14:30"
+		"2 Jan 2006 03:04 PM",     // "30 May 2025 03:04 PM"
+		"2 Jan 2006 15:04",        // "30 May 2025 15:04"
+	}
+
+	// Try each format in order
+	for _, format := range formats {
+		t, err := time.Parse(format, dateStr)
+		if err == nil {
+			return t, nil
+		}
+	}
+
+	return time.Time{}, fmt.Errorf("failed to parse date string %q - unrecognized format", dateStr)
 }
 
 func readJobsFromFile(filename string) ([]JobListing, error) {
@@ -54,19 +120,25 @@ func updateJobs() {
 }
 
 func testHandler(w http.ResponseWriter, r *http.Request) {
-	jobs, err := readJobsFromFile("combined_jobs.json")
+	// Get the URL parameter
+	desc := r.URL.Query().Get("desc")
 
+	// URL parameters are often URL-encoded, so we need to decode them
+	decodedDesc, err := url.QueryUnescape(desc)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to read jobs: %v", err), http.StatusInternalServerError)
+		http.Error(w, "Error decoding URL parameter", http.StatusBadRequest)
 		return
 	}
 
-	if err := uploadJobListings(jobs); err != nil {
-		log.Fatalf("Failed to upload job listings: %v", err)
+	result, err := ParseJobDescription(decodedDesc)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Job listings uploaded successfully"))
+	// Return the result
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
 }
 
 // func saveJobs(ctx context.Context, jobs []Job) error {
@@ -149,6 +221,22 @@ func uploadJobListings(jobListings []JobListing) error {
 				return fmt.Errorf("invalid job listing: %w", err)
 			}
 
+			// Parse job description
+			parsed, err := ParseJobDescription(job.JobDescription)
+			if err != nil {
+				return fmt.Errorf("failed to parse job description for job %s: %w", job.Link, err)
+			}
+
+			datePosted, err := parseTimeString(job.DatePosted)
+			if err != nil {
+				return fmt.Errorf("invalid datePosted for job %s: %w", job.Link, err)
+			}
+
+			applicationDeadline, err := parseTimeString(job.ApplicationDeadline)
+			if err != nil {
+				return fmt.Errorf("invalid applicationDeadline for job %s: %w", job.Link, err)
+			}
+
 			docID, err := generateJobDocID(job)
 			if err != nil {
 				return fmt.Errorf("failed to generate document ID: %w", err)
@@ -156,24 +244,42 @@ func uploadJobListings(jobListings []JobListing) error {
 
 			listingRef := sourceDocRef.Collection("listings").Doc(docID)
 
-			_, err = bw.Create(listingRef, map[string]interface{}{
+			docData := map[string]interface{}{
 				"link":                job.Link,
 				"companyLogo":         job.CompanyLogo,
 				"position":            job.Position,
 				"companyName":         job.CompanyName,
 				"location":            job.Location,
 				"jobType":             job.JobType,
-				"datePosted":          job.DatePosted,
-				"applicationDeadline": job.ApplicationDeadline,
+				"datePosted":          datePosted,
+				"applicationDeadline": applicationDeadline,
+				"jobDescription":      job.JobDescription,
 				"source":              job.Source,
 				"uploadedAt":          firestore.ServerTimestamp,
-			})
 
+				// Directly add parsed fields
+				"jobTitle":               parsed.JobTitle,
+				"organization":           parsed.Organization,
+				"grade":                  parsed.Grade,
+				"reportingTo":            parsed.ReportingTo,
+				"department":             parsed.Department,
+				"purpose":                parsed.Purpose,
+				"keyResponsibilities":    parsed.KeyResponsibilities,
+				"requiredQualifications": parsed.RequiredQualifications,
+				"requiredExperience":     parsed.RequiredExperience,
+				"requiredMemberships":    parsed.RequiredMemberships,
+				"contactDetails":         parsed.ContactDetails,
+				"additionalNotes":        parsed.AdditionalNotes,
+				"tags":                   parsed.Tags,
+				"industry":               parsed.Industry,
+				"domain":                 parsed.Domain,
+			}
+
+			_, err = bw.Create(listingRef, docData)
 			if err != nil {
 				return fmt.Errorf("failed to queue job %s for source %s: %w", job.Link, source, err)
 			}
 		}
-
 		log.Printf("Queued %d job listings for source: %s", len(jobs), source)
 	}
 	// Wait for all operations to complete and check for errors

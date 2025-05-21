@@ -38,10 +38,10 @@ export function Header({ title, onReset, isResetDisabled, savedJobsButtonProps }
               className="flex items-center gap-1"
               onClick={savedJobsButtonProps.onClick}
             >
-              <Bookmark className="h-4 w-4" />
-              <span>Saved Jobs</span>
+              <Bookmark className="h-4 w-4 text-primary" />
+              <span className="text-primary">Saved Jobs</span>
               {!savedJobsButtonProps.isLoadingSavedJobs && savedJobsButtonProps.savedJobsCount > 0 && (
-                <span className="ml-1 bg-primary text-white rounded-full text-xs px-1.5 py-0.5 min-w-5 text-center">
+                <span className="ml-1 bg-foreground/50 text-white rounded-full text-xs px-1.5 py-0.5 min-w-5 text-center">
                   {savedJobsButtonProps.savedJobsCount}
                 </span>
               )}

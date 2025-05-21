@@ -15,6 +15,7 @@ const (
 	previousJobsFile = "./previous_jobs.json"
 	newJobsFile      = "./new_jobs.json"
 	nodeScriptPath   = "E:/code/random-projects/javascript/web-scrapping/index.mjs"
+	nodeScriptMore   = "E:/code/random-projects/javascript/web-scrapping/get-more-details.mjs"
 	scraperInterval  = time.Minute * 10 // 5 minutes
 )
 
@@ -27,6 +28,16 @@ func createJobKey(job Job) string {
 
 func runNodeScript() error {
 	cmd := exec.Command("node", nodeScriptPath)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("error running node script: %v\nOutput: %s", err, output)
+	}
+	fmt.Printf("Node script output (%s):\n%s\n", time.Now().Format(time.RFC3339), output)
+	return nil
+}
+
+func getMoreDetails() error {
+	cmd := exec.Command("node", nodeScriptMore)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("error running node script: %v\nOutput: %s", err, output)
@@ -87,6 +98,10 @@ func processJobs() error {
 			return fmt.Errorf("error writing new jobs file: %v", err)
 		}
 		fmt.Println("First run: all jobs are new.")
+
+		if err := getMoreDetails(); err != nil {
+			return fmt.Errorf("error getting more details: %v", err)
+		}
 		updateJobs()
 		return nil
 	} else if err != nil {
@@ -117,8 +132,11 @@ func processJobs() error {
 			job["link"])
 	}
 
-	// Optional: process newJobs further
+	if err := getMoreDetails(); err != nil {
+		return fmt.Errorf("error getting more details: %v", err)
+	}
 	updateJobs()
+
 	return nil
 }
 
