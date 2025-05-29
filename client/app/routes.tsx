@@ -17,7 +17,7 @@ export default [
       route("jobs", "routes/dashboard/jobs.tsx"),
       route("settings", "routes/dashboard/settings.tsx"),
       route("search", "routes/dashboard/search.tsx"),
-      route("suggestions", "routes/dashboard/suggestions.tsx"),
+      route("suggestions", "routes/dashboard/recommendations.tsx"),
       route("chatHistory/:chatHistoryId", "routes/dashboard/chat-history.tsx"),
       // route("jobs", "routes/dashboard/jobs.tsx"),
   ]),

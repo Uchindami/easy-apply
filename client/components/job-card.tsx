@@ -1,66 +1,83 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from "react"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Building, MapPin, Clock, ExternalLink, Bookmark, BookmarkCheck, Loader2 } from "lucide-react"
-import { formatRelativeTime } from "@/utils/date-utils"
-import { useSavedJobsStore } from "@/store/saved-jobs-store"
-import { useToast } from "@/hooks/use-toast"
-import type { Job } from "@/types/job"
+import React, { useState, useEffect } from "react";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Building,
+  MapPin,
+  Clock,
+  ExternalLink,
+  Bookmark,
+  BookmarkCheck,
+  Loader2,
+} from "lucide-react";
+import { formatRelativeTime } from "@/utils/date-utils";
+import { useSavedJobsStore } from "@/store/saved-jobs-store";
+import { useToast } from "@/hooks/use-toast";
+import type { Job } from "@/types/job";
 
 interface JobCardProps {
-  job: Job
-  savedJobsInitialized?: boolean
+  job: Job;
+  savedJobsInitialized?: boolean;
 }
 
-export const JobCard = React.memo(function JobCard({ job, savedJobsInitialized = false }: JobCardProps) {
-  const { saveJob, unsaveJob, isJobSaved } = useSavedJobsStore()
-  const { toast } = useToast()
-  const [isSaving, setIsSaving] = useState(false)
-  const [showBookmark, setShowBookmark] = useState(false)
+export const JobCard = React.memo(function JobCard({
+  job,
+  savedJobsInitialized = false,
+}: JobCardProps) {
+  const { saveJob, unsaveJob, isJobSaved } = useSavedJobsStore();
+  const { toast } = useToast();
+  const [isSaving, setIsSaving] = useState(false);
+  const [showBookmark, setShowBookmark] = useState(false);
 
-  const jobId = job.id || `${job.link}-${job.position}-${job.companyName}`.replace(/[^a-zA-Z0-9]/g, "-")
-  const isSaved = isJobSaved(jobId)
+  const jobId =
+    job.id ||
+    `${job.link}-${job.position}-${job.companyName}`.replace(
+      /[^a-zA-Z0-9]/g,
+      "-"
+    );
+  const isSaved = isJobSaved(jobId);
 
   // Only show bookmark icons after saved jobs have been initialized
   // This prevents the "flicker" effect on page reload
   useEffect(() => {
     if (savedJobsInitialized) {
-      setShowBookmark(true)
+      setShowBookmark(true);
     }
-  }, [savedJobsInitialized])
+  }, [savedJobsInitialized]);
 
   const handleSaveToggle = async () => {
-    setIsSaving(true)
+    setIsSaving(true);
 
     try {
       if (isSaved) {
-        await unsaveJob(jobId)
+        await unsaveJob(jobId);
         toast({
           title: "Job removed",
           description: "The job has been removed from your saved jobs",
           variant: "default",
-        })
+        });
       } else {
-        await saveJob({ ...job, id: jobId })
+        await saveJob({ ...job, id: jobId });
         toast({
           title: "Job saved",
           description: "The job has been added to your saved jobs",
           variant: "success",
-        })
+        });
       }
     } catch (error) {
       toast({
         title: isSaved ? "Error removing job" : "Error saving job",
-        description: error instanceof Error ? error.message : "An error occurred",
+        description:
+          error instanceof Error ? error.message : "An error occurred",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
     }
-  }
+  };
 
   return (
     <Card
@@ -77,7 +94,8 @@ export const JobCard = React.memo(function JobCard({ job, savedJobsInitialized =
               alt={`${job.companyName} logo`}
               className="h-full w-full object-contain"
               onError={(e) => {
-                ;(e.target as HTMLImageElement).src = "/placeholder.svg?height=40&width=40"
+                (e.target as HTMLImageElement).src =
+                  "/placeholder.svg?height=40&width=40";
               }}
             />
           </div>
@@ -99,7 +117,9 @@ export const JobCard = React.memo(function JobCard({ job, savedJobsInitialized =
             <Button
               variant="ghost"
               size="icon"
-              className={`h-7 w-7 ${isSaved ? "text-primary" : "text-gray-400 hover:text-primary"}`}
+              className={`h-7 w-7 ${
+                isSaved ? "text-primary" : "text-gray-400 hover:text-primary"
+              }`}
               onClick={handleSaveToggle}
               disabled={isSaving}
               aria-label={isSaved ? "Unsave job" : "Save job"}
@@ -155,5 +175,5 @@ export const JobCard = React.memo(function JobCard({ job, savedJobsInitialized =
         </div>
       </div>
     </Card>
-  )
-})
+  );
+});

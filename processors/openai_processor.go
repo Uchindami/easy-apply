@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	openAIDefaultTimeout = 30 * time.Second
+	openAIDefaultTimeout = 100 * time.Second
 	nebiusDefaultTimeout = 45 * time.Second
 	maxRetries           = 3
 	retryDelay           = 500 * time.Millisecond
@@ -168,15 +168,6 @@ func (o *OpenAIProcessor) generateResumeAndCoverLetter(text string) (string, err
 
 // GenerateSubjectName generates a brief subject name with retries and caching
 func (o *OpenAIProcessor) GenerateSubjectName(jobDescription string) (string, error) {
-	// Check cache first
-	// if cached, ok := o.getFromCache("subject:" + jobDescription); ok {
-	// 	fmt.Printf("\023[33mJob Posting: %s\023[0m\n", "returning cached response")
-	// 	return cached, nil
-	// }
-
-	// if o.nebiusClient == nil {
-	// 	return "", fmt.Errorf("nebius client not initialized")
-	// }
 
 	var result string
 	var err error
@@ -189,8 +180,6 @@ func (o *OpenAIProcessor) GenerateSubjectName(jobDescription string) (string, er
 
 		result, err = o.generateSubjectNameWithContext(jobDescription)
 		if err == nil {
-			// Cache successful response
-			// o.setInCache("subject:"+jobDescription, result)
 			return result, nil
 		}
 
@@ -250,6 +239,58 @@ func (o *OpenAIProcessor) generateSubjectNameWithContext(jobDetails string) (str
 	}
 	log.Printf("\033[31mOpenAI response:\033[0m %s", content)
 
+	return content, nil
+}
+
+// AnalyzeResumeForRecommendation sends a resume to OpenAI for job recommendation analysis
+func (o *OpenAIProcessor) AnalyzeResumeForRecommendation(resume string) (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), openAIDefaultTimeout)
+	defer cancel()
+
+	if o.openAIClient == nil {
+		return "", fmt.Errorf("OpenAI client not initialized")
+	}
+
+	// Prompt for job recommendation
+	prompt := "**Resume:**{resume}\n" + resume
+
+	chatCompletion, err := o.openAIClient.Chat.Completions.New(
+		ctx,
+		openai.ChatCompletionNewParams{
+			Model: constants.RECOMMENDATIONS_MODEL,
+			Messages: []openai.ChatCompletionMessageParamUnion{
+				{
+					OfSystem: &openai.ChatCompletionSystemMessageParam{
+						Content: openai.ChatCompletionSystemMessageParamContentUnion{
+							OfString: openai.String(constants.RECOMMENDATIONS_INSTRUCTION),
+						},
+					},
+				},
+				{
+					OfUser: &openai.ChatCompletionUserMessageParam{
+						Content: openai.ChatCompletionUserMessageParamContentUnion{
+							OfString: openai.String(prompt),
+						},
+					},
+				},
+			},
+			Temperature: openai.Float(0.5),
+			MaxTokens:   openai.Int(512),
+			TopP:        openai.Float(1),
+		},
+	)
+	if err != nil {
+		return "", fmt.Errorf("error creating chat completion: %w", err)
+	}
+
+	if len(chatCompletion.Choices) == 0 {
+		return "", fmt.Errorf("no response choices available")
+	}
+
+	content := chatCompletion.Choices[0].Message.Content
+	if content == "" {
+		return "", fmt.Errorf("empty response content")
+	}
 	return content, nil
 }
 

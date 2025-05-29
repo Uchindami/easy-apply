@@ -302,6 +302,308 @@ func sendOpenAIAnalysis(w http.ResponseWriter, jobPosting, extractedResume, sour
 	}
 }
 
+//start of job recommendations
+
+// JobRecommendationRequest represents the incoming request structure
+type JobRecommendationRequest struct {
+	UserID      string `json:"userId"`
+	Resume      string `json:"resume"`
+	RequestType string `json:"requestType"`
+	Filename    string `json:"filename"`
+}
+
+type SavedUserResponse struct {
+	Success     bool                     `json:"success"`
+	MatchedJobs []map[string]interface{} `json:"matchedJobs"`
+}
+
+// RecommendationResult represents the OpenAI analysis result
+type RecommendationResult struct {
+	Industry   string `json:"industry"`
+	Domain     string `json:"domain"`
+	Confidence string `json:"confidence"`
+	Reasoning  string `json:"reasoning"`
+}
+
+// JobRecommendationResponse represents the final response
+type JobRecommendationResponse struct {
+	Success        bool                     `json:"success"`
+	Recommendation RecommendationResult     `json:"recommendation"`
+	MatchedJobs    []map[string]interface{} `json:"matchedJobs"`
+}
+
+func jobRecommendationsHandler(w http.ResponseWriter, r *http.Request) {
+	logger.Println("Received job recommendations request")
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	initProcessors()
+
+	// Parse and validate request
+	req, err := parseJobRecommendationRequest(r)
+	if err != nil {
+		handleError(w, err.Error(), http.StatusBadRequest, err)
+		return
+	}
+
+	if req.RequestType == "saved" {
+		matchedJobs, err := findMatchingJobsForSavedUser(context.Background(), firestoreClient, req.Resume)
+		if err != nil {
+			handleError(w, "Failed to find matching jobs", http.StatusInternalServerError, err)
+			return
+		}
+		sendJSONResponse(w, SavedUserResponse{
+			Success:     true,
+			MatchedJobs: matchedJobs,
+		})
+		return
+	}
+
+	// Process resume content
+	resumeText, err := processResumeContent(r, req.Resume)
+	if err != nil {
+		handleError(w, "Failed to process resume", http.StatusInternalServerError, err)
+		return
+	}
+
+	// Analyze resume with OpenAI
+	recommendation, err := analyzeResumeForRecommendation(resumeText)
+	if err != nil {
+		handleError(w, "Failed to analyze resume", http.StatusInternalServerError, err)
+		return
+	}
+
+	// Update user document in Firestore
+	if err := updateUserRecommendation(req.UserID, recommendation, req.Filename); err != nil {
+		handleError(w, "Failed to update user recommendation", http.StatusInternalServerError, err)
+		return
+	}
+
+	// Find matching jobs
+	matchedJobs, err := findMatchingJobs(context.Background(), firestoreClient, recommendation)
+	if err != nil {
+		logger.Printf("Warning: Failed to find matching jobs: %v", err)
+		matchedJobs = []map[string]interface{}{}
+	}
+
+	// Send response
+	sendJSONResponse(w, JobRecommendationResponse{
+		Success:        true,
+		Recommendation: recommendation,
+		MatchedJobs:    matchedJobs,
+	})
+}
+
+// parseJobRecommendationRequest parses and validates the incoming request
+func parseJobRecommendationRequest(r *http.Request) (*JobRecommendationRequest, error) {
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		return nil, fmt.Errorf("failed to parse form: %w", err)
+	}
+
+	userID := r.FormValue("userId")
+	if userID == "" {
+		return nil, errors.New("userId is required")
+	}
+
+	// Parse requestType early - it's needed in both code paths
+	requestType := r.FormValue("requestType")
+	if requestType == "" {
+		return nil, errors.New("requestType is required")
+	}
+
+	// Check for resume text content first
+	resumeContent := r.FormValue("resume")
+	if resumeContent != "" {
+		return &JobRecommendationRequest{
+			UserID:      userID,
+			Resume:      resumeContent,
+			RequestType: requestType,
+		}, nil
+	}
+
+	// No resume text; try file upload
+	file, handler, err := r.FormFile("resume")
+	if err != nil {
+		return nil, errors.New("resume file or resume text is required")
+	}
+
+	defer file.Close()
+
+	fileExt := strings.ToLower(getFileExt(handler.Filename))
+	if fileExt != ".pdf" && fileExt != ".docx" && fileExt != ".txt" {
+		return nil, fmt.Errorf("unsupported file type: %s", fileExt)
+	}
+
+	if requestType == "saved" {
+		return nil, fmt.Errorf("you have attached a document but have requestype set to saved, set to unsaved ")
+	}
+
+	logger.Println("Reading uploaded file content")
+	var buf bytes.Buffer
+	if _, err := io.Copy(&buf, file); err != nil {
+		return nil, fmt.Errorf("failed to read uploaded file: %w", err)
+	}
+
+	logger.Println("Processing file content")
+	start := time.Now()
+	resumeText, err := fileProcessor.ProcessFileBuffer(buf.Bytes(), fileExt)
+	if err != nil {
+		logger.Printf("File processing failed after %v: %v", time.Since(start), err)
+		return nil, fmt.Errorf("file processing failed: %w", err)
+	}
+	logger.Printf("File processing completed in %v", time.Since(start))
+
+	return &JobRecommendationRequest{
+		UserID:      userID,
+		Resume:      resumeText,
+		RequestType: requestType,
+		Filename:    handler.Filename,
+	}, nil
+}
+
+// processResumeContent handles both text and file upload resume content
+func processResumeContent(r *http.Request, resumeText string) (string, error) {
+	// If resume text is provided and not empty, use it directly
+	if strings.TrimSpace(resumeText) != "" {
+		return resumeText, nil
+	}
+
+	// Otherwise, try to process uploaded file
+	return processUploadedFile(r)
+}
+
+// processUploadedFile extracts and processes an uploaded resume file
+func processUploadedFile(r *http.Request) (string, error) {
+	logger.Println("Starting file processing in recommendations handler")
+
+	file, handler, err := r.FormFile("file")
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	fileExt := strings.ToLower(getFileExt(handler.Filename))
+
+	var buf bytes.Buffer
+	if _, err := io.Copy(&buf, file); err != nil {
+		return "", err
+	}
+
+	fileStart := time.Now()
+	processedText, err := fileProcessor.ProcessFileBuffer(buf.Bytes(), fileExt)
+	if err != nil {
+		logger.Printf("File processing failed after %v: %v", time.Since(fileStart), err)
+		return "", err
+	}
+
+	logger.Printf("File processing completed in %v", time.Since(fileStart))
+	return processedText, nil
+}
+
+// analyzeResumeForRecommendation gets job recommendations from OpenAI
+func analyzeResumeForRecommendation(resumeText string) (RecommendationResult, error) {
+	var recommendation RecommendationResult
+
+	recommendationJSON, err := openAIProcessor.AnalyzeResumeForRecommendation(resumeText)
+	if err != nil {
+		return recommendation, err
+	}
+
+	if err := json.Unmarshal([]byte(recommendationJSON), &recommendation); err != nil {
+		return recommendation, err
+	}
+
+	return recommendation, nil
+}
+
+// updateUserRecommendation updates the user's recommendation in Firestore
+func updateUserRecommendation(userID string, recommendation RecommendationResult, filename string) error {
+	// Additional validation to prevent empty userID
+	if strings.TrimSpace(userID) == "" {
+		return errors.New("userID cannot be empty when updating Firestore")
+	}
+
+	userRef := firestoreClient.Collection("Users").Doc(userID)
+
+	update := map[string]interface{}{
+		"Recommendation": map[string]interface{}{
+			"industry":   recommendation.Industry,
+			"domain":     recommendation.Domain,
+			"confidence": recommendation.Confidence,
+			"reasoning":  recommendation.Reasoning,
+			"updatedAt":  firestore.ServerTimestamp,
+		},
+		"currentDocument": filename,
+	}
+
+	_, err := userRef.Set(context.Background(), update, firestore.MergeAll)
+	return err
+}
+
+// findMatchingJobs searches Firestore for jobs matching the recommended industry
+func findMatchingJobs(ctx context.Context, client *firestore.Client, recommendation RecommendationResult) ([]map[string]interface{}, error) {
+	// Query all listings subcollections across all sources
+	query := client.CollectionGroup("listings").
+		Where("industry", "==", recommendation.Industry)
+
+	docs, err := query.Documents(ctx).GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	var results []map[string]interface{}
+	for _, doc := range docs {
+		results = append(results, doc.Data())
+	}
+
+	return results, nil
+}
+
+// findMatchingJobs searches Firestore for jobs matching the recommended industry
+func findMatchingJobsForSavedUser(ctx context.Context, client *firestore.Client, recommendation string) ([]map[string]interface{}, error) {
+	// Query all listings subcollections across all sources
+	query := client.CollectionGroup("listings").
+		Where("industry", "==", recommendation)
+
+	docs, err := query.Documents(ctx).GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	var results []map[string]interface{}
+	for _, doc := range docs {
+		results = append(results, doc.Data())
+	}
+
+	return results, nil
+}
+
+// isJobMatch checks if a job listing matches the recommendation criteria
+func isJobMatch(listing map[string]interface{}, recommendation RecommendationResult) bool {
+	industry, _ := listing["industry"].(string)
+	domain, _ := listing["domain"].(string)
+	uploadedAt, ok := listing["uploadedAt"].(time.Time)
+	if !ok {
+		return false
+	}
+
+	twoWeeksAgo := time.Now().AddDate(0, 0, -14)
+
+	return strings.EqualFold(industry, recommendation.Industry) &&
+		strings.EqualFold(domain, recommendation.Domain) &&
+		uploadedAt.After(twoWeeksAgo)
+}
+
+// sendJSONResponse sends a JSON response to the client
+func sendJSONResponse(w http.ResponseWriter, data interface{}) {
+	w.Header().Set("Content-Type", contentTypeJSON)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		logger.Printf("Failed to encode response: %v", err)
+	}
+}
+
+//end of job recommendations
 func extractSourceFromURL(url string) string {
 	for domain, name := range supportedJobSites {
 		if strings.Contains(url, domain) {

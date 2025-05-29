@@ -1,6 +1,6 @@
+"use client";
 
 import { useEffect, useState } from "react";
-import { doc, getDoc, setDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,187 +21,157 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
-  Info,
-  Lock,
-  Loader2,
-} from "lucide-react";
+import { Facebook, Info, Lock, Loader2, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Header } from "@/components/Header";
 import { useProfileStore } from "@/store/profile-store";
-import { db } from "@/lib/firebase";
 import { toast } from "sonner";
+import type { SocialAccount } from "@/services/profile-services";
+import FacebookIcon from "@/assets/FacebookIcon";
+import GoogleIcon from "@/assets/GoogleIcon";
 
 export default function ProfileManagement() {
-  // Get values and actions from the profile store
   const {
     user,
-    username,
-    socialAccounts,
-    webPushNotifications,
-    emailNotifications,
+    preferences,
     isLoading,
     error,
-    setUsername,
-    toggleSocialConnection,
-    toggleWebPushNotifications,
-    toggleEmailNotifications,
-    setLoading,
-    setError,
+    updatePreferences,
+    fetchProfile,
   } = useProfileStore();
 
-  // Local state for form management
-  const [localUsername, setLocalUsername] = useState(username);
+  // Local state for form inputs
+  const [localUsername, setLocalUsername] = useState("");
+  const [localSocialAccounts, setLocalSocialAccounts] = useState<
+    SocialAccount[]
+  >([]);
+  const [webPushNotifications, setWebPushNotifications] = useState(true);
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  // Initialize local state when store values change
+  // Initialize local state when preferences load
   useEffect(() => {
-    if (user) {
-      // If user has a displayName, use it, otherwise use store username
-      setLocalUsername(user.displayName || username);
-
-      // Fetch additional user data from Firestore
-      fetchUserProfile();
+    if (preferences) {
+      setLocalUsername(preferences.username);
+      setLocalSocialAccounts(preferences.socialAccounts);
+      setWebPushNotifications(preferences.webPushNotifications);
+      setEmailNotifications(preferences.emailNotifications);
     }
-  }, [user]);
+  }, [preferences]);
 
-  // Function to fetch user profile from Firestore
-  const fetchUserProfile = async () => {
-    if (!user) return;
+  // Track unsaved changes
+  useEffect(() => {
+    if (!preferences) return;
 
-    setLoading(true);
+    const hasChanges =
+      localUsername !== preferences.username ||
+      webPushNotifications !== preferences.webPushNotifications ||
+      emailNotifications !== preferences.emailNotifications ||
+      JSON.stringify(localSocialAccounts) !==
+        JSON.stringify(preferences.socialAccounts);
 
-    try {
-      const userDocRef = doc(db, "Users", user.uid);
-      const userDoc = await getDoc(userDocRef);
+    setHasUnsavedChanges(hasChanges);
+  }, [
+    localUsername,
+    webPushNotifications,
+    emailNotifications,
+    localSocialAccounts,
+    preferences,
+  ]);
 
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-
-        // Update store with user data from Firestore
-        setUsername(userData.username || user.displayName || "");
-
-        // Update local username state
-        setLocalUsername(userData.username || user.displayName || "");
-
-        // Sync social accounts if they exist in the document
-        if (userData.socialAccounts) {
-          userData.socialAccounts.forEach((account: any) => {
-            if (
-              account.connected !==
-              socialAccounts.find((a) => a.platform === account.platform)
-                ?.connected
-            ) {
-              toggleSocialConnection(account.platform);
-            }
-          });
-        }
-
-        // Sync notification preferences
-        if (
-          userData.webPushNotifications !== undefined &&
-          userData.webPushNotifications !== webPushNotifications
-        ) {
-          toggleWebPushNotifications();
-        }
-
-        if (
-          userData.emailNotifications !== undefined &&
-          userData.emailNotifications !== emailNotifications
-        ) {
-          toggleEmailNotifications();
-        }
-      } else {
-        // If user doc doesn't exist, create one with default values
-        await setDoc(userDocRef, {
-          username: user.displayName || "",
-          socialAccounts,
-          webPushNotifications,
-          emailNotifications,
-          country: "Malawi",
-        });
-      }
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to fetch profile data"
-      );
-      toast("Error", {
-        description: "Failed to load profile data",
-      });
-    } finally {
-      setLoading(false);
+  // Load profile on component mount
+  useEffect(() => {
+    if (user && !preferences.username) {
+      fetchProfile();
     }
-  };
+  }, [user, preferences.username, fetchProfile]);
 
   const handleSave = async () => {
     if (!user) {
-      toast("Error", {
-        description: "You must be logged in to update your profile",
-      });
+      toast.error("User not authenticated");
       return;
     }
 
-    setLoading(true);
-
     try {
-      // Update Firebase Auth displayName
-      await updateProfile(user, {
-        displayName: localUsername,
+      // Update Firebase Auth display name if username changed
+      if (localUsername !== user.displayName) {
+        await updateProfile(user, { displayName: localUsername });
+      }
+
+      // Update preferences in Firestore
+      await updatePreferences({
+        username: localUsername,
+        socialAccounts: localSocialAccounts,
+        webPushNotifications,
+        emailNotifications,
       });
 
-      // Update username in store
-      setUsername(localUsername);
-
-      // Update Firestore document
-      const userDocRef = doc(db, "Users", user.uid);
-      await setDoc(
-        userDocRef,
-        {
-          username: localUsername,
-          socialAccounts,
-          webPushNotifications,
-          emailNotifications,
-          country: "Malawi",
-        },
-        { merge: true }
-      );
-
-      toast("Success", {
-        description: "Profile updated successfully",
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update profile");
-      toast("Error", {
-        description: "Failed to update profile",
-      });
-    } finally {
-      setLoading(false);
+      toast.success("Profile updated successfully!");
+      setHasUnsavedChanges(false);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Failed to update profile. Please try again.");
     }
   };
-  // Helper function to check if a social account is connected
+
   const isSocialConnected = (platform: string): boolean => {
-    const account = socialAccounts.find((acc) => acc.platform === platform);
-    return account ? account.connected : false;
+    return localSocialAccounts.some(
+      (account) => account.platform === platform && account.connected
+    );
+  };
+
+  const toggleSocialConnection = (platform: string) => {
+    setLocalSocialAccounts((prev) =>
+      prev.map((account) =>
+        account.platform === platform
+          ? { ...account, connected: !account.connected }
+          : account
+      )
+    );
+  };
+
+  const toggleWebPushNotifications = (checked: boolean) => {
+    setWebPushNotifications(checked);
+  };
+
+  const toggleEmailNotifications = (checked: boolean) => {
+    setEmailNotifications(checked);
   };
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p>Please log in to view your profile</p>
-      </div>
+      <main className="flex-1 flex flex-col h-full w-full overflow-hidden bg-gray-50 dark:bg-gray-900">
+        <Header title="Profile Management" />
+        <div className="flex-1 flex items-center justify-center">
+          <Alert className="max-w-md">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Please sign in to access your profile settings.
+            </AlertDescription>
+          </Alert>
+        </div>
+      </main>
     );
   }
 
   return (
-    <main className="flex-1 flex flex-col h-full w-full overflow-hidden bg-gray-50 dark:bg-gray-900">
+    <main className="flex-1 flex flex-col h-full w-full overflow-hidden bg-background">
       <Header title="Profile Management" />
       <div className="flex-1 overflow-y-auto p-6 w-full max-w-[1200px] mx-auto">
         {error && (
-          <div className="mb-4 p-4 bg-red-100 border border-red-300 text-red-700 rounded">
-            {error}
-          </div>
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {hasUnsavedChanges && (
+          <Alert className="mb-4">
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              You have unsaved changes. Don't forget to save your updates.
+            </AlertDescription>
+          </Alert>
         )}
 
         <Tabs defaultValue="profile" className="w-full">
@@ -259,6 +229,7 @@ export default function ProfileManagement() {
                     id="username"
                     value={localUsername}
                     onChange={(e) => setLocalUsername(e.target.value)}
+                    placeholder="Enter your username"
                   />
                 </div>
 
@@ -290,7 +261,10 @@ export default function ProfileManagement() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={handleSave} disabled={isLoading}>
+                <Button
+                  onClick={handleSave}
+                  disabled={isLoading || !hasUnsavedChanges}
+                >
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -316,8 +290,8 @@ export default function ProfileManagement() {
                 <div className="grid gap-4">
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center space-x-4">
-                      <Facebook
-                        className={`h-6 w-6 ${
+                      <FacebookIcon
+                        className={`h-10 w-10 ${
                           isSocialConnected("facebook")
                             ? "text-blue-600"
                             : "text-gray-300"
@@ -347,17 +321,17 @@ export default function ProfileManagement() {
 
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center space-x-4">
-                      <Twitter
-                        className={`h-6 w-6 ${
-                          isSocialConnected("twitter")
-                            ? "text-blue-400"
+                      <GoogleIcon
+                        className={`h-10 w-10 ${
+                          isSocialConnected("google")
+                            ? "text-blue-600"
                             : "text-gray-300"
                         }`}
                       />
                       <div>
-                        <p className="font-medium">Twitter</p>
+                        <p className="font-medium">Google</p>
                         <p className="text-sm text-muted-foreground">
-                          {isSocialConnected("twitter")
+                          {isSocialConnected("google")
                             ? "Connected"
                             : "Not connected"}
                         </p>
@@ -365,82 +339,21 @@ export default function ProfileManagement() {
                     </div>
                     <Button
                       variant={
-                        isSocialConnected("twitter") ? "destructive" : "outline"
+                        isSocialConnected("google") ? "destructive" : "outline"
                       }
-                      onClick={() => toggleSocialConnection("twitter")}
+                      onClick={() => toggleSocialConnection("google")}
                       disabled={isLoading}
                     >
-                      {isSocialConnected("twitter") ? "Disconnect" : "Connect"}
-                    </Button>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <Instagram
-                        className={`h-6 w-6 ${
-                          isSocialConnected("instagram")
-                            ? "text-pink-500"
-                            : "text-gray-300"
-                        }`}
-                      />
-                      <div>
-                        <p className="font-medium">Instagram</p>
-                        <p className="text-sm text-muted-foreground">
-                          {isSocialConnected("instagram")
-                            ? "Connected"
-                            : "Not connected"}
-                        </p>
-                      </div>
-                    </div>
-                    <Button
-                      variant={
-                        isSocialConnected("instagram")
-                          ? "destructive"
-                          : "outline"
-                      }
-                      onClick={() => toggleSocialConnection("instagram")}
-                      disabled={isLoading}
-                    >
-                      {isSocialConnected("instagram")
-                        ? "Disconnect"
-                        : "Connect"}
-                    </Button>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <Linkedin
-                        className={`h-6 w-6 ${
-                          isSocialConnected("linkedin")
-                            ? "text-blue-700"
-                            : "text-gray-300"
-                        }`}
-                      />
-                      <div>
-                        <p className="font-medium">LinkedIn</p>
-                        <p className="text-sm text-muted-foreground">
-                          {isSocialConnected("linkedin")
-                            ? "Connected"
-                            : "Not connected"}
-                        </p>
-                      </div>
-                    </div>
-                    <Button
-                      variant={
-                        isSocialConnected("linkedin")
-                          ? "destructive"
-                          : "outline"
-                      }
-                      onClick={() => toggleSocialConnection("linkedin")}
-                      disabled={isLoading}
-                    >
-                      {isSocialConnected("linkedin") ? "Disconnect" : "Connect"}
+                      {isSocialConnected("google") ? "Disconnect" : "Connect"}
                     </Button>
                   </div>
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={handleSave} disabled={isLoading}>
+                <Button
+                  onClick={handleSave}
+                  disabled={isLoading || !hasUnsavedChanges}
+                >
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -492,7 +405,10 @@ export default function ProfileManagement() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={handleSave} disabled={isLoading}>
+                <Button
+                  onClick={handleSave}
+                  disabled={isLoading || !hasUnsavedChanges}
+                >
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

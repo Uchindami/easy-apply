@@ -1,111 +1,170 @@
 import { create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import {
+  getUserProfile,
+  updateUserPreferences,
+  type Preferences,
+} from "@/services/profile-services";
 
-export type SocialAccount = {
-  platform: "facebook" | "twitter" | "instagram" | "linkedin";
-  connected: boolean;
-  username?: string;
+export type RecommendationData = {
+  industry: string;
+  // Add other recommendation fields as needed
+  skills?: string[];
+  experience?: string;
+  // ... other properties
 };
 
 export type ProfileState = {
   user: User | null;
-  username: string;
-  country: string;
-  socialAccounts: SocialAccount[];
-  webPushNotifications: boolean;
-  emailNotifications: boolean;
+  recommendation: RecommendationData | null;
+  preferences: Preferences;
   isLoading: boolean;
   error: string | null;
+  isInitialized: boolean;
+  currentDocument?: string | null; // Optional field for current document
 };
 
 export type ProfileActions = {
   setUser: (user: User | null) => void;
-  setUsername: (username: string) => void;
-  toggleSocialConnection: (platform: SocialAccount["platform"]) => void;
-  toggleWebPushNotifications: () => void;
-  toggleEmailNotifications: () => void;
+  setRecommendation: (recommendation: RecommendationData | null) => void;
+  setPreferences: (preferences: Preferences) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
-  updateProfile: () => Promise<void>;
+  setInitialized: (initialized: boolean) => void;
+  fetchProfile: () => Promise<void>;
+  updatePreferences: (updated: Partial<Preferences>) => Promise<void>;
+  resetStore: () => void;
+  clearError: () => void;
+  clearRecommendation: () => void;
 };
 
-export const useProfileStore = create<ProfileState & ProfileActions>(
-  (set, get) => ({
-    user: null,
-    username: "",
-    country: "Malawi",
-    socialAccounts: [
-      { platform: "facebook", connected: false },
-      { platform: "twitter", connected: false },
-      { platform: "instagram", connected: false },
-      { platform: "linkedin", connected: false },
-    ],
-    webPushNotifications: true,
-    emailNotifications: true,
-    isLoading: true,
-    error: null,
+const defaultPreferences: Preferences = {
+  username: "",
+  country: "Malawi",
+  socialAccounts: [
+    { platform: "google", connected: false },
+    { platform: "facebook", connected: false },
+  ],
+  webPushNotifications: true,
+  emailNotifications: true,
+};
+
+const initialState: ProfileState = {
+  recommendation: null,
+  user: null,
+  preferences: defaultPreferences,
+  isLoading: true,
+  error: null,
+  isInitialized: false,
+  currentDocument: null,
+};
+
+export const useProfileStore = create<ProfileState & ProfileActions>()(
+  subscribeWithSelector((set, get) => ({
+    ...initialState,
 
     setUser: (user) => set({ user }),
-    setUsername: (username) => set({ username }),
-    toggleSocialConnection: (platform) => {
-      set((state) => ({
-        socialAccounts: state.socialAccounts.map((account) =>
-          account.platform === platform
-            ? { ...account, connected: !account.connected }
-            : account
-        ),
-      }));
-    },
-    toggleWebPushNotifications: () =>
-      set((state) => ({ webPushNotifications: !state.webPushNotifications })),
-    toggleEmailNotifications: () =>
-      set((state) => ({ emailNotifications: !state.emailNotifications })),
+    setRecommendation: (recommendation) => set({ recommendation }),
+    setPreferences: (preferences) => set({ preferences }),
     setLoading: (isLoading) => set({ isLoading }),
     setError: (error) => set({ error }),
-    updateProfile: async () => {
-      const {
-        user,
-        username,
-        socialAccounts,
-        webPushNotifications,
-        emailNotifications,
-      } = get();
+    setInitialized: (initialized) => set({ isInitialized: initialized }),
+    clearError: () => set({ error: null }),
+    clearRecommendation: () => set({ recommendation: null }),
 
+    fetchProfile: async () => {
+      const { user } = get();
       if (!user) {
-        set({ error: "User not authenticated" });
+        set({ error: "User not authenticated", isLoading: false });
         return;
       }
 
       set({ isLoading: true, error: null });
 
       try {
-        // Here you would update the user profile in Firebase
-        // For example:
-        // await updateDoc(doc(db, 'users', user.uid), {
-        //   username,
-        //   socialAccounts,
-        //   webPushNotifications,
-        //   emailNotifications,
-        // })
-
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        set({ isLoading: false });
+        const profile = await getUserProfile(user.uid);
+        set({
+          preferences: profile.Preferences || defaultPreferences,
+          recommendation: profile.Recommendation || null,
+          isLoading: false,
+          currentDocument: profile.currentDocument || null,
+        });
       } catch (error) {
+        console.error("Error fetching profile:", error);
         set({
           isLoading: false,
           error:
-            error instanceof Error ? error.message : "Failed to update profile",
+            error instanceof Error ? error.message : "Failed to fetch profile",
         });
       }
     },
-  })
+
+    updatePreferences: async (updated) => {
+      const { user, preferences } = get();
+      if (!user) {
+        set({ error: "User not authenticated" });
+        return;
+      }
+
+      // Optimistic update
+      const newPreferences = { ...preferences, ...updated };
+      set({ preferences: newPreferences, error: null });
+
+      try {
+        await updateUserPreferences(user.uid, updated);
+      } catch (error) {
+        console.error("Error updating preferences:", error);
+        // Revert optimistic update
+        set({
+          preferences,
+          error:
+            error instanceof Error
+              ? error.message
+              : "Failed to update preferences",
+        });
+      }
+    },
+
+    resetStore: () => set({ ...initialState, isInitialized: false }),
+  }))
 );
+
+// Initialize auth state listener
+let authUnsubscribe: (() => void) | null = null;
+
+export const initializeAuth = () => {
+  if (authUnsubscribe) return; // Already initialized
+
+  authUnsubscribe = onAuthStateChanged(auth, (user) => {
+    const store = useProfileStore.getState();
+
+    if (user) {
+      store.setUser(user);
+      store.setInitialized(true);
+      store.fetchProfile();
+    } else {
+      store.resetStore();
+      store.setInitialized(true);
+      store.setLoading(false);
+    }
+  });
+};
+
+export const cleanupAuth = () => {
+  if (authUnsubscribe) {
+    authUnsubscribe();
+    authUnsubscribe = null;
+  }
+};
 
 // Initialize auth state listener
 onAuthStateChanged(auth, (user) => {
   useProfileStore.getState().setUser(user);
   useProfileStore.getState().setLoading(false);
+  if (user) {
+    useProfileStore.getState().fetchProfile();
+  }
 });
+

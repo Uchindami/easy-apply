@@ -1,17 +1,19 @@
 package main
 
 import (
-	"net/http"
 	"easy-apply/middleware"
+	"net/http"
+
+	sentryhttp "github.com/getsentry/sentry-go/http"
 )
 
-
 // Setup API routes
-func setupRoutes() {
-	http.HandleFunc("/auth", middleware.WithCORS(authHandler))
-	http.HandleFunc("/upload", middleware.WithCORS(uploadHandler))
-	http.HandleFunc("/convert-pdf", middleware.WithCORS(convertPDFHandler))
+func setupRoutes(sentryHandler *sentryhttp.Handler) {
+	http.HandleFunc("/auth", sentryHandler.HandleFunc(middleware.WithCORS(authHandler)))
+	http.HandleFunc("/upload", sentryHandler.HandleFunc(middleware.WithCORS(uploadHandler)))
+	http.HandleFunc("/convert-pdf", sentryHandler.HandleFunc(middleware.WithCORS(convertPDFHandler)))
+	http.HandleFunc("/recommendations", sentryHandler.HandleFunc(middleware.WithCORS(jobRecommendationsHandler)))
 
 	//test route
-	http.HandleFunc("/test", middleware.WithCORS(testHandler))
+	http.HandleFunc("/test", sentryHandler.HandleFunc(middleware.WithCORS(testHandler)))
 }

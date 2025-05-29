@@ -53,6 +53,7 @@ require (
 )
 
 require (
+	github.com/getsentry/sentry-go v0.33.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect

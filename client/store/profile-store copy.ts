@@ -10,6 +10,7 @@ import {
 
 export type ProfileState = {
   user: User | null;
+  activeResume: string | null;
   preferences: Preferences;
   isLoading: boolean;
   error: string | null;
@@ -36,6 +37,7 @@ const defaultPreferences: Preferences = {
 };
 
 export const useProfileStore = create<ProfileState & ProfileActions>((set, get) => ({
+  activeResume: null,
   user: null,
   preferences: defaultPreferences,
   isLoading: true,

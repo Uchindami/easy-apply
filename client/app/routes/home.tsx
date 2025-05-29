@@ -1,6 +1,6 @@
 import type { Route } from "./+types/home";
 import { useNavigate } from 'react-router'
-import { useProfileStore } from "@/store/profile-store"
+import { useProfileStore } from "@/store/profile-store";
 import { LandingPage } from "@/components/landing-page";
 
 export function meta({ }: Route.MetaArgs) {

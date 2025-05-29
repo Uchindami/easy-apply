@@ -1,4 +1,4 @@
-import { db } from "@/lib/firebase";
+import { db } from "@/lib/firebase"
 import {
   collection,
   query,
@@ -8,170 +8,149 @@ import {
   type QuerySnapshot,
   type DocumentData,
   type Unsubscribe,
-} from "firebase/firestore";
-import { updateSourceBucket } from "@/store/job-store";
-import type { Job } from "@/types/job";
+} from "firebase/firestore"
+import { updateSourceBucket } from "@/store/job-store"
+import type { Job, RecommendationResponse } from "@/types/job"
 
-const sources = [
+const JOB_SOURCES = [
   { id: "careersmw", title: "Careers Malawi" },
   { id: "jobsearchmalawi", title: "Job Search Malawi" },
   { id: "ntchito", title: "Nchito" },
   { id: "unicef-careers", title: "UNICEF Careers" },
   { id: "opportunitiesforyouth", title: "Opportunities for Youth" },
-];
+] as const
 
-/**
- * Start real-time listeners for each job source
- * @returns A function to unsubscribe from all listeners
- */
+type JobSource = (typeof JOB_SOURCES)[number]
+
+const transformJobData = (doc: DocumentData, sourceId: string): Job => {
+  const data = doc.data()
+  return {
+    id: doc.id,
+    link: data.link || "",
+    companyLogo: data.companyLogo || "",
+    position: data.position || "",
+    companyName: data.companyName || "",
+    location: data.location || "",
+    jobType: data.jobType || "",
+    datePosted: data.datePosted || "",
+    applicationDeadline: data.applicationDeadline || "",
+    source: data.source || sourceId,
+  }
+}
+
 export function listenToJobListings(): () => void {
-  const unsubscribers: Unsubscribe[] = [];
+  const unsubscribers: Unsubscribe[] = []
 
   try {
-    sources.forEach(({ id, title }) => {
-      const listingsRef = collection(db, "jobs", id, "listings");
-      const q = query(listingsRef, orderBy("datePosted", "desc"), limit(20));
+    JOB_SOURCES.forEach(({ id, title }) => {
+      const listingsRef = collection(db, "jobs", id, "listings")
+      const q = query(listingsRef, orderBy("datePosted", "desc"), limit(20))
 
       const unsubscribe = onSnapshot(
         q,
         (snapshot: QuerySnapshot<DocumentData>) => {
           try {
-            const jobs: Job[] = snapshot.docs.map((doc) => {
-              const data = doc.data();
-              return {
-                link: data.link || "",
-                companyLogo: data.companyLogo || "",
-                position: data.position || "",
-                companyName: data.companyName || "",
-                location: data.location || "",
-                jobType: data.jobType || "",
-                datePosted: data.datePosted || "",
-                applicationDeadline: data.applicationDeadline || "",
-                source: data.source || id,
-              };
-            });
-
-            updateSourceBucket({
-              id,
-              title,
-              jobs,
-            });
+            const jobs: Job[] = snapshot.docs.map((doc) => transformJobData(doc, id))
+            updateSourceBucket({ id, title, jobs })
           } catch (error) {
-            console.error(`Error processing jobs for source "${id}":`, error);
-            // Update with empty jobs array to prevent UI from waiting indefinitely
-            updateSourceBucket({
-              id,
-              title,
-              jobs: [],
-            });
+            console.error(`Error processing jobs for source "${id}":`, error)
+            updateSourceBucket({ id, title, jobs: [] })
           }
         },
         (error) => {
-          console.error(`Error listening to jobs for source "${id}":`, error);
-          // Update with empty jobs array on error
-          updateSourceBucket({
-            id,
-            title,
-            jobs: [],
-          });
-        }
-      );
+          console.error(`Error listening to jobs for source "${id}":`, error)
+          updateSourceBucket({ id, title, jobs: [] })
+        },
+      )
 
-      unsubscribers.push(unsubscribe);
-    });
+      unsubscribers.push(unsubscribe)
+    })
   } catch (error) {
-    console.error("Error setting up job listeners:", error);
+    console.error("Error setting up job listeners:", error)
   }
 
-  // Return a cleanup function that unsubscribes from all listeners
   return () => {
     unsubscribers.forEach((unsubscribe) => {
       try {
-        unsubscribe();
+        unsubscribe()
       } catch (error) {
-        console.error("Error unsubscribing from job listener:", error);
+        console.error("Error unsubscribing from job listener:", error)
       }
-    });
-  };
+    })
+  }
 }
 
-/**
- * Fetch jobs for a specific source
- * @param sourceId The ID of the source to fetch jobs for
- * @returns A function to unsubscribe from the listener
- */
 export function listenToSourceJobs(sourceId: string): Unsubscribe | undefined {
   try {
-    const source = sources.find((s) => s.id === sourceId);
+    const source = JOB_SOURCES.find((s) => s.id === sourceId)
     if (!source) {
-      console.error(`Source with ID "${sourceId}" not found`);
-      return undefined;
+      console.error(`Source with ID "${sourceId}" not found`)
+      return undefined
     }
 
-    const listingsRef = collection(db, "jobs", sourceId, "listings");
-    const q = query(
-      listingsRef,
-      orderBy("applicationDeadline", "desc"),
-      limit(1)
-    );
+    const listingsRef = collection(db, "jobs", sourceId, "listings")
+    const q = query(listingsRef, orderBy("applicationDeadline", "desc"), limit(20))
 
     return onSnapshot(
       q,
       (snapshot: QuerySnapshot<DocumentData>) => {
         try {
-          const jobs: Job[] = snapshot.docs.map((doc) => {
-            const data = doc.data();
-            return {
-              link: data.link || "",
-              companyLogo: data.companyLogo || "",
-              position: data.position || "",
-              companyName: data.companyName || "",
-              location: data.location || "",
-              jobType: data.jobType || "",
-              datePosted: data.datePosted || "",
-              applicationDeadline: data.applicationDeadline || "",
-              source: data.source || sourceId,
-            };
-          });
-
-          updateSourceBucket({
-            id: sourceId,
-            title: source.title,
-            jobs,
-          });
+          const jobs: Job[] = snapshot.docs.map((doc) => transformJobData(doc, sourceId))
+          updateSourceBucket({ id: sourceId, title: source.title, jobs })
         } catch (error) {
-          console.error(
-            `Error processing jobs for source "${sourceId}":`,
-            error
-          );
-          updateSourceBucket({
-            id: sourceId,
-            title: source.title,
-            jobs: [],
-          });
+          console.error(`Error processing jobs for source "${sourceId}":`, error)
+          updateSourceBucket({ id: sourceId, title: source.title, jobs: [] })
         }
       },
       (error) => {
-        console.error(
-          `Error listening to jobs for source "${sourceId}":`,
-          error
-        );
-        updateSourceBucket({
-          id: sourceId,
-          title: source.title,
-          jobs: [],
-        });
-      }
-    );
+        console.error(`Error listening to jobs for source "${sourceId}":`, error)
+        updateSourceBucket({ id: sourceId, title: source.title, jobs: [] })
+      },
+    )
   } catch (error) {
-    console.error(`Error setting up listener for source "${sourceId}":`, error);
-    return undefined;
+    console.error(`Error setting up listener for source "${sourceId}":`, error)
+    return undefined
   }
 }
 
-/**
- * Get all available job sources
- */
-export function getJobSources(): { id: string; title: string }[] {
-  return [...sources];
+export function getJobSources(): readonly JobSource[] {
+  return JOB_SOURCES
+}
+
+export async function fetchJobRecommendations(
+  userId: string,
+  resumeFile: File | string,
+): Promise<RecommendationResponse> {
+  try {
+    const formData = new FormData()
+    formData.append("userId", userId)
+
+    if (typeof resumeFile === "string") {
+      formData.append("resume", resumeFile)
+    } else {
+      formData.append("resume", resumeFile)
+    }
+    
+    if(typeof resumeFile === "string") {
+      formData.append("requestType", "saved")
+    } else{
+      formData.append("requestType", "unsaved")
+    }
+
+    const response = await fetch("http://localhost:8080/recommendations", {
+      method: "POST",
+      body: formData,
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      throw new Error(`Failed to fetch recommendations: ${response.status} ${errorText}`)
+    }
+
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error("Error fetching job recommendations:", error)
+    throw error instanceof Error ? error : new Error("An unexpected error occurred while fetching recommendations")
+  }
 }
