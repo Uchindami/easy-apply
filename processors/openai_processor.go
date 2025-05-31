@@ -17,7 +17,6 @@ import (
 
 const (
 	openAIDefaultTimeout = 100 * time.Second
-	nebiusDefaultTimeout = 45 * time.Second
 	maxRetries           = 3
 	retryDelay           = 500 * time.Millisecond
 	cacheTTL             = 5 * time.Minute
@@ -26,15 +25,12 @@ const (
 var (
 	openAIOnce   sync.Once
 	openAIClient *openai.Client
-	nebiusOnce   sync.Once
-	nebiusClient *openai.Client
 )
 
 // OpenAIProcessor handles OpenAI API interactions
 type OpenAIProcessor struct {
-	openAIClient *openai.Client
-	nebiusClient *openai.Client
-	cache        sync.Map // Simple in-memory cache
+	client *openai.Client
+	cache  sync.Map // Simple in-memory cache
 }
 
 type cacheItem struct {
@@ -42,14 +38,14 @@ type cacheItem struct {
 	expiration time.Time
 }
 
-// NewOpenAIProcessor creates a new OpenAI processor with singleton clients
+// NewOpenAIProcessor creates a new OpenAI processor with singleton client
 func NewOpenAIProcessor() *OpenAIProcessor {
 	// Load .env file once
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found or error loading it:", err)
 	}
 
-	// Initialize clients using sync.Once for thread safety
+	// Initialize client using sync.Once for thread safety
 	openAIOnce.Do(func() {
 		apiKey := os.Getenv("OPENAI_API_KEY")
 		if apiKey == "" {
@@ -62,25 +58,12 @@ func NewOpenAIProcessor() *OpenAIProcessor {
 		openAIClient = &client
 	})
 
-	nebiusOnce.Do(func() {
-		nebiusKey := os.Getenv("NEBIUS_API_KEY")
-		if nebiusKey != "" {
-			client := openai.NewClient(
-				option.WithAPIKey(nebiusKey),
-				option.WithBaseURL("https://api.studio.nebius.com/v1/"),
-				option.WithRequestTimeout(nebiusDefaultTimeout),
-			)
-			nebiusClient = &client
-		}
-	})
-
 	return &OpenAIProcessor{
-		openAIClient: openAIClient,
-		nebiusClient: nebiusClient,
+		client: openAIClient,
 	}
 }
 
-// ProcessText sends the job description and resume to OpenAI API with retries and caching
+// ProcesseDocuments sends the job description and resume to OpenAI API with retries and caching
 func (o *OpenAIProcessor) ProcesseDocuments(documents string) (string, error) {
 	if cached, ok := o.getFromCache(documents); ok {
 		return cached, nil
@@ -112,11 +95,11 @@ func (o *OpenAIProcessor) generateResumeAndCoverLetter(text string) (string, err
 	ctx, cancel := context.WithTimeout(context.Background(), openAIDefaultTimeout)
 	defer cancel()
 
-	if o.openAIClient == nil {
+	if o.client == nil {
 		return "", fmt.Errorf("OpenAI client not initialized")
 	}
 
-	chatCompletion, err := o.openAIClient.Chat.Completions.New(
+	chatCompletion, err := o.client.Chat.Completions.New(
 		ctx,
 		openai.ChatCompletionNewParams{
 			Model: constants.ResumeGenModel,
@@ -161,13 +144,15 @@ func (o *OpenAIProcessor) generateResumeAndCoverLetter(text string) (string, err
 		return "", fmt.Errorf("empty response content")
 	}
 
-	// Log the content with color (cyan)
-	// log.Printf("\033[36mOpenAI response:\033[0m %s", content)
 	return content, nil
 }
 
 // GenerateSubjectName generates a brief subject name with retries and caching
 func (o *OpenAIProcessor) GenerateSubjectName(jobDescription string) (string, error) {
+	cacheKey := "subject:" + jobDescription
+	if cached, ok := o.getFromCache(cacheKey); ok {
+		return cached, nil
+	}
 
 	var result string
 	var err error
@@ -180,6 +165,8 @@ func (o *OpenAIProcessor) GenerateSubjectName(jobDescription string) (string, er
 
 		result, err = o.generateSubjectNameWithContext(jobDescription)
 		if err == nil {
+			// Cache successful response
+			o.setInCache(cacheKey, result)
 			return result, nil
 		}
 
@@ -190,10 +177,14 @@ func (o *OpenAIProcessor) GenerateSubjectName(jobDescription string) (string, er
 }
 
 func (o *OpenAIProcessor) generateSubjectNameWithContext(jobDetails string) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), nebiusDefaultTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), openAIDefaultTimeout)
 	defer cancel()
 
-	chatCompletion, err := o.nebiusClient.Chat.Completions.New(
+	if o.client == nil {
+		return "", fmt.Errorf("OpenAI client not initialized")
+	}
+
+	chatCompletion, err := o.client.Chat.Completions.New(
 		ctx,
 		openai.ChatCompletionNewParams{
 			Model: constants.SubjectGenModel,
@@ -237,8 +228,8 @@ func (o *OpenAIProcessor) generateSubjectNameWithContext(jobDetails string) (str
 	if content == "" {
 		return "", fmt.Errorf("empty response content")
 	}
-	log.Printf("\033[31mOpenAI response:\033[0m %s", content)
 
+	log.Printf("\033[31mOpenAI response:\033[0m %s", content)
 	return content, nil
 }
 
@@ -247,14 +238,14 @@ func (o *OpenAIProcessor) AnalyzeResumeForRecommendation(resume string) (string,
 	ctx, cancel := context.WithTimeout(context.Background(), openAIDefaultTimeout)
 	defer cancel()
 
-	if o.openAIClient == nil {
+	if o.client == nil {
 		return "", fmt.Errorf("OpenAI client not initialized")
 	}
 
 	// Prompt for job recommendation
 	prompt := "**Resume:**{resume}\n" + resume
 
-	chatCompletion, err := o.openAIClient.Chat.Completions.New(
+	chatCompletion, err := o.client.Chat.Completions.New(
 		ctx,
 		openai.ChatCompletionNewParams{
 			Model: constants.RECOMMENDATIONS_MODEL,

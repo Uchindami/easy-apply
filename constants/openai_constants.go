@@ -3,7 +3,7 @@ package constants
 
 const (
 	ResumeGenModel  = "gpt-4o-mini"
-	SubjectGenModel = "meta-llama/Meta-Llama-3.1-70B-Instruct-fast"
+	SubjectGenModel = "gpt-4.1-nano"
 )
 
 // Chat prompt roles

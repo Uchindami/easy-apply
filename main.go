@@ -4,34 +4,63 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 )
 
+// Enhanced main.go with better Sentry configuration
 func main() {
-	// To initialize Sentry's handler, you need to initialize Sentry itself beforehand
+	// Use environment variable for DSN
+	dsn := os.Getenv("SENTRY_DSN")
+	if dsn == "" {
+		dsn = "https://4287ce3953bea35493bcf28251325a9c@o4507588309221376.ingest.de.sentry.io/4509407954075728"
+	}
+
+	// Enhanced Sentry initialization with more options
 	if err := sentry.Init(sentry.ClientOptions{
-		Dsn: "https://4287ce3953bea35493bcf28251325a9c@o4507588309221376.ingest.de.sentry.io/4509407954075728",
+		Dsn:              dsn,
+		SampleRate:       1.0, // Capture 100% of errors
+		TracesSampleRate: 0.1, // Capture 10% of performance data
+		// 		EnableTracing: true,
+		Release:     "1.0-pre-beta",
+		Environment: "development",
+		BeforeSend: func(event *sentry.Event, hint *sentry.EventHint) *sentry.Event {
+			// Filter out sensitive data or modify events before sending
+			if event.Request != nil {
+				// Remove sensitive headers
+				delete(event.Request.Headers, "Authorization")
+				delete(event.Request.Headers, "Cookie")
+			}
+			return event
+		},
 	}); err != nil {
 		fmt.Printf("Sentry initialization failed: %v\n", err)
 	}
 
-	// Create an instance of sentryhttp
-	sentryHandler := sentryhttp.New(sentryhttp.Options{})
+	// Flush buffered events on exit
+	defer sentry.Flush(2 * time.Second)
 
-	initFirebase()             // Initialize Firebase
-	setupRoutes(sentryHandler) // Register Routes
+	// Sentry HTTP handler with context propagation
+	sentryHandler := sentryhttp.New(sentryhttp.Options{
+		Repanic:         true,
+		WaitForDelivery: false,
+		Timeout:         3 * time.Second,
+	})
 
-	// go launchScraper() // Start the scraper concurrently
+	initFirebase()
+	setupRoutes(sentryHandler)
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080" // Default port if not set
+		port = "8080"
 	}
 
 	fmt.Printf("Server running on port %s\n", port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil); err != nil {
-		panic(err)
+		// Capture server startup errors
+		sentry.CaptureException(err)
+		fmt.Printf("Server failed: %v\n", err)
 	}
 }

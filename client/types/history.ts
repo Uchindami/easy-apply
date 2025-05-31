@@ -2,12 +2,12 @@ export interface HistoryData {
     timestamp: Date
     status: "processing" | "completed" | "failed"
     original: {
-      resumePath: string
+      resumeText: string
       jobLink: string
     }
     generated: {
-      resumePath: string
-      coverLetterPath: string
+      resumeText: string
+      coverLetterText: string
     }
     jobDetails: {
       title: string

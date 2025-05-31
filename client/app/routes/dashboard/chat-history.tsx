@@ -140,15 +140,15 @@ const DocumentsViewer: React.FC<DocumentsViewerProps> = ({
         </TabsList>
         <TabsContent value="resume" className="mt-4 flex">
           <DocumentViewer
-            documentHTML={historyData.generated.resumePath}
+            documentHTML={historyData.generated.resumeText}
             historyId={useParams<{ chatHistoryId: string; }>().chatHistoryId!}
-            documentType={"resume"} jobTitle={historyData.jobDetails.title}          />
+            documentType={"resume"} jobTitle={historyData.jobDetails.title} />
         </TabsContent>
         <TabsContent value="coverLetter" className="mt-4">
           <DocumentViewer
-            documentHTML={historyData.generated.coverLetterPath}
+            documentHTML={historyData.generated.coverLetterText}
             historyId={useParams<{ chatHistoryId: string; }>().chatHistoryId!}
-            documentType={"coverLetter"} jobTitle={historyData.jobDetails.title}          />
+            documentType={"coverLetter"} jobTitle={historyData.jobDetails.title} />
         </TabsContent>
       </Tabs>
     </CardContent>

@@ -16,17 +16,16 @@ import (
 )
 
 type JobListing struct {
-	Link                   string   `json:"link"`
-	CompanyLogo            string   `json:"companyLogo"`
-	Position               string   `json:"position"`
-	CompanyName            string   `json:"companyName"`
-	Location               string   `json:"location"`
-	JobType                string   `json:"jobType"`
-	DatePosted             string   `json:"datePosted"`
-	ApplicationDeadline    string   `json:"applicationDeadline"`
-	JobDescription         string   `json:"jobDescription"`
-	Source                 string   `json:"source"`
-
+	Link                string `json:"link"`
+	CompanyLogo         string `json:"companyLogo"`
+	Position            string `json:"position"`
+	CompanyName         string `json:"companyName"`
+	Location            string `json:"location"`
+	JobType             string `json:"jobType"`
+	DatePosted          string `json:"datePosted"`
+	ApplicationDeadline string `json:"applicationDeadline"`
+	JobDescription      string `json:"jobDescription"`
+	Source              string `json:"source"`
 
 	Grade                  interface{} `json:"grade"` // could be string or N/A
 	ReportingTo            string      `json:"reportingTo"`
@@ -37,11 +36,11 @@ type JobListing struct {
 	RequiredQualifications []string    `json:"requiredQualifications"`
 	RequiredExperience     interface{} `json:"requiredExperience"`  // could be string, []string, or object
 	RequiredMemberships    interface{} `json:"requiredMemberships"` // could be string, []string, or N/A
-	ContactDetails         interface{} `json:"contactDetails"` // could be string or object
+	ContactDetails         interface{} `json:"contactDetails"`      // could be string or object
 	AdditionalNotes        string      `json:"additionalNotes"`
 	Tags                   []string    `json:"tags"`
 	Industry               string      `json:"industry"`
-	Domain                 string      `json:"domain"`           // Domain
+	Domain                 string      `json:"domain"` // Domain
 }
 
 // parseTimeStringFlexible attempts to parse a date string in multiple common formats
