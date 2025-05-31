@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
-	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -15,6 +13,12 @@ import (
 	"cloud.google.com/go/firestore"
 )
 
+// projectID is your Google Cloud Project ID.
+// Replace "your-gcp-project-id" with your actual project ID.
+const projectID = "your-gcp-project-id"
+const jobsInputFile = "new_jobs.json"
+
+// JobListing represents the structure of a job listing as read from the input JSON.
 type JobListing struct {
 	Link                string `json:"link"`
 	CompanyLogo         string `json:"companyLogo"`
@@ -22,11 +26,12 @@ type JobListing struct {
 	CompanyName         string `json:"companyName"`
 	Location            string `json:"location"`
 	JobType             string `json:"jobType"`
-	DatePosted          string `json:"datePosted"`
-	ApplicationDeadline string `json:"applicationDeadline"`
+	DatePosted          string `json:"datePosted"`          // Raw string, will be parsed
+	ApplicationDeadline string `json:"applicationDeadline"` // Raw string, will be parsed
 	JobDescription      string `json:"jobDescription"`
 	Source              string `json:"source"`
 
+	// Fields below might be in the input JSON or populated/overridden by ParseJobDescription
 	Grade                  interface{} `json:"grade"` // could be string or N/A
 	ReportingTo            string      `json:"reportingTo"`
 	ResponsibleFor         interface{} `json:"responsibleFor,omitempty"` // could be string or []string
@@ -40,18 +45,37 @@ type JobListing struct {
 	AdditionalNotes        string      `json:"additionalNotes"`
 	Tags                   []string    `json:"tags"`
 	Industry               string      `json:"industry"`
-	Domain                 string      `json:"domain"` // Domain
+	Domain                 string      `json:"domain"`
 }
 
-// parseTimeStringFlexible attempts to parse a date string in multiple common formats
+// ParsedJobData holds the structured information extracted from a job description by ParseJobDescription.
+type ParsedJobData struct {
+	JobTitle               string      `json:"jobTitle"`
+	Organization           string      `json:"organization"`
+	Grade                  interface{} `json:"grade"`
+	ReportingTo            string      `json:"reportingTo"`
+	ResponsibleFor         interface{} `json:"responsibleFor,omitempty"`
+	Department             string      `json:"department"`
+	Purpose                string      `json:"purpose"`
+	KeyResponsibilities    []string    `json:"keyResponsibilities"`
+	RequiredQualifications []string    `json:"requiredQualifications"`
+	RequiredExperience     interface{} `json:"requiredExperience"`
+	RequiredMemberships    interface{} `json:"requiredMemberships"`
+	ContactDetails         interface{} `json:"contactDetails"`
+	AdditionalNotes        string      `json:"additionalNotes"`
+	Tags                   []string    `json:"tags"`
+	Industry               string      `json:"industry"`
+	Domain                 string      `json:"domain"`
+}
+
+// parseTimeString attempts to parse a date string in multiple common formats.
+// Returns zero time.Time if parsing fails or input is empty/N/A.
 func parseTimeString(dateStr string) (time.Time, error) {
-	// Handle empty or "N/A" cases
 	dateStr = strings.TrimSpace(dateStr)
-	if dateStr == "" || strings.EqualFold(dateStr, "N/A") {
-		return time.Time{}, nil
+	if dateStr == "" || strings.EqualFold(dateStr, "N/A") || strings.EqualFold(dateStr, "Not specified") {
+		return time.Time{}, nil // Represents "no date" or "not applicable"
 	}
 
-	// List of common date formats to try (in order of likelihood)
 	formats := []string{
 		"2006-01-02",              // YYYY-MM-DD (ISO 8601)
 		"January 2, 2006",         // "May 30, 2025"
@@ -62,13 +86,8 @@ func parseTimeString(dateStr string) (time.Time, error) {
 		"2006-01-02T15:04:05",     // ISO 8601 with time
 		"02-01-2006",              // DD-MM-YYYY
 		"01-02-2006",              // MM-DD-YYYY
-		"2006-01-02",              // "2025-05-16"
 		"02 Jan 2006",             // "30 May 2025"
-		"Jan 02, 2006",            // "May 30, 2025"
-		"January 2, 2006",         // "May 30, 2025"
 		"2 January 2006",          // "30 May 2025"
-		"01/02/2006",              // "05/30/2025"
-		"02/01/2006",              // "30/05/2025"
 		"2 January 2006 03:04 PM", // "30 May 2025 03:04 PM"
 		"2 January 2006 15:04",    // "30 May 2025 15:04"
 		"2006-01-02 15:04:05",     // "2025-05-16 14:30:00"
@@ -76,116 +95,77 @@ func parseTimeString(dateStr string) (time.Time, error) {
 		"2006-01-02 15:04",        // "2025-05-16 14:30"
 		"2 Jan 2006 03:04 PM",     // "30 May 2025 03:04 PM"
 		"2 Jan 2006 15:04",        // "30 May 2025 15:04"
+		time.RFC1123,              // "Mon, 02 Jan 2006 15:04:05 MST"
+		time.RFC1123Z,             // "Mon, 02 Jan 2006 15:04:05 -0700"
+		"02-Jan-2006",             // DD-Mon-YYYY
 	}
 
-	// Try each format in order
 	for _, format := range formats {
 		t, err := time.Parse(format, dateStr)
 		if err == nil {
 			return t, nil
 		}
 	}
-
-	return time.Time{}, fmt.Errorf("failed to parse date string %q - unrecognized format", dateStr)
+	return time.Time{}, fmt.Errorf("failed to parse date string %q - unrecognized format after trying %d formats", dateStr, len(formats))
 }
 
+// readJobsFromFile reads job listings from a JSON file.
 func readJobsFromFile(filename string) ([]JobListing, error) {
-	log.Println("started jobs processing")
+	log.Printf("Reading job listings from file: %s", filename)
 	file, err := os.Open(filename)
 	if err != nil {
-		return nil, fmt.Errorf("error opening file: %w", err)
+		return nil, fmt.Errorf("error opening file %s: %w", filename, err)
 	}
 	defer file.Close()
 
 	var jobs []JobListing
 	if err := json.NewDecoder(file).Decode(&jobs); err != nil {
-		return nil, fmt.Errorf("error decoding JSON: %w", err)
+		return nil, fmt.Errorf("error decoding JSON from file %s: %w", filename, err)
 	}
-
+	log.Printf("Successfully read %d job listings from %s", len(jobs), filename)
 	return jobs, nil
 }
 
+// updateJobs orchestrates reading jobs from a file and uploading them.
 func updateJobs() {
-	jobs, err := readJobsFromFile("new_jobs.json")
-
+	jobs, err := readJobsFromFile(jobsInputFile)
 	if err != nil {
-		log.Fatalf("Failed to read jobs: %v", err)
+		log.Fatalf("Failed to read jobs from %s: %v", jobsInputFile, err)
+	}
+
+	if len(jobs) == 0 {
+		log.Println("No job listings found in the file. Nothing to upload.")
+		return
 	}
 
 	if err := uploadJobListings(jobs); err != nil {
 		log.Fatalf("Failed to upload job listings: %v", err)
 	}
-	log.Println("Job listings uploaded successfully")
+	log.Println("Job listings processing and upload completed successfully.")
 }
 
-func testHandler(w http.ResponseWriter, r *http.Request) {
-	// Get the URL parameter
-	desc := r.URL.Query().Get("desc")
-
-	// URL parameters are often URL-encoded, so we need to decode them
-	decodedDesc, err := url.QueryUnescape(desc)
-	if err != nil {
-		http.Error(w, "Error decoding URL parameter", http.StatusBadRequest)
-		return
-	}
-
-	result, err := ParseJobDescription(decodedDesc)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Return the result
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(result)
-}
-
-// func saveJobs(ctx context.Context, jobs []Job) error {
-// 	log.Println("started jobs processing")
-// 	for _, job := range jobs {
-// 		hash := sha256.Sum256([]byte(job.Link))
-// 		jobID := fmt.Sprintf("%x", hash)
-
-// 		jobRef := firestoreClient.
-// 			Collection("jobs").
-// 			Doc(job.Source).
-// 			Collection("listings").
-// 			Doc(jobID)
-
-// 		snap, err := jobRef.Get(ctx)
-// 		if err != nil && status.Code(err) != codes.NotFound {
-// 			return fmt.Errorf("failed to check job existence: %w", err)
-// 		}
-
-// 		if snap.Exists() {
-// 			continue
-// 		}
-
-// 		_, err = jobRef.Set(ctx, job)
-// 		if err != nil {
-// 			return fmt.Errorf("failed to save job: %w", err)
-// 		}
-// 	}
-// 	return nil
-// }
-
-// uploadJobListings uploads job listings to Firebase, grouped by source.
-// Returns an error if any operation fails.
+// uploadJobListings uploads job listings to Firestore, grouped by source, using BulkWriter.
 func uploadJobListings(jobListings []JobListing) error {
 	ctx := context.Background()
 
 	if len(jobListings) == 0 {
+		log.Println("No job listings provided to upload.")
 		return nil
 	}
 
-	// Track seen job URLs to avoid duplicates
+	// Deduplicate jobs based on a generated document ID (hash of the link)
 	seenJobs := make(map[string]bool)
 	var uniqueJobs []JobListing
-
 	for _, job := range jobListings {
-		docID, err := generateJobDocID(job)
+		if job.Link == "" { // Basic validation before generating ID
+			log.Printf("Skipping job with empty link: %+v", job)
+			continue
+		}
+		docID, err := generateJobDocID(job) // generateJobDocID now expects a validated job.Link
 		if err != nil {
-			return fmt.Errorf("failed to generate doc ID: %w", err)
+			// This should ideally not happen if job.Link is validated, but good to have
+			log.Printf("Failed to generate doc ID for job %s, skipping: %v", job.Link, err)
+			continue
 		}
 		if !seenJobs[docID] {
 			seenJobs[docID] = true
@@ -193,126 +173,155 @@ func uploadJobListings(jobListings []JobListing) error {
 		}
 	}
 
-	log.Printf("Filtered %d duplicates, uploading %d unique jobs",
+	if len(uniqueJobs) == 0 {
+		log.Println("No unique job listings to upload after deduplication.")
+		return nil
+	}
+	log.Printf("Filtered %d duplicates, preparing to upload %d unique job listings.",
 		len(jobListings)-len(uniqueJobs), len(uniqueJobs))
 
 	// Group jobs by source
 	jobsBySource := make(map[string][]JobListing)
 	for _, job := range uniqueJobs {
-		jobsBySource[job.Source] = append(jobsBySource[job.Source], job)
+		if job.Source == "" {
+			log.Printf("Job listing with empty source found (Link: %s). Assigning to 'unknown_source'.", job.Link)
+			jobsBySource["unknown_source"] = append(jobsBySource["unknown_source"], job)
+		} else {
+			jobsBySource[job.Source] = append(jobsBySource[job.Source], job)
+		}
 	}
 
-	// Create a new BulkWriter with appropriate configuration
 	bw := firestoreClient.BulkWriter(ctx)
-	// Configure BulkWriter for better error handling (adjust as needed)
+	var totalJobsQueued int
 
-	// Process each source and upload its listings
-	for source, jobs := range jobsBySource {
-		if source == "" {
-			return fmt.Errorf("job listing with empty source found")
-		}
+	for source, jobsInSource := range jobsBySource {
+		log.Printf("Processing source: %s with %d job(s)", source, len(jobsInSource))
+		sourceDocRef := firestoreClient.Collection("jobs").Doc(source) // Reference to the source document
 
-		sourceDocRef := firestoreClient.Collection("jobs").Doc(source)
-		log.Printf("Processing source: %s with %d jobs", source, len(jobs))
-
-		for _, job := range jobs {
+		for _, job := range jobsInSource {
+			// Validate essential fields for each job
 			if err := validateJobListing(job); err != nil {
-				return fmt.Errorf("invalid job listing: %w", err)
+				log.Printf("Invalid job listing (Link: %s, Source: %s), skipping: %v", job.Link, source, err)
+				continue // Skip this job and proceed to the next
 			}
 
-			// Parse job description
-			parsed, err := ParseJobDescription(job.JobDescription)
+			// Parse job description string into ParsedJobData struct
+			parsedDetails, err := ParseJobDescription(job.JobDescription)
 			if err != nil {
-				return fmt.Errorf("failed to parse job description for job %s: %w", job.Link, err)
+				log.Printf("Failed to parse job description for job (Link: %s), skipping: %v", job.Link, err)
+				continue // Skip this job
 			}
 
+			// Parse date strings into time.Time objects
 			datePosted, err := parseTimeString(job.DatePosted)
 			if err != nil {
-				return fmt.Errorf("invalid datePosted for job %s: %w", job.Link, err)
+				log.Printf("Invalid DatePosted format for job (Link: %s): %q, attempting to proceed without date: %v", job.Link, job.DatePosted, err)
+				// Decide if you want to skip or upload with zero time for datePosted
+				// For now, we log and continue, datePosted will be zero time.Time
 			}
 
 			applicationDeadline, err := parseTimeString(job.ApplicationDeadline)
 			if err != nil {
-				return fmt.Errorf("invalid applicationDeadline for job %s: %w", job.Link, err)
+				log.Printf("Invalid ApplicationDeadline format for job (Link: %s): %q, attempting to proceed without deadline: %v", job.Link, job.ApplicationDeadline, err)
+				// Similar to datePosted, deadline will be zero time.Time
 			}
 
-			docID, err := generateJobDocID(job)
-			if err != nil {
-				return fmt.Errorf("failed to generate document ID: %w", err)
-			}
-
+			docID, _ := generateJobDocID(job) // Already generated and validated link, so error is unlikely here
 			listingRef := sourceDocRef.Collection("listings").Doc(docID)
 
+			// Construct the document data to be written to Firestore
+			// This map will contain fields from the original JobListing and the ParsedJobData
 			docData := map[string]interface{}{
 				"link":                job.Link,
 				"companyLogo":         job.CompanyLogo,
-				"position":            job.Position,
+				"position":            job.Position, // Original position from JSON
 				"companyName":         job.CompanyName,
 				"location":            job.Location,
 				"jobType":             job.JobType,
-				"datePosted":          datePosted,
-				"applicationDeadline": applicationDeadline,
-				"jobDescription":      job.JobDescription,
+				"datePosted":          datePosted,          // Parsed time.Time object
+				"applicationDeadline": applicationDeadline, // Parsed time.Time object
+				"jobDescription":      job.JobDescription,  // Raw job description
 				"source":              job.Source,
-				"uploadedAt":          firestore.ServerTimestamp,
+				"uploadedAt":          firestore.ServerTimestamp, // Timestamp of upload
 
-				// Directly add parsed fields
-				"jobTitle":               parsed.JobTitle,
-				"organization":           parsed.Organization,
-				"grade":                  parsed.Grade,
-				"reportingTo":            parsed.ReportingTo,
-				"department":             parsed.Department,
-				"purpose":                parsed.Purpose,
-				"keyResponsibilities":    parsed.KeyResponsibilities,
-				"requiredQualifications": parsed.RequiredQualifications,
-				"requiredExperience":     parsed.RequiredExperience,
-				"requiredMemberships":    parsed.RequiredMemberships,
-				"contactDetails":         parsed.ContactDetails,
-				"additionalNotes":        parsed.AdditionalNotes,
-				"tags":                   parsed.Tags,
-				"industry":               parsed.Industry,
-				"domain":                 parsed.Domain,
+				// Fields from ParsedJobData (may override or augment JobListing fields)
+				"jobTitle":               parsedDetails.JobTitle,
+				"organization":           parsedDetails.Organization,
+				"grade":                  parsedDetails.Grade,
+				"reportingTo":            parsedDetails.ReportingTo,
+				"responsibleFor":         parsedDetails.ResponsibleFor,
+				"department":             parsedDetails.Department,
+				"purpose":                parsedDetails.Purpose,
+				"keyResponsibilities":    parsedDetails.KeyResponsibilities,
+				"requiredQualifications": parsedDetails.RequiredQualifications,
+				"requiredExperience":     parsedDetails.RequiredExperience,
+				"requiredMemberships":    parsedDetails.RequiredMemberships,
+				"contactDetails":         parsedDetails.ContactDetails,
+				"additionalNotes":        parsedDetails.AdditionalNotes,
+				"tags":                   parsedDetails.Tags,
+				"industry":               parsedDetails.Industry,
+				"domain":                 parsedDetails.Domain,
 			}
 
+			// Clean up nil or empty array fields from parsedDetails to avoid storing empty values if not desired
+			if parsedDetails.ResponsibleFor == nil || (fmt.Sprintf("%v", parsedDetails.ResponsibleFor) == "[]") {
+				delete(docData, "responsibleFor")
+			}
+			// Add similar checks for other slice/map fields if needed
+
+			// Queue the create operation. Errors here are typically for invalid arguments.
 			_, err = bw.Create(listingRef, docData)
 			if err != nil {
-				return fmt.Errorf("failed to queue job %s for source %s: %w", job.Link, source, err)
+				// Log the error and continue to queue other jobs.
+				// The BulkWriter will retry network errors, but this error is likely local.
+				log.Printf("Failed to queue job for create (Link: %s, Source: %s): %v", job.Link, source, err)
+				// Optionally, you could collect these errors and return them at the end.
+				continue
 			}
+			totalJobsQueued++
 		}
-		log.Printf("Queued %d job listings for source: %s", len(jobs), source)
+		log.Printf("Queued %d job listings for source: %s", len(jobsInSource), source)
 	}
-	// Wait for all operations to complete and check for errors
-	bw.Flush()
-	// if err := bw.Flush(); err != nil {
-	// 	return fmt.Errorf("bulk write operations failed: %w", err)
-	// }
 
-	// All errors are reported via bw.Flush() in the current Firestore Go client.
+	// Flush any remaining writes and wait for all operations to complete.
+	// BulkWriter handles retries internally. Errors that persist after retries are logged by the client library.
+	// The Flush method itself doesn't return application-level errors for individual writes.
+	// If bw.Create returned an error, it was handled above.
+	log.Printf("All %d unique jobs queued. Flushing writes...", totalJobsQueued)
+	bw.Flush() // Ensures all batched writes are sent.
 
-	log.Printf("Successfully uploaded %d job listings across %d sources", len(jobListings), len(jobsBySource))
+	// To explicitly wait for all operations and stop adding new ones, you can use End.
+	// bw.End() // Call this if this BulkWriter instance will not be used anymore.
+
+	log.Printf("Successfully processed and attempted to upload %d unique job listings across %d source(s). Check logs for any individual write errors.", totalJobsQueued, len(jobsBySource))
 	return nil
 }
 
-// validateJobListing checks if required fields are present
+// validateJobListing checks if essential fields are present in a JobListing.
 func validateJobListing(job JobListing) error {
 	if job.Link == "" {
 		return fmt.Errorf("job link is required")
 	}
 	if job.Position == "" {
-		return fmt.Errorf("position is required")
+		// This is a warning rather than a fatal error for a single job,
+		// as ParseJobDescription might derive a JobTitle.
+		log.Printf("Warning: Job (Link: %s) has an empty 'Position' field.", job.Link)
 	}
 	if job.CompanyName == "" {
-		return fmt.Errorf("company name is required")
+		return fmt.Errorf("company name is required for job link: %s", job.Link)
 	}
-	if job.Source == "" {
-		return fmt.Errorf("source is required")
-	}
+	// Source is handled by assigning to "unknown_source" if empty, so not a fatal validation here.
 	return nil
 }
 
-// generateJobDocID creates a consistent document ID for a job listing
+// generateJobDocID creates a consistent document ID for a job listing using a hash of its link.
+// Ensures the link is not empty before hashing.
 func generateJobDocID(job JobListing) (string, error) {
-	// Use a hash of the job link for consistent document IDs
-	hash := sha256.Sum256([]byte(job.Link))
+	if job.Link == "" {
+		return "", fmt.Errorf("cannot generate document ID: job link is empty")
+	}
+	hash := sha256.Sum256([]byte(strings.TrimSpace(job.Link)))
+	// Using the first 32 characters (16 bytes) of the hex string for the ID.
+	// SHA256 hex string is 64 chars long.
 	return fmt.Sprintf("%x", hash)[:32], nil
 }

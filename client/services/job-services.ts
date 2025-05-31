@@ -128,13 +128,13 @@ export async function fetchJobRecommendations(
     if (typeof resumeFile === "string") {
       formData.append("resume", resumeFile)
     } else {
-      formData.append("resume", resumeFile)
+      formData.append("resumeFile", resumeFile)
     }
     
     if(typeof resumeFile === "string") {
       formData.append("requestType", "saved")
     } else{
-      formData.append("requestType", "unsaved")
+      formData.append("requestType", "new")
     }
 
     const response = await fetch("http://localhost:8080/recommendations", {

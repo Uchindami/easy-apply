@@ -13,5 +13,5 @@ func setupRoutes(sentryHandler *sentryhttp.Handler) {
 	http.HandleFunc("/upload", sentryHandler.HandleFunc(middleware.WithCORS(uploadHandler)))
 	http.HandleFunc("/convert-pdf", sentryHandler.HandleFunc(middleware.WithCORS(convertPDFHandler)))
 	http.HandleFunc("/recommendations", sentryHandler.HandleFunc(middleware.WithCORS(jobRecommendationsHandler)))
-	http.HandleFunc("/test", sentryHandler.HandleFunc(middleware.WithCORS(testHandler)))
+	// http.HandleFunc("/test", sentryHandler.HandleFunc(middleware.WithCORS(testHandler)))
 }
