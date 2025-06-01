@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -82,7 +83,7 @@ func findNewJobs(currentJobs, previousJobs []Job) []Job {
 	return newJobs
 }
 
-func processJobs() error {
+func processJobs(ctx context.Context) error {
 	currentJobs, err := readJobsFile(currentJobsFile)
 	if err != nil {
 		return fmt.Errorf("error reading current jobs: %v", err)
@@ -102,7 +103,7 @@ func processJobs() error {
 		if err := getMoreDetails(); err != nil {
 			return fmt.Errorf("error getting more details: %v", err)
 		}
-		updateJobs()
+		updateJobs(ctx)
 		return nil
 	} else if err != nil {
 		return fmt.Errorf("error reading previous jobs: %v", err)
@@ -135,12 +136,12 @@ func processJobs() error {
 	if err := getMoreDetails(); err != nil {
 		return fmt.Errorf("error getting more details: %v", err)
 	}
-	updateJobs()
+	updateJobs(ctx)
 
 	return nil
 }
 
-func runScraperCycle() {
+func runScraperCycle(ctx context.Context) {
 	fmt.Printf("\nRunning scraper cycle at %s...\n", time.Now().Format(time.RFC3339))
 
 	if err := runNodeScript(); err != nil {
@@ -148,14 +149,14 @@ func runScraperCycle() {
 		return
 	}
 
-	if err := processJobs(); err != nil {
+	if err := processJobs(ctx); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 }
 
-func launchScraper() {
+func launchScraper(ctx context.Context) {
 	// Run immediately on startup
-	runScraperCycle()
+	runScraperCycle(ctx)
 
 	// Schedule periodic runs
 	ticker := time.NewTicker(scraperInterval)
@@ -163,6 +164,6 @@ func launchScraper() {
 
 	for t := range ticker.C {
 		fmt.Printf("\n--- Run at %s ---\n", t.Format(time.RFC3339))
-		runScraperCycle()
+		runScraperCycle(ctx)
 	}
 }

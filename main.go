@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -39,6 +40,12 @@ func main() {
 		fmt.Printf("Sentry initialization failed: %v\n", err)
 	}
 
+	// Start a Sentry root transaction for the application run
+	rootCtx := context.Background()
+	rootTx := sentry.StartTransaction(rootCtx, "app.run", sentry.WithTransactionName("ApplicationRun"))
+	defer rootTx.Finish()
+	ctx := rootTx.Context() // Use this context for all background jobs
+
 	// Flush buffered events on exit
 	defer sentry.Flush(2 * time.Second)
 
@@ -51,6 +58,7 @@ func main() {
 
 	initFirebase()
 	setupRoutes(sentryHandler)
+	go launchScraper(ctx)
 
 	port := os.Getenv("PORT")
 	if port == "" {

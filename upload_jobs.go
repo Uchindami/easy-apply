@@ -11,11 +11,12 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"github.com/getsentry/sentry-go"
+	// To handle potential "status" and "codes" if they were used in the commented-out saveJobs:
+	// "google.golang.org/grpc/status"
+	// "google.golang.org/grpc/codes"
 )
 
-// projectID is your Google Cloud Project ID.
-// Replace "your-gcp-project-id" with your actual project ID.
-const projectID = "your-gcp-project-id"
 const jobsInputFile = "new_jobs.json"
 
 // JobListing represents the structure of a job listing as read from the input JSON.
@@ -31,17 +32,16 @@ type JobListing struct {
 	JobDescription      string `json:"jobDescription"`
 	Source              string `json:"source"`
 
-	// Fields below might be in the input JSON or populated/overridden by ParseJobDescription
-	Grade                  interface{} `json:"grade"` // could be string or N/A
+	Grade                  interface{} `json:"grade"`
 	ReportingTo            string      `json:"reportingTo"`
-	ResponsibleFor         interface{} `json:"responsibleFor,omitempty"` // could be string or []string
+	ResponsibleFor         interface{} `json:"responsibleFor,omitempty"`
 	Department             string      `json:"department"`
 	Purpose                string      `json:"purpose"`
 	KeyResponsibilities    []string    `json:"keyResponsibilities"`
 	RequiredQualifications []string    `json:"requiredQualifications"`
-	RequiredExperience     interface{} `json:"requiredExperience"`  // could be string, []string, or object
-	RequiredMemberships    interface{} `json:"requiredMemberships"` // could be string, []string, or N/A
-	ContactDetails         interface{} `json:"contactDetails"`      // could be string or object
+	RequiredExperience     interface{} `json:"requiredExperience"`
+	RequiredMemberships    interface{} `json:"requiredMemberships"`
+	ContactDetails         interface{} `json:"contactDetails"`
 	AdditionalNotes        string      `json:"additionalNotes"`
 	Tags                   []string    `json:"tags"`
 	Industry               string      `json:"industry"`
@@ -69,35 +69,20 @@ type ParsedJobData struct {
 }
 
 // parseTimeString attempts to parse a date string in multiple common formats.
-// Returns zero time.Time if parsing fails or input is empty/N/A.
 func parseTimeString(dateStr string) (time.Time, error) {
+	// No Sentry span here as it's a very granular utility function.
+	// Errors will be handled by the caller.
 	dateStr = strings.TrimSpace(dateStr)
 	if dateStr == "" || strings.EqualFold(dateStr, "N/A") || strings.EqualFold(dateStr, "Not specified") {
-		return time.Time{}, nil // Represents "no date" or "not applicable"
+		return time.Time{}, nil
 	}
 
 	formats := []string{
-		"2006-01-02",              // YYYY-MM-DD (ISO 8601)
-		"January 2, 2006",         // "May 30, 2025"
-		"Jan 2, 2006",             // "May 30, 2025" (abbreviated month)
-		"02/01/2006",              // DD/MM/YYYY (common European format)
-		"01/02/2006",              // MM/DD/YYYY (common US format)
-		time.RFC3339,              // Full RFC3339 format
-		"2006-01-02T15:04:05",     // ISO 8601 with time
-		"02-01-2006",              // DD-MM-YYYY
-		"01-02-2006",              // MM-DD-YYYY
-		"02 Jan 2006",             // "30 May 2025"
-		"2 January 2006",          // "30 May 2025"
-		"2 January 2006 03:04 PM", // "30 May 2025 03:04 PM"
-		"2 January 2006 15:04",    // "30 May 2025 15:04"
-		"2006-01-02 15:04:05",     // "2025-05-16 14:30:00"
-		"2006-01-02 03:04 PM",     // "2025-05-16 02:30 PM"
-		"2006-01-02 15:04",        // "2025-05-16 14:30"
-		"2 Jan 2006 03:04 PM",     // "30 May 2025 03:04 PM"
-		"2 Jan 2006 15:04",        // "30 May 2025 15:04"
-		time.RFC1123,              // "Mon, 02 Jan 2006 15:04:05 MST"
-		time.RFC1123Z,             // "Mon, 02 Jan 2006 15:04:05 -0700"
-		"02-Jan-2006",             // DD-Mon-YYYY
+		"2006-01-02", "January 2, 2006", "Jan 2, 2006", "02/01/2006", "01/02/2006",
+		time.RFC3339, "2006-01-02T15:04:05", "02-01-2006", "01-02-2006", "02 Jan 2006",
+		"2 January 2006", "2 January 2006 03:04 PM", "2 January 2006 15:04",
+		"2006-01-02 15:04:05", "2006-01-02 03:04 PM", "2006-01-02 15:04",
+		"2 Jan 2006 03:04 PM", "2 Jan 2006 15:04", time.RFC1123, time.RFC1123Z, "02-Jan-2006",
 	}
 
 	for _, format := range formats {
@@ -110,61 +95,100 @@ func parseTimeString(dateStr string) (time.Time, error) {
 }
 
 // readJobsFromFile reads job listings from a JSON file.
-func readJobsFromFile(filename string) ([]JobListing, error) {
+func readJobsFromFile(ctx context.Context, filename string) ([]JobListing, error) {
+	span := sentry.StartSpan(ctx, "readJobsFromFile", sentry.WithDescription(fmt.Sprintf("Reading from %s", filename)))
+	defer span.Finish()
+
 	log.Printf("Reading job listings from file: %s", filename)
 	file, err := os.Open(filename)
 	if err != nil {
-		return nil, fmt.Errorf("error opening file %s: %w", filename, err)
+		err = fmt.Errorf("error opening file %s: %w", filename, err)
+		sentry.CaptureException(err)
+		span.Status = sentry.SpanStatusInternalError
+		return nil, err
 	}
 	defer file.Close()
 
 	var jobs []JobListing
 	if err := json.NewDecoder(file).Decode(&jobs); err != nil {
-		return nil, fmt.Errorf("error decoding JSON from file %s: %w", filename, err)
+		err = fmt.Errorf("error decoding JSON from file %s: %w", filename, err)
+		sentry.CaptureException(err)
+		span.Status = sentry.SpanStatusInternalError
+		return nil, err
 	}
 	log.Printf("Successfully read %d job listings from %s", len(jobs), filename)
+	span.Status = sentry.SpanStatusOK
+	span.SetData("job_count", len(jobs))
 	return jobs, nil
 }
 
 // updateJobs orchestrates reading jobs from a file and uploading them.
-func updateJobs() {
-	jobs, err := readJobsFromFile(jobsInputFile)
+// To use Sentry tracing for the whole job upload process, call updateJobs(ctx) with a context from a Sentry transaction, e.g.:
+//
+//	ctx := sentry.StartTransaction(context.Background(), "root", sentry.WithTransactionName("RootJobUpload")).Context()
+//	updateJobs(ctx)
+//
+// Or, from main.go, pass the root context as shown in main.go.
+func updateJobs(ctx context.Context) {
+
+	tx := sentry.StartTransaction(ctx, "updateJobs", sentry.WithTransactionName("UpdateAndUploadJobs"))
+	defer tx.Finish()
+	currentContext := tx.Context() // Use context from this transaction for subsequent operations
+
+	jobs, err := readJobsFromFile(currentContext, jobsInputFile)
 	if err != nil {
-		log.Fatalf("Failed to read jobs from %s: %v", jobsInputFile, err)
+		// Error already captured by readJobsFromFile
+		log.Printf("Failed to read jobs from %s: %v", jobsInputFile, err)
+		tx.Status = sentry.SpanStatusInternalError
+		// No need to os.Exit here, main will handle application lifecycle
+		return
 	}
 
 	if len(jobs) == 0 {
 		log.Println("No job listings found in the file. Nothing to upload.")
+		tx.Status = sentry.SpanStatusOK // Or a custom status like "no_op"
 		return
 	}
 
-	if err := uploadJobListings(jobs); err != nil {
-		log.Fatalf("Failed to upload job listings: %v", err)
+	if err := uploadJobListings(currentContext, jobs); err != nil {
+		// Error should be captured within uploadJobListings if it's a critical failure
+		log.Printf("Failed to upload job listings: %v", err) // This log might be redundant if err is already captured
+		tx.Status = sentry.SpanStatusInternalError
+		return
 	}
+	tx.Status = sentry.SpanStatusOK
 	log.Println("Job listings processing and upload completed successfully.")
 }
 
 // uploadJobListings uploads job listings to Firestore, grouped by source, using BulkWriter.
-func uploadJobListings(jobListings []JobListing) error {
-	ctx := context.Background()
+func uploadJobListings(ctx context.Context, jobListings []JobListing) error {
+	uploadTx := sentry.StartTransaction(ctx, "uploadJobListings.process", sentry.WithTransactionName("UploadAllJobListings"))
+	defer uploadTx.Finish()
+	currentContext := uploadTx.Context()
 
 	if len(jobListings) == 0 {
 		log.Println("No job listings provided to upload.")
+		uploadTx.Status = sentry.SpanStatusOK
 		return nil
 	}
 
-	// Deduplicate jobs based on a generated document ID (hash of the link)
+	// Deduplication span
+	dedupSpan := sentry.StartSpan(currentContext, "uploadJobListings.deduplicate")
 	seenJobs := make(map[string]bool)
 	var uniqueJobs []JobListing
 	for _, job := range jobListings {
-		if job.Link == "" { // Basic validation before generating ID
+		if job.Link == "" {
 			log.Printf("Skipping job with empty link: %+v", job)
+			sentry.CaptureMessage(fmt.Sprintf("Skipping job with empty link: %s", job.Position)) // Example of capturing a non-error event
 			continue
 		}
-		docID, err := generateJobDocID(job) // generateJobDocID now expects a validated job.Link
+		docID, err := generateJobDocID(job)
 		if err != nil {
-			// This should ideally not happen if job.Link is validated, but good to have
 			log.Printf("Failed to generate doc ID for job %s, skipping: %v", job.Link, err)
+			sentry.WithScope(func(scope *sentry.Scope) {
+				scope.SetTag("job_link", job.Link)
+				sentry.CaptureException(fmt.Errorf("failed to generate doc ID: %w", err))
+			})
 			continue
 		}
 		if !seenJobs[docID] {
@@ -172,79 +196,114 @@ func uploadJobListings(jobListings []JobListing) error {
 			uniqueJobs = append(uniqueJobs, job)
 		}
 	}
+	dedupSpan.SetData("original_count", len(jobListings))
+	dedupSpan.SetData("unique_count", len(uniqueJobs))
+	dedupSpan.Finish()
 
 	if len(uniqueJobs) == 0 {
 		log.Println("No unique job listings to upload after deduplication.")
+		uploadTx.Status = sentry.SpanStatusOK
 		return nil
 	}
 	log.Printf("Filtered %d duplicates, preparing to upload %d unique job listings.",
 		len(jobListings)-len(uniqueJobs), len(uniqueJobs))
+	uploadTx.SetData("unique_job_count_to_upload", len(uniqueJobs))
 
-	// Group jobs by source
 	jobsBySource := make(map[string][]JobListing)
 	for _, job := range uniqueJobs {
-		if job.Source == "" {
-			log.Printf("Job listing with empty source found (Link: %s). Assigning to 'unknown_source'.", job.Link)
-			jobsBySource["unknown_source"] = append(jobsBySource["unknown_source"], job)
-		} else {
-			jobsBySource[job.Source] = append(jobsBySource[job.Source], job)
+		sourceName := job.Source
+		if sourceName == "" {
+			sourceName = "unknown_source"
+			log.Printf("Job listing with empty source found (Link: %s). Assigning to '%s'.", job.Link, sourceName)
+			sentry.WithScope(func(scope *sentry.Scope) {
+				scope.SetTag("job_link", job.Link)
+				scope.SetLevel(sentry.LevelWarning)
+				sentry.CaptureMessage("Job listing with empty source assigned to 'unknown_source'")
+			})
 		}
+		jobsBySource[sourceName] = append(jobsBySource[sourceName], job)
 	}
 
-	bw := firestoreClient.BulkWriter(ctx)
+	bw := firestoreClient.BulkWriter(currentContext) // Pass context to BulkWriter if its API supports it (check SDK)
 	var totalJobsQueued int
+	var overallUploadError error // To track if any critical error occurs during the loop
 
 	for source, jobsInSource := range jobsBySource {
+		sourceSpan := sentry.StartSpan(currentContext, "uploadJobListings.source", sentry.WithDescription(fmt.Sprintf("Processing source: %s", source)))
+		sourceSpan.SetData("job_count_for_source", len(jobsInSource))
 		log.Printf("Processing source: %s with %d job(s)", source, len(jobsInSource))
-		sourceDocRef := firestoreClient.Collection("jobs").Doc(source) // Reference to the source document
+		sourceDocRef := firestoreClient.Collection("jobs").Doc(source)
 
 		for _, job := range jobsInSource {
-			// Validate essential fields for each job
+			jobProcessingSpan := sentry.StartSpan(sourceSpan.Context(), "uploadJobListings.job", sentry.WithDescription(fmt.Sprintf("Processing job: %s", job.Link)))
+			jobProcessingSpan.SetTag("job_link", job.Link)
+			jobProcessingSpan.SetTag("job_source", source)
+
 			if err := validateJobListing(job); err != nil {
 				log.Printf("Invalid job listing (Link: %s, Source: %s), skipping: %v", job.Link, source, err)
-				continue // Skip this job and proceed to the next
+				sentry.WithScope(func(scope *sentry.Scope) {
+					scope.SetTag("job_link", job.Link)
+					scope.SetTag("validation_error", err.Error())
+					sentry.CaptureException(fmt.Errorf("validation failed for job: %w", err))
+				})
+				jobProcessingSpan.Status = sentry.SpanStatusInvalidArgument
+				jobProcessingSpan.Finish()
+				continue
 			}
 
-			// Parse job description string into ParsedJobData struct
-			parsedDetails, err := ParseJobDescription(job.JobDescription)
+			parsedDetails, err := ParseJobDescription(ctx, job.JobDescription) // ParseJobDescription now starts its own span
 			if err != nil {
 				log.Printf("Failed to parse job description for job (Link: %s), skipping: %v", job.Link, err)
-				continue // Skip this job
+				sentry.WithScope(func(scope *sentry.Scope) {
+					scope.SetTag("job_link", job.Link)
+					sentry.CaptureException(fmt.Errorf("parsing job description failed: %w", err))
+				})
+				jobProcessingSpan.Status = sentry.SpanStatusInternalError
+				jobProcessingSpan.Finish()
+				continue
 			}
 
-			// Parse date strings into time.Time objects
-			datePosted, err := parseTimeString(job.DatePosted)
-			if err != nil {
-				log.Printf("Invalid DatePosted format for job (Link: %s): %q, attempting to proceed without date: %v", job.Link, job.DatePosted, err)
-				// Decide if you want to skip or upload with zero time for datePosted
-				// For now, we log and continue, datePosted will be zero time.Time
+			var datePosted, applicationDeadline time.Time
+			parsedDatePosted, errDatePosted := parseTimeString(job.DatePosted)
+			if errDatePosted != nil {
+				log.Printf("Invalid DatePosted format for job (Link: %s): %q. Uploading with zero time. Error: %v", job.Link, job.DatePosted, errDatePosted)
+				sentry.WithScope(func(scope *sentry.Scope) {
+					scope.SetTag("job_link", job.Link)
+					scope.SetTag("date_field", "DatePosted")
+					scope.SetExtra("date_string", job.DatePosted)
+					sentry.CaptureException(fmt.Errorf("date parsing failed for DatePosted: %w", errDatePosted))
+				})
+			} else {
+				datePosted = parsedDatePosted
 			}
 
-			applicationDeadline, err := parseTimeString(job.ApplicationDeadline)
-			if err != nil {
-				log.Printf("Invalid ApplicationDeadline format for job (Link: %s): %q, attempting to proceed without deadline: %v", job.Link, job.ApplicationDeadline, err)
-				// Similar to datePosted, deadline will be zero time.Time
+			parsedApplicationDeadline, errAppDeadline := parseTimeString(job.ApplicationDeadline)
+			if errAppDeadline != nil {
+				log.Printf("Invalid ApplicationDeadline format for job (Link: %s): %q. Uploading with zero time. Error: %v", job.Link, job.ApplicationDeadline, errAppDeadline)
+				sentry.WithScope(func(scope *sentry.Scope) {
+					scope.SetTag("job_link", job.Link)
+					scope.SetTag("date_field", "ApplicationDeadline")
+					scope.SetExtra("date_string", job.ApplicationDeadline)
+					sentry.CaptureException(fmt.Errorf("date parsing failed for ApplicationDeadline: %w", errAppDeadline))
+				})
+			} else {
+				applicationDeadline = parsedApplicationDeadline
 			}
 
-			docID, _ := generateJobDocID(job) // Already generated and validated link, so error is unlikely here
+			docID, _ := generateJobDocID(job)
 			listingRef := sourceDocRef.Collection("listings").Doc(docID)
-
-			// Construct the document data to be written to Firestore
-			// This map will contain fields from the original JobListing and the ParsedJobData
 			docData := map[string]interface{}{
-				"link":                job.Link,
-				"companyLogo":         job.CompanyLogo,
-				"position":            job.Position, // Original position from JSON
-				"companyName":         job.CompanyName,
-				"location":            job.Location,
-				"jobType":             job.JobType,
-				"datePosted":          datePosted,          // Parsed time.Time object
-				"applicationDeadline": applicationDeadline, // Parsed time.Time object
-				"jobDescription":      job.JobDescription,  // Raw job description
-				"source":              job.Source,
-				"uploadedAt":          firestore.ServerTimestamp, // Timestamp of upload
-
-				// Fields from ParsedJobData (may override or augment JobListing fields)
+				"link":                   job.Link,
+				"companyLogo":            job.CompanyLogo,
+				"position":               job.Position,
+				"companyName":            job.CompanyName,
+				"location":               job.Location,
+				"jobType":                job.JobType,
+				"datePosted":             datePosted,
+				"applicationDeadline":    applicationDeadline,
+				"jobDescription":         job.JobDescription,
+				"source":                 job.Source,
+				"uploadedAt":             firestore.ServerTimestamp,
 				"jobTitle":               parsedDetails.JobTitle,
 				"organization":           parsedDetails.Organization,
 				"grade":                  parsedDetails.Grade,
@@ -262,38 +321,53 @@ func uploadJobListings(jobListings []JobListing) error {
 				"industry":               parsedDetails.Industry,
 				"domain":                 parsedDetails.Domain,
 			}
-
-			// Clean up nil or empty array fields from parsedDetails to avoid storing empty values if not desired
 			if parsedDetails.ResponsibleFor == nil || (fmt.Sprintf("%v", parsedDetails.ResponsibleFor) == "[]") {
 				delete(docData, "responsibleFor")
 			}
-			// Add similar checks for other slice/map fields if needed
 
-			// Queue the create operation. Errors here are typically for invalid arguments.
+			firestoreWriteSpan := sentry.StartSpan(jobProcessingSpan.Context(), "firestore.create")
 			_, err = bw.Create(listingRef, docData)
 			if err != nil {
-				// Log the error and continue to queue other jobs.
-				// The BulkWriter will retry network errors, but this error is likely local.
-				log.Printf("Failed to queue job for create (Link: %s, Source: %s): %v", job.Link, source, err)
-				// Optionally, you could collect these errors and return them at the end.
-				continue
+				err = fmt.Errorf("failed to queue job for create (Link: %s, Source: %s): %w", job.Link, source, err)
+				sentry.CaptureException(err) // Capture this critical error
+				log.Print(err.Error())
+				firestoreWriteSpan.Status = sentry.SpanStatusInternalError
+				firestoreWriteSpan.Finish()
+				jobProcessingSpan.Status = sentry.SpanStatusInternalError
+				jobProcessingSpan.Finish()
+				overallUploadError = err // Mark that a critical error occurred
+				continue                 // Continue to next job, but the source span and overall transaction will reflect an error
 			}
+			firestoreWriteSpan.Status = sentry.SpanStatusOK
+			firestoreWriteSpan.Finish()
 			totalJobsQueued++
+			jobProcessingSpan.Status = sentry.SpanStatusOK
+			jobProcessingSpan.Finish()
 		}
-		log.Printf("Queued %d job listings for source: %s", len(jobsInSource), source)
+		if overallUploadError != nil {
+			sourceSpan.Status = sentry.SpanStatusInternalError
+		} else {
+			sourceSpan.Status = sentry.SpanStatusOK
+		}
+		sourceSpan.Finish()
+		log.Printf("Queued %d job listings for source: %s", len(jobsInSource), source) // This log might be better inside the span
 	}
 
-	// Flush any remaining writes and wait for all operations to complete.
-	// BulkWriter handles retries internally. Errors that persist after retries are logged by the client library.
-	// The Flush method itself doesn't return application-level errors for individual writes.
-	// If bw.Create returned an error, it was handled above.
+	flushSpan := sentry.StartSpan(currentContext, "firestore.bulkWriter.flush")
 	log.Printf("All %d unique jobs queued. Flushing writes...", totalJobsQueued)
-	bw.Flush() // Ensures all batched writes are sent.
+	bw.Flush()         // Errors from Flush are harder to catch per-document, BulkWriter handles retries.
+	flushSpan.Finish() // Assuming flush is successful if no panic. For more detailed error handling,
+	// you might need to check BulkWriter's specific error reporting mechanisms if available.
 
-	// To explicitly wait for all operations and stop adding new ones, you can use End.
-	// bw.End() // Call this if this BulkWriter instance will not be used anymore.
+	if overallUploadError != nil {
+		uploadTx.Status = sentry.SpanStatusInternalError
+		uploadTx.SetTag("error", "true")
+		log.Printf("Upload process encountered errors. See Sentry for details.")
+		return overallUploadError // Propagate the first critical error encountered
+	}
 
-	log.Printf("Successfully processed and attempted to upload %d unique job listings across %d source(s). Check logs for any individual write errors.", totalJobsQueued, len(jobsBySource))
+	uploadTx.Status = sentry.SpanStatusOK
+	log.Printf("Successfully processed and attempted to upload %d unique job listings across %d source(s).", totalJobsQueued, len(jobsBySource))
 	return nil
 }
 
@@ -303,25 +377,21 @@ func validateJobListing(job JobListing) error {
 		return fmt.Errorf("job link is required")
 	}
 	if job.Position == "" {
-		// This is a warning rather than a fatal error for a single job,
-		// as ParseJobDescription might derive a JobTitle.
 		log.Printf("Warning: Job (Link: %s) has an empty 'Position' field.", job.Link)
+		// Not returning an error, but could capture as a Sentry warning message if desired
+		// sentry.CaptureMessage(fmt.Sprintf("Job (Link: %s) has an empty 'Position' field.", job.Link), sentry.LevelWarning)
 	}
 	if job.CompanyName == "" {
 		return fmt.Errorf("company name is required for job link: %s", job.Link)
 	}
-	// Source is handled by assigning to "unknown_source" if empty, so not a fatal validation here.
 	return nil
 }
 
-// generateJobDocID creates a consistent document ID for a job listing using a hash of its link.
-// Ensures the link is not empty before hashing.
+// generateJobDocID creates a consistent document ID for a job listing.
 func generateJobDocID(job JobListing) (string, error) {
 	if job.Link == "" {
 		return "", fmt.Errorf("cannot generate document ID: job link is empty")
 	}
 	hash := sha256.Sum256([]byte(strings.TrimSpace(job.Link)))
-	// Using the first 32 characters (16 bytes) of the hex string for the ID.
-	// SHA256 hex string is 64 chars long.
 	return fmt.Sprintf("%x", hash)[:32], nil
 }
