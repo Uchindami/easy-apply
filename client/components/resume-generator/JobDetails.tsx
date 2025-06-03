@@ -35,7 +35,7 @@ export function JobDetails({
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     onUrlChange(value);
-    
+
     if (hasError) {
       validateUrl(value);
     }
@@ -47,7 +47,7 @@ export function JobDetails({
       setErrorMessage("Please enter a job posting URL");
       return false;
     }
-    
+
     try {
       new URL(url);
       setHasError(false);
@@ -74,7 +74,7 @@ export function JobDetails({
   };
 
   return (
-    <Card>
+    <Card className="w-full max-w-5xl mx-auto hover:shadow-lg">
       <CardHeader>
         <CardTitle className="flex items-center">
           <LinkIcon className="h-5 w-5 mr-2 text-primary" />
@@ -86,7 +86,10 @@ export function JobDetails({
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          <label htmlFor="job-url" className="text-sm font-medium">
+          <label
+            htmlFor="job-url"
+            className="text-sm font-medium text-foreground"
+          >
             Job Posting URL
           </label>
           <div className="relative">
@@ -98,21 +101,25 @@ export function JobDetails({
               onFocus={() => setIsFocused(true)}
               onBlur={handleBlur}
               disabled={isGenerating}
-              className={`pr-10 ${hasError ? 'border-destructive focus-visible:ring-destructive/30' : ''}`}
+              className={`pr-10 ${
+                hasError
+                  ? "border-destructive focus-visible:ring-destructive/30"
+                  : ""
+              }`}
             />
-            <div 
+            <div
               className={`absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none ${
-                isFocused ? 'text-primary' : 'text-muted-foreground'
+                isFocused ? "text-primary" : "text-muted-foreground"
               }`}
             >
               <LinkIcon className="h-4 w-4" />
             </div>
           </div>
-          
+
           {hasError && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
             >
@@ -122,9 +129,10 @@ export function JobDetails({
               </Alert>
             </motion.div>
           )}
-          
+
           <p className="text-xs text-muted-foreground mt-1">
-            This URL will be used to analyze job requirements and tailor your resume accordingly.
+            This URL will be used to analyze job requirements and tailor your
+            resume accordingly.
           </p>
         </div>
       </CardContent>
@@ -140,10 +148,10 @@ export function JobDetails({
               Analyzing Job...
             </>
           ) : (
-            "Continue"
+            "Continue to Design"
           )}
         </Button>
-        
+
         <p className="text-xs text-center text-muted-foreground">
           Supported sites: LinkedIn, Indeed, Glassdoor, ZipRecruiter, and more
         </p>

@@ -1,9 +1,13 @@
-import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar"
-import { Home, Plus } from "lucide-react"
+import {
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+} from "@/components/ui/sidebar";
+import { Home, Plus } from "lucide-react";
 
 interface SidebarMainNavProps {
-  isActive: (path: string) => boolean
-  onNewChat: () => void
+  isActive: (path: string) => boolean;
+  onNewChat: () => void;
 }
 
 import { useLocation, useNavigate } from "react-router";
@@ -16,7 +20,9 @@ export function SidebarMainNav({ isActive, onNewChat }: SidebarMainNavProps) {
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton
-            isActive={isActive("/dashboard") && location.pathname === "/dashboard"}
+            isActive={
+              isActive("/dashboard") && location.pathname === "/dashboard"
+            }
             onClick={() => navigate("/dashboard")}
             tooltip="Home"
           >
@@ -25,12 +31,16 @@ export function SidebarMainNav({ isActive, onNewChat }: SidebarMainNavProps) {
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
-          <SidebarMenuButton onClick={onNewChat} tooltip="New Chat" variant="outline">
+          <SidebarMenuButton
+            onClick={onNewChat}
+            tooltip="New Chat"
+            variant="outline"
+          >
             <Plus className="mr-2" />
             <span>New Chat</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
     </>
-  )
+  );
 }

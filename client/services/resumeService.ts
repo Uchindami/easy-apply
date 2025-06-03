@@ -1,16 +1,16 @@
 import { Document, Packer, Paragraph } from "docx";
 
 interface GeneratedDocuments {
-  resume: string
-  coverLetter: string
-  userId?: string
-  historyId: string
+  resume: string;
+  coverLetter: string;
+  userId?: string;
+  historyId: string;
 }
 
 interface ApiResponse {
-  resume: string
-  coverLetter: string
-  historyId: string
+  resume: string;
+  coverLetter: string;
+  historyId: string;
 }
 
 /**
@@ -21,11 +21,29 @@ interface ApiResponse {
  * @returns A promise resolving to the generated documents.
  * @throws If the API request fails or returns an error status.
  */
-export async function generateTailoredDocuments(resumeFile: File, jobUrl: string, userId: string): Promise<GeneratedDocuments> {
-  const formData = new FormData()
-  formData.append("file", resumeFile)
-  formData.append("weblink", jobUrl)
-  formData.append("userId", userId)
+export async function generateTailoredDocuments(
+  resumeFile: File,
+  jobUrl: string,
+  userId: string,
+  selectedTemplate: string,
+  selectedColors: string
+): Promise<GeneratedDocuments> {
+  if (!resumeFile || !jobUrl || !userId || !selectedTemplate || !selectedColors) {
+    throw new Error("Missing required parameters: resumeFile, jobUrl, or userId");
+  }
+  if (!(resumeFile instanceof File)) {
+    throw new Error("resumeFile must be a valid File object");
+  }
+  if (typeof jobUrl !== "string" || typeof userId !== "string") {
+    throw new Error("jobUrl and userId must be strings");
+  }
+  
+  const formData = new FormData();
+  formData.append("file", resumeFile);
+  formData.append("weblink", jobUrl);
+  formData.append("userId", userId);
+  formData.append("selectedTemplate", selectedTemplate);
+  formData.append("selectedColors", selectedColors);
 
   // console.log(resumeFile,jobUrl)
 
@@ -33,23 +51,25 @@ export async function generateTailoredDocuments(resumeFile: File, jobUrl: string
     const response = await fetch("http://localhost:8080/upload", {
       method: "POST",
       body: formData,
-    })
+    });
 
     if (!response.ok) {
-      const errorText = await response.text()
-      throw new Error(`Failed to generate documents. Status: ${response.status}. Message: ${errorText}`)
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to generate documents. Status: ${response.status}. Message: ${errorText}`
+      );
     }
 
-    const data = (await response.json()) as ApiResponse
+    const data = (await response.json()) as ApiResponse;
     return {
       resume: data.resume,
       coverLetter: data.coverLetter,
       historyId: data.historyId,
       userId,
-    }
+    };
   } catch (error) {
-    console.error("Failed to generate documents:", error)
-    throw error
+    console.error("Failed to generate documents:", error);
+    throw error;
   }
 }
 
@@ -66,12 +86,13 @@ export async function convertHtmlToPdf(htmlContent: string): Promise<Blob> {
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to convert HTML to PDF. Status: ${response.status}`);
+    throw new Error(
+      `Failed to convert HTML to PDF. Status: ${response.status}`
+    );
   }
 
   return await response.blob();
 }
-
 
 /**
  * Converts HTML content to a DOCX Blob using the docx package.
@@ -88,9 +109,7 @@ export async function convertHtmlToDocx(htmlContent: string): Promise<Blob> {
     sections: [
       {
         properties: {},
-        children: [
-          new Paragraph({ text }),
-        ],
+        children: [new Paragraph({ text })],
       },
     ],
   });

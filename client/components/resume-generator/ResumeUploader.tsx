@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { UploadCloud, File, X } from "lucide-react";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -16,10 +16,10 @@ interface ResumeUploaderProps {
   isGenerating?: boolean;
 }
 
-export function ResumeUploader({ 
-  resumeFile, 
+export function ResumeUploader({
+  resumeFile,
   onFileChange,
-  isGenerating = false
+  isGenerating = false,
 }: ResumeUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
 
@@ -40,7 +40,7 @@ export function ResumeUploader({
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const file = e.dataTransfer.files?.[0] || null;
     if (file && isValidFileType(file)) {
       onFileChange(file);
@@ -53,32 +53,32 @@ export function ResumeUploader({
 
   const isValidFileType = (file: File) => {
     const validTypes = [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'text/plain'
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "text/plain",
     ];
     return validTypes.includes(file.type);
   };
 
   const getFileIcon = (file: File) => {
-    const extension = file.name.split('.').pop()?.toLowerCase();
-    
-    switch(extension) {
-      case 'pdf':
-        return { color: 'text-red-500', bg: 'bg-red-100' };
-      case 'doc':
-      case 'docx':
-        return { color: 'text-blue-500', bg: 'bg-blue-100' };
-      case 'txt':
-        return { color: 'text-gray-500', bg: 'bg-gray-100' };
+    const extension = file.name.split(".").pop()?.toLowerCase();
+
+    switch (extension) {
+      case "pdf":
+        return { color: "text-red-500", bg: "bg-red-100" };
+      case "doc":
+      case "docx":
+        return { color: "text-blue-500", bg: "bg-blue-100" };
+      case "txt":
+        return { color: "text-gray-500", bg: "bg-gray-100" };
       default:
-        return { color: 'text-primary', bg: 'bg-primary/10' };
+        return { color: "text-primary", bg: "bg-primary/10" };
     }
   };
 
   return (
-    <Card>
+    <Card className="w-full max-w-5xl mx-auto hover:shadow-lg">
       <CardHeader>
         <CardTitle className="flex items-center">
           <UploadCloud className="h-5 w-5 mr-2 text-primary" />
@@ -92,8 +92,12 @@ export function ResumeUploader({
         <div
           className={cn(
             "relative flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 transition-all duration-200",
-            isDragging ? "border-primary bg-primary/5" : "border-muted-foreground/20",
-            isGenerating ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-muted/50",
+            isDragging
+              ? "border-primary bg-primary/5"
+              : "border-muted-foreground/20",
+            isGenerating
+              ? "opacity-50 cursor-not-allowed"
+              : "cursor-pointer hover:bg-muted/50"
           )}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -107,20 +111,24 @@ export function ResumeUploader({
             onChange={handleFileChange}
             disabled={isGenerating}
           />
-          
+
           {resumeFile ? (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               className="flex flex-col items-center w-full"
             >
-              <div className={cn(
-                "h-12 w-12 rounded-full flex items-center justify-center mb-3",
-                getFileIcon(resumeFile).bg
-              )}>
-                <File className={cn("h-6 w-6", getFileIcon(resumeFile).color)} />
+              <div
+                className={cn(
+                  "h-12 w-12 rounded-full flex items-center justify-center mb-3",
+                  getFileIcon(resumeFile).bg
+                )}
+              >
+                <File
+                  className={cn("h-6 w-6", getFileIcon(resumeFile).color)}
+                />
               </div>
-              
+
               <div className="text-center space-y-1">
                 <p className="font-medium text-foreground break-all max-w-full">
                   {resumeFile.name}
@@ -129,9 +137,9 @@ export function ResumeUploader({
                   {(resumeFile.size / 1024).toFixed(1)} KB
                 </p>
               </div>
-              
+
               {!isGenerating && (
-                <button 
+                <button
                   type="button"
                   onClick={handleRemoveFile}
                   className="mt-4 flex items-center text-sm text-muted-foreground hover:text-destructive transition-colors"
@@ -142,8 +150,8 @@ export function ResumeUploader({
               )}
             </motion.div>
           ) : (
-            <label 
-              htmlFor="resume-upload" 
+            <label
+              htmlFor="resume-upload"
               className={cn(
                 "cursor-pointer flex flex-col items-center text-center",
                 isGenerating && "pointer-events-none"
@@ -152,16 +160,16 @@ export function ResumeUploader({
               <motion.div
                 initial={{ y: 0 }}
                 animate={{ y: [0, -5, 0] }}
-                transition={{ 
-                  repeat: Infinity, 
-                  repeatType: "mirror", 
+                transition={{
+                  repeat: Infinity,
+                  repeatType: "mirror",
                   duration: 2,
-                  repeatDelay: 1
+                  repeatDelay: 1,
                 }}
               >
                 <UploadCloud className="h-12 w-12 text-muted-foreground mb-3" />
               </motion.div>
-              
+
               <div className="space-y-1">
                 <p className="font-medium text-foreground">
                   Click to upload or drag and drop

@@ -14,20 +14,38 @@ interface HeaderProps {
   };
 }
 
-export function Header({ title, onReset, isResetDisabled, savedJobsButtonProps }: HeaderProps) {
-  const renderCount = useRef(0)
-  renderCount.current +=1
+export function Header({
+  title,
+  onReset,
+  isResetDisabled,
+  savedJobsButtonProps,
+}: HeaderProps) {
+  const renderCount = useRef(0);
+  renderCount.current += 1;
   return (
     <header className="border-b bg-background p-4 sticky top-0 z-10">
       <div className="flex items-center justify-between max-w-[1200px] mx-auto">
         <div className="flex items-center space-x-2">
           <SidebarTrigger className="mr-4" />
-          <h1 className="text-xl font-bold">{title}</h1>
-          <span className="text-xs text-muted-foreground">Renders: {renderCount.current}</span>
+          <h1 className="md:text-xl font-bold">{title}</h1>
+          <span className="text-xs text-muted-foreground">
+            Renders: {renderCount.current}
+            <span className="text-xs text-muted-foreground ml-2">
+              <span className="hidden md:inline">
+                 development mode
+
+              </span>
+            </span>
+          </span>
         </div>
         <div className="flex items-center gap-2">
           {onReset && (
-            <Button onClick={onReset} variant="ghost" disabled={isResetDisabled}>
+            <Button
+              onClick={onReset}
+              // size={"sm"}
+              variant="ghost"
+              disabled={isResetDisabled}
+            >
               Reset
             </Button>
           )}
@@ -40,11 +58,12 @@ export function Header({ title, onReset, isResetDisabled, savedJobsButtonProps }
             >
               <Bookmark className="h-4 w-4 text-primary" />
               <span className="text-primary">Saved Jobs</span>
-              {!savedJobsButtonProps.isLoadingSavedJobs && savedJobsButtonProps.savedJobsCount > 0 && (
-                <span className="ml-1 bg-foreground/50 text-white rounded-full text-xs px-1.5 py-0.5 min-w-5 text-center">
-                  {savedJobsButtonProps.savedJobsCount}
-                </span>
-              )}
+              {!savedJobsButtonProps.isLoadingSavedJobs &&
+                savedJobsButtonProps.savedJobsCount > 0 && (
+                  <span className="ml-1 bg-foreground/50 text-white rounded-full text-xs px-1.5 py-0.5 min-w-5 text-center">
+                    {savedJobsButtonProps.savedJobsCount}
+                  </span>
+                )}
             </Button>
           )}
         </div>

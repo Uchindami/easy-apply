@@ -12,8 +12,12 @@ interface ResumeState {
   // Job details
   jobUrl: string
 
+  // Template and design
+  selectedTemplate: any | null
+  selectedColors: any | null
+
   // UI states
-  activeTab: "upload" | "preview"
+  activeTab: "upload" | "design" | "preview"
   isGenerating: boolean
   isComplete: boolean
 
@@ -24,7 +28,9 @@ interface ResumeState {
   // Actions
   setResumeFile: (file: File | null) => void
   setJobUrl: (url: string) => void
-  setActiveTab: (tab: "upload" | "preview") => void
+  setActiveTab: (tab: "upload" | "design" | "preview") => void
+  setSelectedTemplate: (template: any) => void
+  setSelectedColors: (colors: any) => void
   setGeneratedResume: (content: string) => void
   setGeneratedCoverLetter: (content: string) => void
   generateDocuments: () => Promise<void>
@@ -37,6 +43,8 @@ export const useDocumentStore = create<ResumeState>((set, get) => ({
   resumeFile: null,
   originalResume: "",
   jobUrl: "",
+  selectedTemplate: null,
+  selectedColors: null,
   activeTab: "upload",
   isGenerating: false,
   isComplete: false,
@@ -64,12 +72,16 @@ export const useDocumentStore = create<ResumeState>((set, get) => ({
 
   setActiveTab: (tab) => set({ activeTab: tab }),
 
+  setSelectedTemplate: (template) => set({ selectedTemplate: template }),
+
+  setSelectedColors: (colors) => set({ selectedColors: colors }),
+
   setGeneratedResume: (content) => set({ generatedResume: content }),
 
   setGeneratedCoverLetter: (content) => set({ generatedCoverLetter: content }),
 
   generateDocuments: async () => {
-    const { resumeFile, jobUrl } = get()
+    const { resumeFile, jobUrl, selectedTemplate, selectedColors } = get()
 
     if (!resumeFile || !jobUrl) return
 
@@ -82,7 +94,13 @@ export const useDocumentStore = create<ResumeState>((set, get) => ({
     set({ isGenerating: true, activeTab: "preview" })
 
     try {
-      const {historyId, resume, coverLetter } = await generateTailoredDocuments(resumeFile, jobUrl, userId)
+      const { historyId, resume, coverLetter } = await generateTailoredDocuments(
+        resumeFile,
+        jobUrl,
+        userId,
+        selectedTemplate,
+        selectedColors,
+      )
 
       set({
         generatedResume: resume,
@@ -106,6 +124,8 @@ export const useDocumentStore = create<ResumeState>((set, get) => ({
       resumeFile: null,
       originalResume: "",
       jobUrl: "",
+      selectedTemplate: null,
+      selectedColors: null,
       isComplete: false,
       generatedResume: "",
       generatedCoverLetter: "",

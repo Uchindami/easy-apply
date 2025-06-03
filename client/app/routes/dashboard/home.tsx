@@ -8,6 +8,7 @@ import { useDocumentStore } from "@/store/useResumeStore";
 import DocumentViewer from "@/components/chats/resume-viewer";
 import { motion } from "framer-motion";
 import { ProgressIndicator } from "@/components/resume-generator/progress-indicator";
+import { TemplateSelector } from "@/components/resume-generator/TemplateSelector";
 
 export default function DocumentGenerator() {
   const {
@@ -18,9 +19,13 @@ export default function DocumentGenerator() {
     generatedResume,
     chatId,
     generatedCoverLetter,
+    selectedTemplate,
+    selectedColors,
     setResumeFile,
     setJobUrl,
     setActiveTab,
+    setSelectedTemplate,
+    setSelectedColors,
     generateDocuments,
     resetForm,
   } = useDocumentStore();
@@ -43,13 +48,20 @@ export default function DocumentGenerator() {
           className="w-full"
         >
           <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
-            <TabsList className="grid w-full sm:w-auto grid-cols-2">
+            <TabsList className="grid w-full sm:w-auto grid-cols-3">
               <TabsTrigger
                 value="upload"
                 disabled={isGenerating}
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
                 Upload
+              </TabsTrigger>
+              <TabsTrigger
+                value="design"
+                disabled={isGenerating}
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                Design
               </TabsTrigger>
               <TabsTrigger
                 value="preview"
@@ -61,9 +73,9 @@ export default function DocumentGenerator() {
             </TabsList>
 
             <ProgressIndicator
-              step={activeTab === "upload" ? 1 : 2}
-              totalSteps={2}
-              labels={["Upload", "Preview"]}
+              step={activeTab === "upload" ? 1 : activeTab === "design" ? 2 : 3}
+              totalSteps={3}
+              labels={["Upload", "Design", "Preview"]}
             />
           </div>
 
@@ -77,36 +89,22 @@ export default function DocumentGenerator() {
               <JobDetails
                 jobUrl={jobUrl}
                 onUrlChange={setJobUrl}
-                onGenerate={generateDocuments}
+                onGenerate={() => setActiveTab("design")}
                 isGenerating={isGenerating}
                 isDisabled={!isReadyToGenerate}
               />
             </div>
+          </TabsContent>
 
-            {isReadyToGenerate && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="flex justify-center mt-8"
-              >
-                <Button
-                  size="lg"
-                  onClick={generateDocuments}
-                  disabled={isGenerating}
-                  className="w-full sm:w-auto min-w-[200px]"
-                >
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Generating...
-                    </>
-                  ) : (
-                    "Generate Documents"
-                  )}
-                </Button>
-              </motion.div>
-            )}
+          <TabsContent value="design" className="space-y-6 mt-0">
+            <TemplateSelector
+              onTemplateSelect={(template, colors) => {
+                setSelectedTemplate(template);
+                setSelectedColors(colors);
+              }}
+              onContinue={generateDocuments}
+              isGenerating={isGenerating}
+            />
           </TabsContent>
 
           <TabsContent value="preview" className="space-y-6 mt-0">
