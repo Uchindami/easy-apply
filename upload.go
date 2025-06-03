@@ -86,7 +86,11 @@ func initProcessors() {
 
 		fileProcessor = processors.NewFileProcessor()
 		webProcessor = processors.NewWebProcessor("")
-		openAIProcessor = processors.NewOpenAIProcessor()
+		var err error
+		openAIProcessor, err = processors.NewOpenAIProcessor()
+		if err != nil {
+			logger.Fatalf("Failed to initialize OpenAIProcessor: %v", err)
+		}
 		logger.Printf("Processors initialized in %v", time.Since(startTime))
 	})
 }
@@ -432,8 +436,8 @@ func processWithOpenAI(ctx context.Context, jobPosting, extractedResume string) 
 		logger.Println("Starting resume and cover letter processing with OpenAI")
 		startTime := time.Now()
 
-		// Assuming openAIProcessor.ProcesseDocuments exists
-		processedDocumentsJSON, err := openAIProcessor.ProcesseDocuments(documents)
+	
+		processedDocumentsJSON, err := openAIProcessor.ProcessDocuments(documents)
 		duration := time.Since(startTime)
 		taskSpan.SetData("duration_ms", duration.Milliseconds())
 

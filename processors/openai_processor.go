@@ -15,291 +15,302 @@ import (
 	"github.com/openai/openai-go/option"
 )
 
+// Configuration constants
 const (
-	openAIDefaultTimeout = 100 * time.Second
-	maxRetries           = 3
-	retryDelay           = 500 * time.Millisecond
-	cacheTTL             = 5 * time.Minute
+	defaultTimeout = 100 * time.Second
+	maxRetries     = 3
+	retryDelay     = 500 * time.Millisecond
+	cacheTTL       = 5 * time.Minute
 )
 
+// Singleton client management
 var (
-	openAIOnce   sync.Once
-	openAIClient *openai.Client
+	clientOnce sync.Once
+	client     openai.Client
+	clientErr  error
 )
 
-// OpenAIProcessor handles OpenAI API interactions
-type OpenAIProcessor struct {
-	client *openai.Client
-	cache  sync.Map // Simple in-memory cache
-}
-
-type cacheItem struct {
+// CacheItem represents a cached value with expiration
+type CacheItem struct {
 	value      string
 	expiration time.Time
 }
 
-// NewOpenAIProcessor creates a new OpenAI processor with singleton client
-func NewOpenAIProcessor() *OpenAIProcessor {
-	// Load .env file once
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found or error loading it:", err)
-	}
+// IsExpired checks if the cache item has expired
+func (c CacheItem) IsExpired() bool {
+	return time.Now().After(c.expiration)
+}
 
-	// Initialize client using sync.Once for thread safety
-	openAIOnce.Do(func() {
-		apiKey := os.Getenv("OPENAI_API_KEY")
-		if apiKey == "" {
-			log.Println("Warning: OPENAI_API_KEY environment variable not set")
-		}
-		client := openai.NewClient(
-			option.WithAPIKey(apiKey),
-			option.WithRequestTimeout(openAIDefaultTimeout),
-		)
-		openAIClient = &client
-	})
+// Cache provides thread-safe caching functionality
+type Cache struct {
+	store sync.Map
+	ttl   time.Duration
+}
 
-	return &OpenAIProcessor{
-		client: openAIClient,
+// NewCache creates a new cache with the specified TTL
+func NewCache(ttl time.Duration) *Cache {
+	return &Cache{
+		ttl: ttl,
 	}
 }
 
-// ProcesseDocuments sends the job description and resume to OpenAI API with retries and caching
-func (o *OpenAIProcessor) ProcesseDocuments(documents string) (string, error) {
-	if cached, ok := o.getFromCache(documents); ok {
+// Set stores a value in the cache with expiration
+func (c *Cache) Set(key, value string) {
+	item := CacheItem{
+		value:      value,
+		expiration: time.Now().Add(c.ttl),
+	}
+	c.store.Store(key, item)
+}
+
+// Get retrieves a value from the cache if it exists and hasn't expired
+func (c *Cache) Get(key string) (string, bool) {
+	val, exists := c.store.Load(key)
+	if !exists {
+		return "", false
+	}
+
+	item := val.(CacheItem)
+	if item.IsExpired() {
+		c.store.Delete(key)
+		return "", false
+	}
+
+	return item.value, true
+}
+
+// OpenAIProcessor handles OpenAI API interactions with caching and retry logic
+type OpenAIProcessor struct {
+	client openai.Client
+	cache  *Cache
+}
+
+// NewOpenAIProcessor creates a new OpenAI processor with singleton client
+func NewOpenAIProcessor() (*OpenAIProcessor, error) {
+	if err := initializeClient(); err != nil {
+		return nil, fmt.Errorf("failed to initialize OpenAI client: %w", err)
+	}
+
+	return &OpenAIProcessor{
+		client: client,
+		cache:  NewCache(cacheTTL),
+	}, nil
+}
+
+// initializeClient initializes the OpenAI client as a singleton
+func initializeClient() error {
+	clientOnce.Do(func() {
+		if err := godotenv.Load(); err != nil {
+			log.Println("No .env file found or error loading it:", err)
+		}
+
+		apiKey := os.Getenv("OPENAI_API_KEY")
+		if apiKey == "" {
+			clientErr = fmt.Errorf("OPENAI_API_KEY environment variable not set")
+			return
+		}
+
+		client = openai.NewClient(
+			option.WithAPIKey(apiKey),
+			option.WithRequestTimeout(defaultTimeout),
+		)
+	})
+
+	return clientErr
+}
+
+// ProcessDocuments processes documents through OpenAI with retry logic and caching
+func (p *OpenAIProcessor) ProcessDocuments(documents string) (string, error) {
+	if cached, found := p.cache.Get(documents); found {
 		return cached, nil
 	}
 
-	var result string
-	var err error
+	result, err := p.executeWithRetry(func() (string, error) {
+		return p.generateResumeAndCoverLetter(documents)
+	})
 
-	// Retry logic
-	for attempt := 0; attempt < maxRetries; attempt++ {
-		if attempt > 0 {
-			time.Sleep(retryDelay)
-		}
-
-		result, err = o.generateResumeAndCoverLetter(documents)
-		if err == nil {
-			// Cache successful response
-			o.setInCache(documents, result)
-			return result, nil
-		}
-
-		log.Printf("Attempt %d failed: %v", attempt+1, err)
-	}
-
-	return "", fmt.Errorf("after %d attempts: %w", maxRetries, err)
-}
-
-func (o *OpenAIProcessor) generateResumeAndCoverLetter(text string) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), openAIDefaultTimeout)
-	defer cancel()
-
-	if o.client == nil {
-		return "", fmt.Errorf("OpenAI client not initialized")
-	}
-
-	chatCompletion, err := o.client.Chat.Completions.New(
-		ctx,
-		openai.ChatCompletionNewParams{
-			Model: constants.ResumeGenModel,
-			Messages: []openai.ChatCompletionMessageParamUnion{
-				{
-					OfSystem: &openai.ChatCompletionSystemMessageParam{
-						Content: openai.ChatCompletionSystemMessageParamContentUnion{
-							OfString: openai.String(constants.OpenAIInstruction),
-						},
-					},
-				},
-				{
-					OfAssistant: &openai.ChatCompletionAssistantMessageParam{
-						Content: openai.ChatCompletionAssistantMessageParamContentUnion{
-							OfString: openai.String(constants.AssistantResumeExample),
-						},
-					},
-				},
-				{
-					OfUser: &openai.ChatCompletionUserMessageParam{
-						Content: openai.ChatCompletionUserMessageParamContentUnion{
-							OfString: openai.String(text),
-						},
-					},
-				},
-			},
-			Temperature: openai.Float(0.7),
-			MaxTokens:   openai.Int(4000),
-			TopP:        openai.Float(1),
-		},
-	)
 	if err != nil {
-		return "", fmt.Errorf("error creating chat completion: %w", err)
+		return "", err
 	}
 
-	if len(chatCompletion.Choices) == 0 {
-		return "", fmt.Errorf("no response choices available")
-	}
-
-	content := chatCompletion.Choices[0].Message.Content
-	if content == "" {
-		return "", fmt.Errorf("empty response content")
-	}
-
-	return content, nil
+	p.cache.Set(documents, result)
+	return result, nil
 }
 
 // GenerateSubjectName generates a brief subject name with retries and caching
-func (o *OpenAIProcessor) GenerateSubjectName(jobDescription string) (string, error) {
+func (p *OpenAIProcessor) GenerateSubjectName(jobDescription string) (string, error) {
 	cacheKey := "subject:" + jobDescription
-	if cached, ok := o.getFromCache(cacheKey); ok {
+
+	if cached, found := p.cache.Get(cacheKey); found {
 		return cached, nil
 	}
 
-	var result string
-	var err error
+	result, err := p.executeWithRetry(func() (string, error) {
+		return p.generateSubjectNameWithContext(jobDescription)
+	})
 
-	// Retry logic
+	if err != nil {
+		return "", err
+	}
+
+	p.cache.Set(cacheKey, result)
+	return result, nil
+}
+
+// AnalyzeResumeForRecommendation analyzes a resume for job recommendations
+func (p *OpenAIProcessor) AnalyzeResumeForRecommendation(resume string) (string, error) {
+	prompt := fmt.Sprintf("**Resume:**{resume}\n%s", resume)
+
+	params := chatCompletionParams{
+		model:       constants.RECOMMENDATIONS_MODEL,
+		systemMsg:   constants.RECOMMENDATIONS_INSTRUCTION,
+		userMsg:     prompt,
+		temperature: 0.5,
+		maxTokens:   512,
+		topP:        1.0,
+	}
+
+	return p.createChatCompletion(params)
+}
+
+// chatCompletionParams holds parameters for chat completion requests
+type chatCompletionParams struct {
+	model        openai.ChatModel
+	systemMsg    string
+	assistantMsg string
+	userMsg      string
+	temperature  float64
+	maxTokens    int
+	topP         float64
+}
+
+// executeWithRetry executes a function with retry logic
+func (p *OpenAIProcessor) executeWithRetry(fn func() (string, error)) (string, error) {
+	var lastErr error
+
 	for attempt := 0; attempt < maxRetries; attempt++ {
 		if attempt > 0 {
 			time.Sleep(retryDelay)
 		}
 
-		result, err = o.generateSubjectNameWithContext(jobDescription)
+		result, err := fn()
 		if err == nil {
-			// Cache successful response
-			o.setInCache(cacheKey, result)
 			return result, nil
 		}
 
+		lastErr = err
 		log.Printf("Attempt %d failed: %v", attempt+1, err)
 	}
 
-	return "", fmt.Errorf("after %d attempts: %w", maxRetries, err)
+	return "", fmt.Errorf("after %d attempts: %w", maxRetries, lastErr)
 }
 
-func (o *OpenAIProcessor) generateSubjectNameWithContext(jobDetails string) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), openAIDefaultTimeout)
-	defer cancel()
-
-	if o.client == nil {
-		return "", fmt.Errorf("OpenAI client not initialized")
+// generateResumeAndCoverLetter generates resume and cover letter content
+func (p *OpenAIProcessor) generateResumeAndCoverLetter(text string) (string, error) {
+	params := chatCompletionParams{
+		model:        constants.ResumeGenModel,
+		systemMsg:    constants.OpenAIInstruction,
+		assistantMsg: constants.AssistantResumeExample,
+		userMsg:      text,
+		temperature:  0.7,
+		maxTokens:    4000,
+		topP:         1.0,
 	}
 
-	chatCompletion, err := o.client.Chat.Completions.New(
+	return p.createChatCompletion(params)
+}
+
+// generateSubjectNameWithContext generates a subject name based on job details
+func (p *OpenAIProcessor) generateSubjectNameWithContext(jobDetails string) (string, error) {
+	params := chatCompletionParams{
+		model:        constants.SubjectGenModel,
+		systemMsg:    constants.SubjectGenInstruction,
+		assistantMsg: constants.SubjectGenAssistantInstruction,
+		userMsg:      jobDetails,
+		temperature:  0.7,
+		maxTokens:    64,
+		topP:         0.9,
+	}
+
+	result, err := p.createChatCompletion(params)
+	if err != nil {
+		return "", err
+	}
+
+	log.Printf("\033[31mOpenAI response:\033[0m %s", result)
+	return result, nil
+}
+
+// createChatCompletion creates a chat completion request with the given parameters
+func (p *OpenAIProcessor) createChatCompletion(params chatCompletionParams) (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
+	defer cancel()
+
+	messages := p.buildMessages(params)
+
+	chatCompletion, err := p.client.Chat.Completions.New(
 		ctx,
 		openai.ChatCompletionNewParams{
-			Model: constants.SubjectGenModel,
-			Messages: []openai.ChatCompletionMessageParamUnion{
-				{
-					OfSystem: &openai.ChatCompletionSystemMessageParam{
-						Content: openai.ChatCompletionSystemMessageParamContentUnion{
-							OfString: openai.String(constants.SubjectGenInstruction),
-						},
-					},
-				},
-				{
-					OfAssistant: &openai.ChatCompletionAssistantMessageParam{
-						Content: openai.ChatCompletionAssistantMessageParamContentUnion{
-							OfString: openai.String(constants.SubjectGenAssistantInstruction),
-						},
-					},
-				},
-				{
-					OfUser: &openai.ChatCompletionUserMessageParam{
-						Content: openai.ChatCompletionUserMessageParamContentUnion{
-							OfString: openai.String(jobDetails),
-						},
-					},
-				},
-			},
-			Temperature: openai.Float(0.7),
-			MaxTokens:   openai.Int(64),
-			TopP:        openai.Float(0.9),
+			Model:       params.model,
+			Messages:    messages,
+			Temperature: openai.Float(params.temperature),
+			MaxTokens:   openai.Int(int64(params.maxTokens)),
+			TopP:        openai.Float(params.topP),
 		},
 	)
+
 	if err != nil {
 		return "", fmt.Errorf("error creating chat completion: %w", err)
 	}
 
-	if len(chatCompletion.Choices) == 0 {
-		return "", fmt.Errorf("no response choices available")
-	}
-
-	content := chatCompletion.Choices[0].Message.Content
-	if content == "" {
-		return "", fmt.Errorf("empty response content")
-	}
-
-	log.Printf("\033[31mOpenAI response:\033[0m %s", content)
-	return content, nil
+	return p.extractContent(chatCompletion)
 }
 
-// AnalyzeResumeForRecommendation sends a resume to OpenAI for job recommendation analysis
-func (o *OpenAIProcessor) AnalyzeResumeForRecommendation(resume string) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), openAIDefaultTimeout)
-	defer cancel()
-
-	if o.client == nil {
-		return "", fmt.Errorf("OpenAI client not initialized")
-	}
-
-	// Prompt for job recommendation
-	prompt := "**Resume:**{resume}\n" + resume
-
-	chatCompletion, err := o.client.Chat.Completions.New(
-		ctx,
-		openai.ChatCompletionNewParams{
-			Model: constants.RECOMMENDATIONS_MODEL,
-			Messages: []openai.ChatCompletionMessageParamUnion{
-				{
-					OfSystem: &openai.ChatCompletionSystemMessageParam{
-						Content: openai.ChatCompletionSystemMessageParamContentUnion{
-							OfString: openai.String(constants.RECOMMENDATIONS_INSTRUCTION),
-						},
-					},
-				},
-				{
-					OfUser: &openai.ChatCompletionUserMessageParam{
-						Content: openai.ChatCompletionUserMessageParamContentUnion{
-							OfString: openai.String(prompt),
-						},
-					},
+// buildMessages constructs the message array for chat completion
+func (p *OpenAIProcessor) buildMessages(params chatCompletionParams) []openai.ChatCompletionMessageParamUnion {
+	messages := []openai.ChatCompletionMessageParamUnion{
+		{
+			OfSystem: &openai.ChatCompletionSystemMessageParam{
+				Content: openai.ChatCompletionSystemMessageParamContentUnion{
+					OfString: openai.String(params.systemMsg),
 				},
 			},
-			Temperature: openai.Float(0.5),
-			MaxTokens:   openai.Int(512),
-			TopP:        openai.Float(1),
 		},
-	)
-	if err != nil {
-		return "", fmt.Errorf("error creating chat completion: %w", err)
 	}
 
-	if len(chatCompletion.Choices) == 0 {
-		return "", fmt.Errorf("no response choices available")
+	// Add assistant message if provided
+	if params.assistantMsg != "" {
+		messages = append(messages, openai.ChatCompletionMessageParamUnion{
+			OfAssistant: &openai.ChatCompletionAssistantMessageParam{
+				Content: openai.ChatCompletionAssistantMessageParamContentUnion{
+					OfString: openai.String(params.assistantMsg),
+				},
+			},
+		})
 	}
 
-	content := chatCompletion.Choices[0].Message.Content
-	if content == "" {
-		return "", fmt.Errorf("empty response content")
-	}
-	return content, nil
-}
-
-// Cache helper methods
-func (o *OpenAIProcessor) setInCache(key, value string) {
-	o.cache.Store(key, cacheItem{
-		value:      value,
-		expiration: time.Now().Add(cacheTTL),
+	// Add user message
+	messages = append(messages, openai.ChatCompletionMessageParamUnion{
+		OfUser: &openai.ChatCompletionUserMessageParam{
+			Content: openai.ChatCompletionUserMessageParamContentUnion{
+				OfString: openai.String(params.userMsg),
+			},
+		},
 	})
+
+	return messages
 }
 
-func (o *OpenAIProcessor) getFromCache(key string) (string, bool) {
-	if val, ok := o.cache.Load(key); ok {
-		item := val.(cacheItem)
-		if time.Now().Before(item.expiration) {
-			return item.value, true
-		}
-		o.cache.Delete(key) // Remove expired item
+// extractContent extracts content from chat completion response
+func (p *OpenAIProcessor) extractContent(chatCompletion *openai.ChatCompletion) (string, error) {
+	if len(chatCompletion.Choices) == 0 {
+		return "", fmt.Errorf("no response choices available")
 	}
-	return "", false
+
+	content := chatCompletion.Choices[0].Message.Content
+	if content == "" {
+		return "", fmt.Errorf("empty response content")
+	}
+
+	return content, nil
 }

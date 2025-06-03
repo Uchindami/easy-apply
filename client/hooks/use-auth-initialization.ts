@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect } from "react"
 import { initializeAuth, cleanupAuth } from "@/store/profile-store"
 

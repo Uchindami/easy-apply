@@ -105,28 +105,6 @@ export function PageHeader({
               <span className="hidden sm:inline">Change Document</span>
               <span className="sm:hidden">Change</span>
             </Button>
-
-            <Button
-              variant={canRefresh ? "default" : "outline"}
-              size="sm"
-              onClick={onRefresh}
-              disabled={isLoading || !canRefresh}
-              className={`transition-all ${
-                canRefresh
-                  ? "bg-primary hover:bg-primary/90 shadow-sm"
-                  : "opacity-60"
-              }`}
-            >
-              <RefreshCw
-                className={`h-4 w-4 mr-2 transition-transform ${
-                  isLoading ? "animate-spin" : ""
-                }`}
-              />
-              <span className="hidden sm:inline">
-                {isLoading ? "Refreshing..." : "Refresh"}
-              </span>
-              <span className="sm:hidden">↻</span>
-            </Button>
           </div>
         </div>
 
@@ -139,11 +117,15 @@ export function PageHeader({
                   <div className="w-2 h-2 rounded-full bg-green-500"></div>
                   Recommendations Active
                 </span>
-                {recommendation.lastUpdated && (
-                  <span>
-                    Last updated:{" "}
-                    {new Date(recommendation.lastUpdated).toLocaleDateString()}
-                  </span>
+                {recommendation.confidence && (
+                  <>
+                    <span>Confidence Level:</span>
+                    <span className="flex items-center gap-1">
+                      <span className="text-yellow-500">
+                        {recommendation.confidence.toUpperCase()}
+                      </span>
+                    </span>
+                  </>
                 )}
               </div>
               <div className="flex items-center gap-1">

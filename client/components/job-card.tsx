@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -64,7 +62,7 @@ export const JobCard = React.memo(function JobCard({
         toast({
           title: "Job saved",
           description: "The job has been added to your saved jobs",
-          variant: "success",
+          variant: "default",
         });
       }
     } catch (error) {

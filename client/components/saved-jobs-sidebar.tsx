@@ -1,13 +1,23 @@
-"use client"
+"use client";
 
-import React from "react"
-import { Bookmark, Trash2, Clock, MapPin, Building, ExternalLink, X, RefreshCw, AlertTriangle } from "lucide-react"
-import { formatRelativeTime } from "@/utils/date-utils"
-import { useSavedJobsStore } from "@/store/saved-jobs-store"
-import { useToast } from "@/hooks/use-toast"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import React from "react";
+import {
+  Bookmark,
+  Trash2,
+  Clock,
+  MapPin,
+  Building,
+  ExternalLink,
+  X,
+  RefreshCw,
+  AlertTriangle,
+} from "lucide-react";
+import { formatRelativeTime } from "@/utils/date-utils";
+import { useSavedJobsStore } from "@/store/saved-jobs-store";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Sidebar,
   SidebarContent,
@@ -20,7 +30,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,60 +40,70 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 
 export function SavedJobsSidebar() {
-  const { savedJobs, isLoading, error, fetchSavedJobs, unsaveJob, clearAllSavedJobs } = useSavedJobsStore()
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState(false)
-  const { toast } = useToast()
+  const {
+    savedJobs,
+    isLoading,
+    error,
+    fetchSavedJobs,
+    unsaveJob,
+    clearAllSavedJobs,
+  } = useSavedJobsStore();
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState(false);
+  const { toast } = useToast();
 
   // Handle job removal with error handling
   const handleUnsaveJob = async (jobId: string) => {
     try {
-      await unsaveJob(jobId)
+      await unsaveJob(jobId);
       toast({
         title: "Job removed",
         description: "The job has been removed from your saved jobs",
         variant: "success",
-      })
+      });
     } catch (err) {
       toast({
         title: "Error removing job",
-        description: err instanceof Error ? err.message : "Failed to remove job",
+        description:
+          err instanceof Error ? err.message : "Failed to remove job",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   // Handle clearing all jobs with error handling
   const handleClearAllJobs = async () => {
     try {
-      await clearAllSavedJobs()
-      setIsConfirmDialogOpen(false)
+      await clearAllSavedJobs();
+      setIsConfirmDialogOpen(false);
       toast({
         title: "All jobs cleared",
         description: "All saved jobs have been removed",
         variant: "success",
-      })
+      });
     } catch (err) {
       toast({
         title: "Error clearing jobs",
-        description: err instanceof Error ? err.message : "Failed to clear saved jobs",
+        description:
+          err instanceof Error ? err.message : "Failed to clear saved jobs",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   // Handle retry loading
   const handleRetryLoading = () => {
     fetchSavedJobs().catch((err) => {
       toast({
         title: "Error loading saved jobs",
-        description: err instanceof Error ? err.message : "Failed to load saved jobs",
+        description:
+          err instanceof Error ? err.message : "Failed to load saved jobs",
         variant: "destructive",
-      })
-    })
-  }
+      });
+    });
+  };
 
   return (
     <>
@@ -113,7 +133,9 @@ export function SavedJobsSidebar() {
           {error && !isLoading && (
             <div className="flex flex-col items-center justify-center h-48 p-4 text-center">
               <AlertTriangle className="h-10 w-10 mb-2 text-red-500" />
-              <p className="text-sm font-medium text-red-500 mb-1">Failed to load saved jobs</p>
+              <p className="text-sm font-medium text-red-500 mb-1">
+                Failed to load saved jobs
+              </p>
               <p className="text-xs text-gray-500 mb-4">{error}</p>
               <Button variant="outline" size="sm" onClick={handleRetryLoading}>
                 <RefreshCw className="h-4 w-4 mr-2" />
@@ -152,21 +174,31 @@ export function SavedJobsSidebar() {
                         <div className="flex items-start gap-3">
                           <div className="h-10 w-10 min-w-[40px] rounded-md bg-gray-100 flex items-center justify-center overflow-hidden">
                             <img
-                              src={job.companyLogo || "/placeholder.svg?height=40&width=40"}
+                              src={
+                                job.companyLogo ||
+                                "/placeholder.svg?height=40&width=40"
+                              }
                               alt={`${job.companyName} logo`}
                               className="h-full w-full object-contain"
                               onError={(e) => {
-                                ;(e.target as HTMLImageElement).src = "/placeholder.svg?height=40&width=40"
+                                (e.target as HTMLImageElement).src =
+                                  "/placeholder.svg?height=40&width=40";
                               }}
                             />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-medium text-sm truncate" title={job.position}>
+                            <h3
+                              className="font-medium text-sm truncate"
+                              title={job.position}
+                            >
                               {job.position}
                             </h3>
                             <p className="text-xs text-gray-600 flex items-center">
                               <Building className="h-3 w-3 min-w-[12px] mr-1" />
-                              <span className="truncate" title={job.companyName}>
+                              <span
+                                className="truncate"
+                                title={job.companyName}
+                              >
                                 {job.companyName}
                               </span>
                             </p>
@@ -216,30 +248,39 @@ export function SavedJobsSidebar() {
             {isLoading
               ? "Loading saved jobs..."
               : savedJobs.length > 0
-                ? `You have ${savedJobs.length} saved job${savedJobs.length !== 1 ? "s" : ""}`
-                : "Save jobs to view them later"}
+              ? `You have ${savedJobs.length} saved job${
+                  savedJobs.length !== 1 ? "s" : ""
+                }`
+              : "Save jobs to view them later"}
           </p>
         </SidebarFooter>
 
         <SidebarRail />
       </Sidebar>
 
-      <AlertDialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
+      <AlertDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Clear all saved jobs?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently remove all your saved jobs.
+              This action cannot be undone. This will permanently remove all
+              your saved jobs.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleClearAllJobs} className="bg-red-500 hover:bg-red-600">
+            <AlertDialogAction
+              onClick={handleClearAllJobs}
+              className="bg-red-500 hover:bg-red-600"
+            >
               Clear All
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }

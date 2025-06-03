@@ -10,10 +10,7 @@ import {
 
 export type RecommendationData = {
   industry: string;
-  // Add other recommendation fields as needed
-  skills?: string[];
-  experience?: string;
-  // ... other properties
+  confidence: string;
 };
 
 export type ProfileState = {
