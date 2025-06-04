@@ -18,7 +18,7 @@ var (
 // Initialize Firebase
 func initFirebase() {
 	opt := option.WithCredentialsFile("easy-apply.json")
-	
+
 	var err error
 	app, err = firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {

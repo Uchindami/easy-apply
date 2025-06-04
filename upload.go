@@ -77,6 +77,22 @@ type ProcessingResult struct {
 	ScrappedWebJobPosting string
 	Error                 error
 }
+type Template struct {
+	Category    string `json:"category"`
+	Description string `json:"description"`
+	HTMLContent string `json:"htmlContent"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+}
+
+type Colors struct {
+	Accent    string `json:"accent"`
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	Primary   string `json:"primary"`
+	Secondary string `json:"secondary"`
+	Text      string `json:"text"`
+}
 
 // Initialization
 func initProcessors() {
@@ -158,13 +174,13 @@ func extractTextFromFile(ctx context.Context, fileContent []byte, fileExt string
 	span.SetData("file_content_length", len(fileContent))
 
 	startTime := time.Now()
-	extractedText, err := fileProcessor.ProcessFileBuffer(fileContent, fileExt) // Assuming ProcessFileBuffer exists
+	extractedText, err := fileProcessor.ProcessFileBuffer(fileContent, fileExt)
 	duration := time.Since(startTime)
 	span.SetData("duration_ms", duration.Milliseconds())
 
 	if err != nil {
 		logger.Printf("File processing failed after %v: %v", duration, err)
-		span.Status = sentry.SpanStatusAborted // Corrected
+		span.Status = sentry.SpanStatusAborted
 		span.SetData("error", err.Error())
 		return "", fmt.Errorf("file processing failed: %w", err)
 	}
@@ -237,7 +253,7 @@ func processFileAndWeb(ctx context.Context, fileContent []byte, fileExt, webLink
 		defer mu.Unlock()
 
 		if err != nil {
-			taskSpan.Status = sentry.SpanStatusAborted // Corrected
+			taskSpan.Status = sentry.SpanStatusAborted
 			taskSpan.SetData("error", err.Error())
 			logger.Printf("Web processing failed after %v: %v", duration, err)
 			wrappedErr := fmt.Errorf("web processing failed: %w", err)
@@ -387,7 +403,7 @@ func updateUserRecommendation(ctx context.Context, userID string, recommendation
 }
 
 // OpenAI processing
-func processWithOpenAI(ctx context.Context, jobPosting, extractedResume string) (processedDocs map[string]string, jobDetails map[string]string, err error) {
+func processWithOpenAI(ctx context.Context, jobPosting, extractedResume, selectedTemplate string, selectedColors Colors) (processedDocs map[string]string, jobDetails map[string]string, err error) {
 	parentSpan := sentry.SpanFromContext(ctx)
 	var span *sentry.Span
 	if parentSpan != nil {
@@ -397,7 +413,7 @@ func processWithOpenAI(ctx context.Context, jobPosting, extractedResume string) 
 	}
 	defer func() {
 		if err != nil {
-			span.Status = sentry.SpanStatusAborted // Corrected
+			span.Status = sentry.SpanStatusAborted
 			span.SetData("error", err.Error())
 		}
 		span.Finish()
@@ -436,7 +452,6 @@ func processWithOpenAI(ctx context.Context, jobPosting, extractedResume string) 
 		logger.Println("Starting resume and cover letter processing with OpenAI")
 		startTime := time.Now()
 
-	
 		processedDocumentsJSON, err := openAIProcessor.ProcessDocuments(documents)
 		duration := time.Since(startTime)
 		taskSpan.SetData("duration_ms", duration.Milliseconds())
@@ -461,7 +476,7 @@ func processWithOpenAI(ctx context.Context, jobPosting, extractedResume string) 
 		if errUnmarshal := json.Unmarshal([]byte(processedDocumentsJSON), &processedDocumentsResult); errUnmarshal != nil {
 			taskSpan.Status = sentry.SpanStatusInvalidArgument // Corrected
 			taskSpan.SetData("unmarshal_error", errUnmarshal.Error())
-			taskSpan.SetData("raw_json_response", processedDocumentsJSON) // Be cautious with PII
+			// taskSpan.SetData("raw_json_response", processedDocumentsJSON) // Be cautious with PII
 
 			errsMu.Lock()
 			multiErr = append(multiErr, fmt.Errorf("failed to parse processed documents JSON: %w", errUnmarshal))
@@ -680,23 +695,18 @@ func sendJSONResponse(w http.ResponseWriter, r *http.Request, data interface{}, 
 }
 
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
-	// Clone the hub for this request context to ensure isolation.
-	hub := sentry.CurrentHub().Clone()
-	// Set the hub on the request's context.
-	// This makes the hub available to deeper parts of the application via r.Context().
-	ctx := sentry.SetHubOnContext(r.Context(), hub)
-	r = r.WithContext(ctx) // Update request with new context
 
-	// Start a transaction for performance monitoring.
-	// Using r.URL.Path provides a more specific transaction name than a generic one.
+	hub := sentry.CurrentHub().Clone()
+	ctx := sentry.SetHubOnContext(r.Context(), hub)
+	r = r.WithContext(ctx)
+
 	transaction := sentry.StartTransaction(ctx, fmt.Sprintf("http.handler.%s %s", r.Method, r.URL.Path), sentry.ContinueFromRequest(r))
 	defer transaction.Finish()
-	// Set transaction on the scope so it's available for error events
 	hub.ConfigureScope(func(scope *sentry.Scope) {
 		scope.SetTag("transaction", transaction.Name)
 	})
 
-	userID := r.FormValue("userId") // Attempt to get userID early for context
+	userID := r.FormValue("userId")
 	if userID != "" {
 		hub.ConfigureScope(func(scope *sentry.Scope) {
 			scope.SetUser(sentry.User{ID: userID})
@@ -704,7 +714,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	logger.Println("Received upload request for user:", userID)
+	// logger.Println("Received upload request for user:", userID)
 
 	if r.Method != http.MethodPost {
 		logger.Println("Invalid method attempted:", r.Method)
@@ -718,9 +728,6 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		handleError(w, r, "Method Not Allowed", http.StatusMethodNotAllowed, errors.New("method not allowed: "+r.Method))
 		return
 	}
-
-	// Delegate to the actual file upload logic
-	// The transaction context is already part of r.Context()
 	handleFileUpload(w, r)
 }
 
@@ -729,8 +736,6 @@ func handleFileUpload(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	hub := sentry.GetHubFromContext(ctx) // Should not be nil here
 
-	// Create a child span for the entirety of file upload handling logic.
-	// This span will be a child of the transaction started in uploadHandler.
 	span := sentry.StartSpan(ctx, "function.handleFileUpload")
 	defer span.Finish()
 
@@ -743,7 +748,7 @@ func handleFileUpload(w http.ResponseWriter, r *http.Request) {
 		// Additional tracking can be added to the span if needed
 	}()
 
-	initProcessors() // Ensure processors are ready
+	initProcessors()
 
 	// Parse form with error tracking
 	formParseSpan := sentry.StartSpan(ctx, "file.parse_multipart_form")
@@ -819,7 +824,7 @@ func handleFileUpload(w http.ResponseWriter, r *http.Request) {
 	fileContent, err := processFileContent(ctx, file, handler.Filename) // Pass ctx
 	fileContentProcessingSpan.Finish()                                  // Finish regardless of error, status set in processFileContent
 	if err != nil {
-		// processFileContent already logged and set span status
+
 		handleError(w, r, "Failed to read content from uploaded file", http.StatusInternalServerError, err)
 		return
 	}
@@ -855,8 +860,21 @@ func handleFileUpload(w http.ResponseWriter, r *http.Request) {
 	sendOpenAIAnalysisAndRespond(w, r, processingResult.ScrappedWebJobPosting, processingResult.ExtractedResume, handler.Filename, historyRef)
 }
 
+func parseFormJSON[T any](w http.ResponseWriter, r *http.Request, fieldName string, target *T) error {
+	jsonStr := r.FormValue(fieldName)
+	if jsonStr == "" {
+		return nil // Empty is valid, leave target as zero value
+	}
+
+	if err := json.Unmarshal([]byte(jsonStr), target); err != nil {
+		handleError(w, r, fmt.Sprintf("Failed to parse %s JSON", fieldName), http.StatusBadRequest, err)
+		return err
+	}
+	return nil
+}
+
 func sendOpenAIAnalysisAndRespond(w http.ResponseWriter, r *http.Request, jobPosting, extractedResume, filename string, historyRef *firestore.DocumentRef) {
-	ctx := r.Context() // Get context from request, which includes Sentry hub and transaction
+	ctx := r.Context()
 	hub := sentry.GetHubFromContext(ctx)
 
 	span := sentry.StartSpan(ctx, "function.sendOpenAIAnalysisAndRespond")
@@ -874,8 +892,23 @@ func sendOpenAIAnalysisAndRespond(w http.ResponseWriter, r *http.Request, jobPos
 	hub.Scope().SetExtra("job_posting_length_openai", len(jobPosting))
 	hub.Scope().SetExtra("extracted_resume_length_openai", len(extractedResume))
 
+	var selectedTemplate Template
+	if err := parseFormJSON(w, r, "selectedTemplate", &selectedTemplate); err != nil {
+		return
+	}
+
+	var selectedColors Colors
+	if err := parseFormJSON(w, r, "selectedColors", &selectedColors); err != nil {
+		return
+	}
 	// processWithOpenAI will create its own span for the OpenAI calls
-	processedDocs, jobDetails, err := processWithOpenAI(ctx, jobPosting, extractedResume) // Pass ctx
+	processedDocs, jobDetails, err := processWithOpenAI(
+		ctx,
+		jobPosting,
+		extractedResume,
+		selectedTemplate.HTMLContent,
+		selectedColors,
+	)
 	if err != nil {
 		// processWithOpenAI already logged, set span status, and captured errors
 		handleError(w, r, fmt.Sprintf("OpenAI processing failed: %v", err), http.StatusInternalServerError, err)

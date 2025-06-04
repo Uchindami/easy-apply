@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import WordIcon from "@/assets/WordIcon";
+import PdfIcon from "@/assets/PdfIcon";
 
 interface ResumeUploaderProps {
   resumeFile: File | null;
@@ -124,9 +126,31 @@ export function ResumeUploader({
                   getFileIcon(resumeFile).bg
                 )}
               >
-                <File
-                  className={cn("h-6 w-6", getFileIcon(resumeFile).color)}
-                />
+                {(() => {
+                  const extension = resumeFile.name
+                    .split(".")
+                    .pop()
+                    ?.toLowerCase();
+                  if (extension === "pdf") {
+                    return (
+                      <PdfIcon
+                        className={cn("h-6 w-6", getFileIcon(resumeFile).color)}
+                      />
+                    );
+                  }
+                  if (extension === "doc" || extension === "docx") {
+                    return (
+                      <WordIcon
+                        className={cn("h-6 w-6", getFileIcon(resumeFile).color)}
+                      />
+                    );
+                  }
+                  return (
+                    <File
+                      className={cn("h-6 w-6", getFileIcon(resumeFile).color)}
+                    />
+                  );
+                })()}
               </div>
 
               <div className="text-center space-y-1">

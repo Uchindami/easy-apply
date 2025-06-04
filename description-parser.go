@@ -432,7 +432,7 @@ func processImageFromURL(imageURL string) (string, error) {
 		return "", reqErr
 	}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	
+
 	client := &http.Client{Timeout: ocrSpaceTimeout}
 	log.Println("Sending OCR API request")
 	resp, err := client.Do(req)

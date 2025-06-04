@@ -25,11 +25,19 @@ export async function generateTailoredDocuments(
   resumeFile: File,
   jobUrl: string,
   userId: string,
-  selectedTemplate: string,
-  selectedColors: string
+  selectedTemplate: object,
+  selectedColors: object
 ): Promise<GeneratedDocuments> {
-  if (!resumeFile || !jobUrl || !userId || !selectedTemplate || !selectedColors) {
-    throw new Error("Missing required parameters: resumeFile, jobUrl, or userId");
+  if (
+    !resumeFile ||
+    !jobUrl ||
+    !userId ||
+    !selectedTemplate ||
+    !selectedColors
+  ) {
+    throw new Error(
+      "Missing required parameters: resumeFile, jobUrl, or userId"
+    );
   }
   if (!(resumeFile instanceof File)) {
     throw new Error("resumeFile must be a valid File object");
@@ -37,15 +45,16 @@ export async function generateTailoredDocuments(
   if (typeof jobUrl !== "string" || typeof userId !== "string") {
     throw new Error("jobUrl and userId must be strings");
   }
-  
+
   const formData = new FormData();
   formData.append("file", resumeFile);
   formData.append("weblink", jobUrl);
   formData.append("userId", userId);
-  formData.append("selectedTemplate", selectedTemplate);
-  formData.append("selectedColors", selectedColors);
+  formData.append("selectedTemplate", JSON.stringify(selectedTemplate));
+  formData.append("selectedColors", JSON.stringify(selectedColors));
 
-  // console.log(resumeFile,jobUrl)
+  console.log(resumeFile, jobUrl, userId, selectedTemplate, selectedColors);
+  console.log("FormData prepared for upload:", formData);
 
   try {
     const response = await fetch("http://localhost:8080/upload", {
