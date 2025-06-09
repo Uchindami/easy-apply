@@ -1,6 +1,8 @@
 package main
 
 import (
+	"easy-apply/handlers"
+
 	"cloud.google.com/go/firestore"
 	"cloud.google.com/go/storage"
 	"context"
@@ -31,11 +33,14 @@ func initFirebase() {
 		log.Fatalf("Error initializing Firestore client: %v", err)
 	}
 
+
 	// Initialize Storage client
 	storageClient, err = storage.NewClient(context.Background(), opt)
 	if err != nil {
 		log.Fatalf("Error initializing Storage client: %v", err)
 	}
+
+	handlers.FirestoreClient = firestoreClient
 
 	log.Println("Firebase services initialized successfully")
 }

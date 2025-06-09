@@ -15,9 +15,9 @@ import (
 	"time"
 
 	"github.com/getsentry/sentry-go" // Added Sentry
+	"github.com/google/generative-ai-go/genai"
 	"github.com/joho/godotenv"
-	"github.com/openai/openai-go" // Assuming this is the user's intended library (e.g., sashabaranov/go-openai aliased or a specific fork)
-	"github.com/openai/openai-go/option"
+	"google.golang.org/api/option"
 )
 
 const (
@@ -57,7 +57,7 @@ type JobDescription struct {
 	Domain                 string      `json:"domain"`
 }
 
-// ParseJobDescription processes the job description string using OpenAI.
+// ParseJobDescription processes the job description string using Gemini.
 // The provided ctx is used for controlling API call timeouts and cancellation.
 func ParseJobDescription(ctx context.Context, description string) (*JobDescription, error) {
 	log.Println("Starting job description processing")
@@ -106,93 +106,61 @@ func ParseJobDescription(ctx context.Context, description string) (*JobDescripti
 		}
 	}
 
-	// Validate OpenAI API key
-	apiKey := os.Getenv("OPENAI_API_KEY") // Changed from OPENROUTER_API_KEY
+	// Validate Gemini API key
+	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
-		err := fmt.Errorf("OPENAI_API_KEY environment variable not set")
+		err := fmt.Errorf("GEMINI_API_KEY environment variable not set")
 		sentry.CaptureException(err)
 		log.Println(err.Error())
 		return nil, err
 	}
 
-	// Initialize OpenAI client
-	log.Println("Initializing OpenAI client")
-	client := openai.NewClient(
-		option.WithAPIKey(apiKey),
-		option.WithRequestTimeout(llmApiTimeout), // Timeout for the underlying HTTP client
-	)
-
-	// Prepare messages for OpenAI API
-	// Ensure constants.OpenRouterInstrunctions is suitable for gpt-4.1-nano
-	messages := []openai.ChatCompletionMessageParamUnion{
-		{
-			OfSystem: &openai.ChatCompletionSystemMessageParam{
-				Content: openai.ChatCompletionSystemMessageParamContentUnion{
-					OfString: openai.String(constants.OpenRouterInstrunctions),
-				},
-			},
-		},
-		{
-			OfUser: &openai.ChatCompletionUserMessageParam{
-				Content: openai.ChatCompletionUserMessageParamContentUnion{
-					OfString: openai.String(desc),
-				},
-			},
-		},
-	}
-
-	// API parameters
-	modelName := "gpt-4.1-nano" // Changed model name
-	params := openai.ChatCompletionNewParams{
-		Model:       modelName,
-		Messages:    messages,
-		Temperature: openai.Float(0.7),
-		TopP:        openai.Float(1),
-		MaxTokens:   openai.Int(4600), // Ensure this is within model limits
-	}
-
-	var responseContent string
-	// Execute API call with retry logic
-	// The `ctx` argument from ParseJobDescription is used as the parent for the API call context.
-	err := withRetry(maxRetries, initialRetryDelay, maxRetryDelay, func() error {
-		// Create a new context for this specific API attempt, derived from the incoming ctx
-		apiCallCtx, apiCallCancel := context.WithTimeout(ctx, llmApiTimeout)
-		defer apiCallCancel()
-
-		log.Printf("Sending request to OpenAI API (model: %s)", modelName)
-		completion, err := client.Chat.Completions.New(apiCallCtx, params) // Use the derived apiCallCtx
-		if err != nil {
-			// Don't capture to Sentry here, as withRetry might retry.
-			// Sentry capture will happen if all retries fail.
-			log.Printf("OpenAI API error (attempt): %v", err)
-			return fmt.Errorf("OpenAI API error: %w", err) // Wrap error for retry logic
-		}
-
-		log.Printf("Received OpenAI response with %d choices", len(completion.Choices))
-		if len(completion.Choices) == 0 || completion.Choices[0].Message.Content == "" {
-			log.Println("No completion choices available or content is empty")
-			return fmt.Errorf("no choices returned or content is empty") // Error for retry
-		}
-
-		responseContent = completion.Choices[0].Message.Content
-		return nil
-	})
-
+	// Initialize Gemini client
+	log.Println("Initializing Gemini client")
+	client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
 	if err != nil {
-		finalErr := fmt.Errorf("failed to get response from OpenAI API after %d retries: %w", maxRetries, err)
-		// Capture the final error to Sentry after all retries have failed.
-		// You can add more context to Sentry if needed:
-		// sentry.WithScope(func(scope *sentry.Scope) {
-		//    scope.SetTag("model_name", modelName)
-		//    scope.SetExtra("description_length", len(desc))
-		//    sentry.CaptureException(finalErr)
-		// })
-		sentry.CaptureException(finalErr)
-		log.Println(finalErr.Error())
-		return nil, finalErr
+		sentry.CaptureException(err)
+		log.Printf("Failed to create Gemini client: %v", err)
+		return nil, err
+	}
+	defer client.Close()
+
+	modelName := constants.GeminiModelName
+	model := client.GenerativeModel(modelName)
+
+	// Set the system instruction for the model
+	model.SystemInstruction = &genai.Content{
+		Parts: []genai.Part{genai.Text(constants.OpenRouterInstrunctions)},
 	}
 
-	log.Printf("Processing complete. OpenAI Response length: %d characters", len(responseContent))
+	// Configure generation parameters
+	model.GenerationConfig = genai.GenerationConfig{
+		Temperature:      genai.Ptr(float32(0.7)),
+		MaxOutputTokens:  genai.Ptr(int32(4096)),
+		ResponseMIMEType: "application/json",
+	}
+
+		// Prepare the content for the model
+		resp, err := model.GenerateContent(ctx, genai.Text(desc))
+		if err != nil {
+			log.Printf("Gemini API error (attempt): %v", err)
+			return nil, fmt.Errorf("gemini api error: %w", err)
+		}
+
+		if len(resp.Candidates) == 0 || resp.Candidates[0].Content == nil || len(resp.Candidates[0].Content.Parts) == 0 {
+			log.Println("No candidates returned or content is empty")
+			return nil, fmt.Errorf("no candidates returned or content is empty")
+		}
+
+		// Assume the first part is the JSON string
+		var responseContent string
+		if text, ok := resp.Candidates[0].Content.Parts[0].(genai.Text); ok {
+			responseContent = string(text)
+		} else {
+			responseContent = fmt.Sprintf("%v", resp.Candidates[0].Content.Parts[0])
+		}
+
+		log.Printf("Processing complete. Gemini Response length: %d characters", len(responseContent))
 
 	// Preprocess and unmarshal the response
 	processedData, err := PreprocessJobDescription([]byte(responseContent))
@@ -205,7 +173,7 @@ func ParseJobDescription(ctx context.Context, description string) (*JobDescripti
 
 	var jobDesc JobDescription
 	if err := json.Unmarshal(processedData, &jobDesc); err != nil {
-		unmarshalErr := fmt.Errorf("failed to parse structured job description from OpenAI response: %w", err)
+		unmarshalErr := fmt.Errorf("failed to parse structured job description from Gemini response: %w", err)
 		sentry.CaptureException(unmarshalErr)
 		log.Printf("Error unmarshalling responseContent: %v", unmarshalErr)
 		return nil, unmarshalErr
@@ -453,14 +421,14 @@ func processImageFromURL(imageURL string) (string, error) {
 		return "", statusErr // Return for retry
 	}
 
-	var result struct {
-		ParsedResults []struct {
-			ParsedText string `json:"ParsedText"`
-		} `json:"ParsedResults"`
-		IsErroredOnProcessing bool   `json:"IsErroredOnProcessing"`
-		ErrorMessage          string `json:"ErrorMessage,omitempty"` // Corrected to string
-		ErrorDetails          string `json:"ErrorDetails,omitempty"` // Added for more info
-	}
+    var result struct {
+        ParsedResults []struct {
+            ParsedText string `json:"ParsedText"`
+        } `json:"ParsedResults"`
+        IsErroredOnProcessing bool        `json:"IsErroredOnProcessing"`
+        ErrorMessage          interface{} `json:"ErrorMessage,omitempty"` // Handle both string/array
+        ErrorDetails          interface{} `json:"ErrorDetails,omitempty"` // Handle both string/array
+    }
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		decodeErr := fmt.Errorf("error parsing OCR service response for %s: %w", imageURL, err)
@@ -468,11 +436,15 @@ func processImageFromURL(imageURL string) (string, error) {
 		return "", decodeErr // Return for retry
 	}
 
-	if result.IsErroredOnProcessing {
-		ocrProcErr := fmt.Errorf("OCR service processing error for %s: %s. Details: %s", imageURL, result.ErrorMessage, result.ErrorDetails)
-		log.Println(ocrProcErr.Error())
-		return "", ocrProcErr // Return for retry
-	}
+    if result.IsErroredOnProcessing {
+        // Convert error fields to readable strings
+        errorMsg := convertInterfaceToString(result.ErrorMessage)
+        errorDetails := convertInterfaceToString(result.ErrorDetails)
+        ocrProcErr := fmt.Errorf("OCR service processing error for %s: %s. Details: %s", 
+            imageURL, errorMsg, errorDetails)
+        log.Println(ocrProcErr.Error())
+        return "", ocrProcErr
+    }
 
 	if len(result.ParsedResults) > 0 && result.ParsedResults[0].ParsedText != "" {
 		parsedText := result.ParsedResults[0].ParsedText
@@ -512,9 +484,28 @@ func withRetry(maxAttempts int, initialDelay, maxDelay time.Duration, fn func() 
 }
 
 // min helper for time.Duration (already present and correct)
-func min(a, b time.Duration) time.Duration {
+func    min(a, b time.Duration) time.Duration {
 	if a < b {
 		return a
 	}
 	return b
+}
+
+// Helper function to convert interface{} (string/array) to flat string
+func convertInterfaceToString(val interface{}) string {
+    if val == nil {
+        return ""
+    }
+    switch v := val.(type) {
+    case string:
+        return v
+    case []interface{}:
+        parts := make([]string, 0, len(v))
+        for _, item := range v {
+            parts = append(parts, fmt.Sprintf("%v", item))
+        }
+        return strings.Join(parts, "; ")
+    default:
+        return fmt.Sprintf("%v", val)
+    }
 }

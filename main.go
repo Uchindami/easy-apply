@@ -1,14 +1,15 @@
 package main
 
 import (
-	// "context"
+	"context"
+	"easy-apply/services"
+	"easy-apply/utils"
 	"fmt"
+	"github.com/getsentry/sentry-go"
+	sentryhttp "github.com/getsentry/sentry-go/http"
 	"net/http"
 	"os"
 	"time"
-
-	"github.com/getsentry/sentry-go"
-	sentryhttp "github.com/getsentry/sentry-go/http"
 )
 
 // Enhanced main.go with better Sentry configuration
@@ -41,10 +42,10 @@ func main() {
 	}
 
 	// Start a Sentry root transaction for the application run
-	// rootCtx := context.Background()
-	// rootTx := sentry.StartTransaction(rootCtx, "app.run", sentry.WithTransactionName("ApplicationRun"))
-	// defer rootTx.Finish()
-	// ctx := rootTx.Context()
+	rootCtx := context.Background()
+	rootTx := sentry.StartTransaction(rootCtx, "app.run", sentry.WithTransactionName("ApplicationRun"))
+	defer rootTx.Finish()
+	ctx := rootTx.Context()
 
 	// Flush buffered events on exit
 	defer sentry.Flush(2 * time.Second)
@@ -58,7 +59,17 @@ func main() {
 
 	initFirebase()
 	setupRoutes(sentryHandler)
-	// go launchScraper(ctx)
+	go launchScraper(ctx)
+
+	fileProc, openAIProc, err := services.InitProcessors()
+	if err != nil {
+		sentry.CaptureException(err)
+		utils.Logger.Fatalf("Failed to initialize processors: %v", err)
+	}
+	// Initialize services that depend on these processors
+	services.InitializeFileService(fileProc)     // Pass the initialized FileProcessor
+	services.InitializeOpenAIService(openAIProc) // Pass the initialized OpenAIProcessor
+	// webProc is used by services.ProcessFileAndWeb, which uses the package-level webProcessor
 
 	port := os.Getenv("PORT")
 	if port == "" {

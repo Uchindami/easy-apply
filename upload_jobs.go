@@ -122,13 +122,6 @@ func readJobsFromFile(ctx context.Context, filename string) ([]JobListing, error
 	return jobs, nil
 }
 
-// updateJobs orchestrates reading jobs from a file and uploading them.
-// To use Sentry tracing for the whole job upload process, call updateJobs(ctx) with a context from a Sentry transaction, e.g.:
-//
-//	ctx := sentry.StartTransaction(context.Background(), "root", sentry.WithTransactionName("RootJobUpload")).Context()
-//	updateJobs(ctx)
-//
-// Or, from main.go, pass the root context as shown in main.go.
 func updateJobs(ctx context.Context) {
 
 	tx := sentry.StartTransaction(ctx, "updateJobs", sentry.WithTransactionName("UpdateAndUploadJobs"))
@@ -239,7 +232,7 @@ func uploadJobListings(ctx context.Context, jobListings []JobListing) error {
 			jobProcessingSpan.SetTag("job_link", job.Link)
 			jobProcessingSpan.SetTag("job_source", source)
 
-			if err := validateJobListing(job); err != nil {
+			if err := validateJobListing(sourceSpan.Context(), job, source); err != nil {
 				log.Printf("Invalid job listing (Link: %s, Source: %s), skipping: %v", job.Link, source, err)
 				sentry.WithScope(func(scope *sentry.Scope) {
 					scope.SetTag("job_link", job.Link)
@@ -251,6 +244,7 @@ func uploadJobListings(ctx context.Context, jobListings []JobListing) error {
 				continue
 			}
 
+			//
 			parsedDetails, err := ParseJobDescription(ctx, job.JobDescription) // ParseJobDescription now starts its own span
 			if err != nil {
 				log.Printf("Failed to parse job description for job (Link: %s), skipping: %v", job.Link, err)
@@ -371,20 +365,32 @@ func uploadJobListings(ctx context.Context, jobListings []JobListing) error {
 	return nil
 }
 
-// validateJobListing checks if essential fields are present in a JobListing.
-func validateJobListing(job JobListing) error {
-	if job.Link == "" {
-		return fmt.Errorf("job link is required")
-	}
-	if job.Position == "" {
-		log.Printf("Warning: Job (Link: %s) has an empty 'Position' field.", job.Link)
-		// Not returning an error, but could capture as a Sentry warning message if desired
-		// sentry.CaptureMessage(fmt.Sprintf("Job (Link: %s) has an empty 'Position' field.", job.Link), sentry.LevelWarning)
-	}
-	if job.CompanyName == "" {
-		return fmt.Errorf("company name is required for job link: %s", job.Link)
-	}
-	return nil
+// validateJobListing checks if essential fields are present in a JobListing and if it already exists in Firestore.
+func validateJobListing(ctx context.Context, job JobListing, source string) error {
+    if job.Link == "" {
+        return fmt.Errorf("job link is required")
+    }
+    if job.Position == "" {
+        log.Printf("Warning: Job (Link: %s) has an empty 'Position' field.", job.Link)
+        // No Sentry warning; just a local/logged warning
+    }
+    if job.CompanyName == "" {
+        return fmt.Errorf("company name is required for job link: %s", job.Link)
+    }
+
+    if source == "" {
+        source = "unknown_source"
+    }
+    listingsCol := firestoreClient.Collection("jobs").Doc(source).Collection("listings")
+    query := listingsCol.Where("link", "==", job.Link)
+    docs, err := query.Documents(ctx).GetAll()
+    if err != nil {
+        return fmt.Errorf("error querying Firestore for existing job link: %w", err)
+    }
+    if len(docs) > 0 {
+        return fmt.Errorf("job with this link already exists in Firestore (source: %s) and will be skipped", source)
+    }
+    return nil
 }
 
 // generateJobDocID creates a consistent document ID for a job listing.
