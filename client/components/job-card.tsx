@@ -88,12 +88,14 @@ export const JobCard = React.memo(function JobCard({
         <div className="flex items-start space-x-3">
           <div className="h-10 w-10 min-w-[40px] rounded-md bg-gray-100 flex items-center justify-center overflow-hidden">
             <img
-              src={job.companyLogo || "/placeholder.svg?height=40&width=40"}
+              src={job.companyLogo}
               alt={`${job.companyName} logo`}
               className="h-full w-full object-contain"
+              referrerPolicy="no-referrer"
+              crossOrigin="anonymous"
               onError={(e) => {
-                (e.target as HTMLImageElement).src =
-                  "/placeholder.svg?height=40&width=40";
+              (e.target as HTMLImageElement).src =
+                "/placeholder.svg?height=40&width=40";
               }}
             />
           </div>

@@ -85,6 +85,7 @@ export function RecommendationsContent() {
 function LoadingScreen() {
   return (
     <div className="space-y-12">
+      
       <div className="flex items-center gap-4">
         <div className="h-8 w-8 rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
         <div className="space-y-2">
