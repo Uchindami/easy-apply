@@ -17,7 +17,6 @@ import (
 	"github.com/google/uuid"
 )
 
-
 // UploadHandler handles the file upload endpoint.
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	hub := sentry.CurrentHub().Clone()
@@ -206,6 +205,7 @@ func sendOpenAIAnalysisAndRespond(w http.ResponseWriter, r *http.Request, jobPos
 		return
 	}
 
+	
 	processedDocs, jobDetails, err := services.ProcessWithOpenAI(ctx, jobPosting, extractedResume, selectedTemplate.HTMLContent, selectedColors)
 	if err != nil {
 		utils.HandleError(w, r, fmt.Sprintf("OpenAI processing failed: %v", err), http.StatusInternalServerError, err)

@@ -210,9 +210,8 @@ func (p *OpenAIProcessor) generateResumeAndCoverLetter(text string) (string, err
 	params := chatCompletionParams{
 		model:        constants.ResumeGenModel,
 		systemMsg:    constants.OpenAIInstruction,
-		assistantMsg: constants.AssistantResumeExample,
 		userMsg:      text,
-		temperature:  0.7,
+		temperature:  0,
 		maxTokens:    4000,
 		topP:         1.0,
 	}

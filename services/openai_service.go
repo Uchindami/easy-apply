@@ -2,17 +2,17 @@ package services
 
 import (
 	"context"
-	"easy-apply/models"    // For models.Colors, models.RecommendationResult
+	"easy-apply/models"     // For models.Colors, models.RecommendationResult
 	"easy-apply/processors" // Assuming this is the correct path to your processors package
 	"easy-apply/utils"      // For utils.Logger
 	"encoding/json"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/getsentry/sentry-go"
 )
-
 
 var openAIProcessor *processors.OpenAIProcessor
 
@@ -44,14 +44,21 @@ func ProcessWithOpenAI(ctx context.Context, jobPosting, extractedResume, selecte
 	span.SetData("extracted_resume_length", len(extractedResume))
 	// Note: selectedTemplateHTML and selectedColors are not directly used in the original OpenAI calls in upload.go's processWithOpenAI
 
-
 	if openAIProcessor == nil {
 		err = fmt.Errorf("OpenAIProcessor not initialized in openai_service")
 		utils.Logger.Println(err.Error())
 		return nil, nil, err
 	}
 
-	documents := fmt.Sprintf(`"job_description:"""--- %s ---""" resume:"""--- %s ---"""`, jobPosting, extractedResume)
+	colors := fmt.Sprintf(
+		"<color_palette>\n:primary %s\n:secondary %s\n:accent %s\n:text %s\n",
+		selectedColors.Primary,
+		selectedColors.Secondary,
+		selectedColors.Accent,
+		selectedColors.Text,
+	)
+
+	documents := BuildEnhancedUserMessage(jobPosting, extractedResume, selectedTemplateHTML, colors) // Assuming jobTitle and company are not needed here
 
 	var (
 		processedDocumentsResult struct {
@@ -222,4 +229,35 @@ func AnalyzeResumeForRecommendation(ctx context.Context, resumeText string) (mod
 	span.SetData("parsed_industry", recommendation.Industry)
 	span.SetData("parsed_domain", recommendation.Domain)
 	return recommendation, nil
+}
+
+func BuildEnhancedUserMessage(jobPosting, extractedResume, selectedTemplate, selectedColors string) string {
+	var builder strings.Builder
+
+	builder.WriteString("<analysis_request>\n")
+
+	builder.WriteString("<job_description>\n")
+	builder.WriteString(strings.TrimSpace(jobPosting))
+	builder.WriteString("\n</job_description>\n\n")
+
+	builder.WriteString("<current_resume>\n")
+	builder.WriteString(strings.TrimSpace(extractedResume))
+	builder.WriteString("\n</current_resume>\n\n")
+
+	builder.WriteString("<selectedTemplate>\n")
+	builder.WriteString(strings.TrimSpace(selectedTemplate))
+	builder.WriteString("\n</selectedTemplate>\n\n")
+
+	builder.WriteString("<selectedColors\n")
+	builder.WriteString(strings.TrimSpace(selectedColors))
+	builder.WriteString("\n</selectedColors\n\n")
+
+	builder.WriteString("<task>\n")
+	builder.WriteString("Optimize this resume for the job description above. ")
+	builder.WriteString("Follow all guidelines in your system instructions, ")
+	builder.WriteString("ensuring ATS compatibility and keyword optimization.")
+	builder.WriteString("\n</task>\n")
+	builder.WriteString("</analysis_request>")
+
+	return builder.String()
 }

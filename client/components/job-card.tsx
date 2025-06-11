@@ -86,19 +86,26 @@ export const JobCard = React.memo(function JobCard({
     >
       <div className="p-4 flex flex-col h-full">
         <div className="flex items-start space-x-3">
-          <div className="h-10 w-10 min-w-[40px] rounded-md bg-gray-100 flex items-center justify-center overflow-hidden">
-            <img
-              src={job.companyLogo}
-              alt={`${job.companyName} logo`}
-              className="h-full w-full object-contain"
-              referrerPolicy="no-referrer"
-              crossOrigin="anonymous"
-              onError={(e) => {
-              (e.target as HTMLImageElement).src =
-                "/placeholder.svg?height=40&width=40";
-              }}
-            />
-          </div>
+            <div className="h-10 w-10 min-w-[40px] rounded-md bg-gray-100 flex items-center justify-center overflow-hidden">
+            {job.source === "jobsearchmalawi" ? (
+              <img
+                src={`https://corsproxy.io/?${job.companyLogo}`}
+                alt={`${job.companyName} logo`}
+                className="h-full w-full object-contain"
+                loading="lazy"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src =
+                    "https://via.placeholder.com/40?text=Logo";
+                }}
+              />
+            ) : (
+              <img
+                src={job.companyLogo}
+                alt={`${job.companyName} logo`}
+                className="h-full w-full object-contain"
+              />
+            )}
+            </div>
           <div className="flex-1 min-w-0">
             <h3
               className="font-medium group-hover:text-primary text-sm transition-colors truncate"

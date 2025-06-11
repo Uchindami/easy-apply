@@ -367,30 +367,30 @@ func uploadJobListings(ctx context.Context, jobListings []JobListing) error {
 
 // validateJobListing checks if essential fields are present in a JobListing and if it already exists in Firestore.
 func validateJobListing(ctx context.Context, job JobListing, source string) error {
-    if job.Link == "" {
-        return fmt.Errorf("job link is required")
-    }
-    if job.Position == "" {
-        log.Printf("Warning: Job (Link: %s) has an empty 'Position' field.", job.Link)
-        // No Sentry warning; just a local/logged warning
-    }
-    if job.CompanyName == "" {
-        return fmt.Errorf("company name is required for job link: %s", job.Link)
-    }
+	if job.Link == "" {
+		return fmt.Errorf("job link is required")
+	}
+	if job.Position == "" {
+		log.Printf("Warning: Job (Link: %s) has an empty 'Position' field.", job.Link)
+		// No Sentry warning; just a local/logged warning
+	}
+	if job.CompanyName == "" {
+		return fmt.Errorf("company name is required for job link: %s", job.Link)
+	}
 
-    if source == "" {
-        source = "unknown_source"
-    }
-    listingsCol := firestoreClient.Collection("jobs").Doc(source).Collection("listings")
-    query := listingsCol.Where("link", "==", job.Link)
-    docs, err := query.Documents(ctx).GetAll()
-    if err != nil {
-        return fmt.Errorf("error querying Firestore for existing job link: %w", err)
-    }
-    if len(docs) > 0 {
-        return fmt.Errorf("job with this link already exists in Firestore (source: %s) and will be skipped", source)
-    }
-    return nil
+	if source == "" {
+		source = "unknown_source"
+	}
+	listingsCol := firestoreClient.Collection("jobs").Doc(source).Collection("listings")
+	query := listingsCol.Where("link", "==", job.Link)
+	docs, err := query.Documents(ctx).GetAll()
+	if err != nil {
+		return fmt.Errorf("error querying Firestore for existing job link: %w", err)
+	}
+	if len(docs) > 0 {
+		return fmt.Errorf("job with this link already exists in Firestore (source: %s) and will be skipped", source)
+	}
+	return nil
 }
 
 // generateJobDocID creates a consistent document ID for a job listing.

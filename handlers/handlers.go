@@ -27,3 +27,4 @@ type OCRResponse struct {
 	ErrorMessage                 []string `json:"ErrorMessage,omitempty"` // This is actually an array
 	ErrorDetails                 string   `json:"ErrorDetails,omitempty"`
 }
+
