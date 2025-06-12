@@ -44,6 +44,8 @@ require (
 )
 
 require (
+	cloud.google.com/go/aiplatform v1.88.0
+	cloud.google.com/go/vertexai v0.13.4
 	github.com/getsentry/sentry-go v0.33.0
 	github.com/google/generative-ai-go v0.20.1
 	github.com/joho/godotenv v1.5.1

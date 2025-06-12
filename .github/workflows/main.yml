@@ -22,13 +22,13 @@ jobs:
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
-        server: ftp-uchindami.alwaysdata.net
-        username: uchindami
-        password: ${{ secrets.SSH_PASSWORD }}
+        server: access-5018018253.webspace-host.com
+        username: a2148211
+        password: ${{ secrets.IONOS_PASSWORD }}
         local-dir: ./client/build/
-        server-dir: /home/uchindami/easyapply/client/
+        server-dir: /easyapply/client/
         protocol: ftps
-        port: 21
+        port: 22
         exclude: |
           **/.git*
           **/.git*/**

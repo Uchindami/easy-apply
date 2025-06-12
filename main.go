@@ -5,11 +5,13 @@ import (
 	"easy-apply/services"
 	"easy-apply/utils"
 	"fmt"
-	"github.com/getsentry/sentry-go"
-	sentryhttp "github.com/getsentry/sentry-go/http"
+	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/getsentry/sentry-go"
+	sentryhttp "github.com/getsentry/sentry-go/http"
 )
 
 // Enhanced main.go with better Sentry configuration
@@ -57,8 +59,14 @@ func main() {
 		Timeout:         3 * time.Second,
 	})
 
+	if err := InitGeminiClient(ctx); err != nil {
+		log.Fatalf("Failed to initialize Gemini client: %v", err)
+	}
+	defer CloseGeminiClient()
+	
 	initFirebase()
 	setupRoutes(sentryHandler)
+
 	go launchScraper(ctx)
 
 	fileProc, openAIProc, err := services.InitProcessors()
