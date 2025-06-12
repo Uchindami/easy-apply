@@ -27,6 +27,7 @@ jobs:
           ssh_private_key: ${{ secrets.IONOS_SSH_KEY }}
           local_path: "./client/build/"
           remote_path: "/easyapply/client/"
+          sftp_only: true
           port: 22
           rsyncArgs: "--exclude=node_modules --exclude=.git --exclude=*.log"
 
