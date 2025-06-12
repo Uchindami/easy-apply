@@ -23,10 +23,10 @@ jobs:
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
           server: access-5018018253.webspace-host.com
-          username: a2148211
+          username: a2611640
           ssh_private_key: ${{ secrets.IONOS_SSH_KEY }}
           local_path: "./client/build/"
           remote_path: "/easyapply/client/"
           port: 22
           rsyncArgs: "--exclude=node_modules --exclude=.git --exclude=*.log"
-          
+
