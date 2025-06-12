@@ -5,31 +5,28 @@ jobs:
     name: 🎉 Deploy
     runs-on: ubuntu-latest
     steps:
-    - name: 🚚 Get latest code
-      uses: actions/checkout@v4
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
 
-    - name: Use Node.js 22
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
 
-    - name: 🔨 Build Project
-      run: |
-        cd client
-        npm install
-        npm run build
+      - name: 🔨 Build Project
+        run: |
+          cd client
+          npm install
+          npm run build
 
-    - name: 📂 Sync files
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      with:
-        server: access-5018018253.webspace-host.com
-        username: a2148211
-        password: ${{ secrets.IONOS_PASSWORD }}
-        local-dir: ./client/build/
-        server-dir: /easyapply/client/
-        protocol: ftps
-        port: 22
-        exclude: |
-          **/.git*
-          **/.git*/**
-          **/node_modules/**
+      - name: 📂 Sync files
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
+        with:
+          server: access-5018018253.webspace-host.com
+          username: a2148211
+          ssh_private_key: ${{ secrets.IONOS_SSH_KEY }}
+          local_path: "./client/build/"
+          remote_path: "/easyapply/client/"
+          port: 22
+          rsyncArgs: "--exclude=node_modules --exclude=.git --exclude=*.log"
+          
