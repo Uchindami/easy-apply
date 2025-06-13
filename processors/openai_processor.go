@@ -211,8 +211,8 @@ func (p *OpenAIProcessor) generateResumeAndCoverLetter(text string) (string, err
 		model:        constants.ResumeGenModel,
 		systemMsg:    constants.OpenAIInstruction,
 		userMsg:      text,
-		temperature:  0,
-		maxTokens:    4000,
+		temperature:  0.3,
+		maxTokens:    8000,
 		topP:         1.0,
 	}
 

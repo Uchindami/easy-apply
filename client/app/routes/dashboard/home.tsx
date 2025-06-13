@@ -9,6 +9,8 @@ import DocumentViewer from "@/components/chats/resume-viewer";
 import { motion } from "framer-motion";
 import { ProgressIndicator } from "@/components/resume-generator/progress-indicator";
 import { TemplateSelector } from "@/components/resume-generator/TemplateSelector";
+import { useEffect } from "react";
+import { useLocation } from "react-router";
 
 export default function DocumentGenerator() {
   const {
@@ -29,6 +31,16 @@ export default function DocumentGenerator() {
     generateDocuments,
     resetForm,
   } = useDocumentStore();
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state && location.state.jobUrl) {
+      setJobUrl(location.state.jobUrl);
+      setActiveTab("upload");
+    }
+    // eslint-disable-next-line
+  }, [location.state]);
 
   const isReadyToGenerate = resumeFile && jobUrl;
   const hasGeneratedDocuments = generatedResume || generatedCoverLetter;

@@ -75,15 +75,15 @@ export const historyService = {
     }
   },
 
-  // deleteHistory: async (userId: string, historyId: string) => {
-  //   try {
-  //     const docRef = doc(db, "Users", userId, "History", historyId);
-  //     await deleteDoc(docRef);
-  //   } catch (error) {
-  //     console.error("Error deleting history:", error);
-  //     throw error;
-  //   }
-  // },
+  deleteHistory: async (userId: string, historyId: string) => {
+    try {
+      const docRef = doc(db, "Users", userId, "History", historyId);
+      await deleteDoc(docRef);
+    } catch (error) {
+      console.error("Error deleting history:", error);
+      throw error;
+    }
+  },
 
   // getPaginatedHistory: async (
   //   userId: string,

@@ -22,6 +22,7 @@ import { useChatStore } from "@/store/chat-store";
 import { useProfileStore } from "@/store/profile-store";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "react-router";
+import { historyService } from "@/services/history-service";
 
 interface ChatListProps {
   isActive: (path: string) => boolean;
@@ -103,6 +104,11 @@ export function ChatList({ isActive, searchQuery }: ChatListProps) {
     if (!user) return;
 
     try {
+      historyService.deleteHistory(user.uid, chatId);
+      await fetchChats(user.uid); // Refresh chat list after deletion
+      if (location.pathname.includes(chatId)) {
+        navigate("/dashboard"); // Redirect to dashboard if current chat is deleted
+      }
       toast({
         title: "Chat deleted",
         description: "The chat has been removed from your history",

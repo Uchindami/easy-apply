@@ -244,8 +244,15 @@ func uploadJobListings(ctx context.Context, jobListings []JobListing) error {
 				continue
 			}
 
+			// Initialize Gemini client once
+			geminiClient, err := InitializeGeminiClient(ctx)
+			if err != nil {
+				log.Fatalf("Failed to initialize Gemini client: %v", err)
+			}
+			defer geminiClient.Close()
+
 			//
-			parsedDetails, err := ParseJobDescription(ctx, job.JobDescription) // ParseJobDescription now starts its own span
+			parsedDetails, err := ParseJobDescription(ctx, geminiClient, job.JobDescription) // ParseJobDescription now starts its own span
 			if err != nil {
 				log.Printf("Failed to parse job description for job (Link: %s), skipping: %v", job.Link, err)
 				sentry.WithScope(func(scope *sentry.Scope) {

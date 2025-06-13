@@ -83,6 +83,7 @@ func (s *PDFService) ConvertHTMLToPDF(html string) (io.Reader, error) {
 }
 
 func convertPDFHandler(w http.ResponseWriter, r *http.Request) {
+	println("Received request to convert HTML to PDF")
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return

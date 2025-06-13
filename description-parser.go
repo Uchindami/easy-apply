@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"easy-apply/constants" // Assuming this package and constant are still relevant
+	"easy-apply/constants"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/getsentry/sentry-go" // Added Sentry
+	"github.com/getsentry/sentry-go"
 	"github.com/google/generative-ai-go/genai"
 	"github.com/joho/godotenv"
 	"google.golang.org/api/option"
@@ -22,11 +22,18 @@ import (
 
 const (
 	maxRetries        = 3
+	maxJSONRetries    = 3 // New constant for JSON validation retries
 	initialRetryDelay = 1 * time.Second
 	maxRetryDelay     = 10 * time.Second
-	llmApiTimeout     = 200 * time.Second // Renamed from openRouterTimeout
+	llmApiTimeout     = 200 * time.Second
 	ocrSpaceTimeout   = 200 * time.Second
 )
+
+// GeminiClient wraps the Gemini client and model for reuse
+type GeminiClient struct {
+	client *genai.Client
+	model  *genai.GenerativeModel
+}
 
 func init() {
 	// Load environment variables once at startup
@@ -40,35 +47,185 @@ type JobDescription struct {
 	JobTitle               string      `json:"jobTitle"`
 	Organization           string      `json:"organization"`
 	Location               string      `json:"location"`
-	Grade                  interface{} `json:"grade"` // could be string or N/A
+	Grade                  interface{} `json:"grade"`
 	ReportingTo            string      `json:"reportingTo"`
-	ResponsibleFor         interface{} `json:"responsibleFor,omitempty"` // could be string or []string
+	ResponsibleFor         interface{} `json:"responsibleFor,omitempty"`
 	Department             string      `json:"department"`
 	Purpose                string      `json:"purpose"`
 	KeyResponsibilities    []string    `json:"keyResponsibilities"`
 	RequiredQualifications []string    `json:"requiredQualifications"`
-	RequiredExperience     interface{} `json:"requiredExperience"`  // could be string, []string, or object
-	RequiredMemberships    interface{} `json:"requiredMemberships"` // could be string, []string, or N/A
+	RequiredExperience     interface{} `json:"requiredExperience"`
+	RequiredMemberships    interface{} `json:"requiredMemberships"`
 	ApplicationDeadline    string      `json:"applicationDeadline"`
-	ContactDetails         interface{} `json:"contactDetails"` // could be string or object
+	ContactDetails         interface{} `json:"contactDetails"`
 	AdditionalNotes        string      `json:"additionalNotes"`
 	Tags                   []string    `json:"tags"`
 	Industry               string      `json:"industry"`
 	Domain                 string      `json:"domain"`
 }
 
-// ParseJobDescription processes the job description string using Gemini.
-// The provided ctx is used for controlling API call timeouts and cancellation.
-func ParseJobDescription(ctx context.Context, description string) (*JobDescription, error) {
+// InitializeGeminiClient creates and configures a Gemini client for reuse
+func InitializeGeminiClient(ctx context.Context) (*GeminiClient, error) {
+	// Validate Gemini API key
+	apiKey := os.Getenv("GEMINI_API_KEY")
+	if apiKey == "" {
+		err := fmt.Errorf("GEMINI_API_KEY environment variable not set")
+		sentry.CaptureException(err)
+		log.Println(err.Error())
+		return nil, err
+	}
+
+	// Initialize Gemini client
+	log.Println("Initializing Gemini client")
+	client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
+	if err != nil {
+		sentry.CaptureException(err)
+		log.Printf("Failed to create Gemini client: %v", err)
+		return nil, err
+	}
+
+	modelName := constants.GeminiModelName
+	model := client.GenerativeModel(modelName)
+
+	// Set the system instruction for the model
+	model.SystemInstruction = &genai.Content{
+		Parts: []genai.Part{genai.Text(constants.OpenRouterInstrunctions)},
+	}
+
+	// Configure generation parameters
+	model.GenerationConfig = genai.GenerationConfig{
+		Temperature:      genai.Ptr(float32(0.7)),
+		MaxOutputTokens:  genai.Ptr(int32(4096)),
+		ResponseMIMEType: "application/json",
+	}
+
+	return &GeminiClient{
+		client: client,
+		model:  model,
+	}, nil
+}
+
+// Close closes the Gemini client
+func (gc *GeminiClient) Close() {
+	if gc.client != nil {
+		gc.client.Close()
+	}
+}
+
+// generateContentWithJSONValidation generates content with JSON validation and retry logic
+func (gc *GeminiClient) generateContentWithJSONValidation(ctx context.Context, description string) (string, error) {
+	var lastErr error
+
+	for attempt := 1; attempt <= maxJSONRetries; attempt++ {
+		log.Printf("Gemini API attempt %d/%d", attempt, maxJSONRetries)
+
+		// Generate content
+		resp, err := gc.model.GenerateContent(ctx, genai.Text(description))
+		if err != nil {
+			lastErr = fmt.Errorf("gemini api error (attempt %d): %w", attempt, err)
+			log.Printf("Gemini API error (attempt %d): %v", attempt, err)
+
+			if attempt < maxJSONRetries {
+				// Wait before retrying for API errors
+				time.Sleep(time.Duration(attempt) * time.Second)
+				continue
+			}
+			return "", lastErr
+		}
+
+		if len(resp.Candidates) == 0 || resp.Candidates[0].Content == nil || len(resp.Candidates[0].Content.Parts) == 0 {
+			lastErr = fmt.Errorf("no candidates returned or content is empty (attempt %d)", attempt)
+			log.Printf("No candidates returned or content is empty (attempt %d)", attempt)
+
+			if attempt < maxJSONRetries {
+				time.Sleep(time.Duration(attempt) * time.Second)
+				continue
+			}
+			return "", lastErr
+		}
+
+		// Extract response content
+		var responseContent string
+		if text, ok := resp.Candidates[0].Content.Parts[0].(genai.Text); ok {
+			responseContent = string(text)
+		} else {
+			responseContent = fmt.Sprintf("%v", resp.Candidates[0].Content.Parts[0])
+		}
+
+		log.Printf("Gemini response received (attempt %d), length: %d characters", attempt, len(responseContent))
+
+		// Validate JSON structure
+		if isValidJSON(responseContent) {
+			log.Printf("Valid JSON received on attempt %d", attempt)
+			return responseContent, nil
+		}
+
+		// Try to clean/fix the JSON
+		cleanedJSON := cleanJSONResponse(responseContent)
+		if isValidJSON(cleanedJSON) {
+			log.Printf("JSON cleaned and validated on attempt %d", attempt)
+			return cleanedJSON, nil
+		}
+
+		lastErr = fmt.Errorf("invalid JSON received from Gemini (attempt %d)", attempt)
+		log.Printf("Invalid JSON received from Gemini (attempt %d). Raw response: %s", attempt, responseContent)
+
+		if attempt < maxJSONRetries {
+			log.Printf("Retrying due to invalid JSON...")
+			time.Sleep(time.Duration(attempt) * time.Second)
+		}
+	}
+
+	// All attempts failed
+	finalErr := fmt.Errorf("failed to get valid JSON after %d attempts: %w", maxJSONRetries, lastErr)
+	sentry.CaptureException(finalErr)
+	return "", finalErr
+}
+
+// isValidJSON checks if the string is valid JSON
+func isValidJSON(str string) bool {
+	var js map[string]interface{}
+	return json.Unmarshal([]byte(str), &js) == nil
+}
+
+// cleanJSONResponse attempts to clean and fix common JSON issues
+func cleanJSONResponse(response string) string {
+	// Remove markdown code blocks if present
+	response = strings.TrimSpace(response)
+	if strings.HasPrefix(response, "```json") {
+		response = strings.TrimPrefix(response, "```json")
+	}
+	if strings.HasPrefix(response, "```") {
+		response = strings.TrimPrefix(response, "```")
+	}
+	if strings.HasSuffix(response, "```") {
+		response = strings.TrimSuffix(response, "```")
+	}
+
+	// Trim whitespace
+	response = strings.TrimSpace(response)
+
+	// Find the first { and last } to extract just the JSON object
+	firstBrace := strings.Index(response, "{")
+	lastBrace := strings.LastIndex(response, "}")
+
+	if firstBrace != -1 && lastBrace != -1 && lastBrace > firstBrace {
+		response = response[firstBrace : lastBrace+1]
+	}
+
+	return response
+}
+
+// ParseJobDescription processes the job description string using the provided Gemini client.
+func ParseJobDescription(ctx context.Context, geminiClient *GeminiClient, description string) (*JobDescription, error) {
 	log.Println("Starting job description processing")
-	defer sentry.Flush(2 * time.Second) // Flush Sentry events before function exits
+	defer sentry.Flush(2 * time.Second)
 
 	var desc = description
 
 	// Handle special cases
 	if desc == "" || desc == "No description found" || desc == "N/A" {
 		log.Println("Empty or placeholder description found, skipping processing")
-		// Return a default N/A JobDescription
 		return &JobDescription{
 			JobTitle:               "N/A",
 			Organization:           "N/A",
@@ -95,72 +252,24 @@ func ParseJobDescription(ctx context.Context, description string) (*JobDescripti
 	linkRegex := regexp.MustCompile(`^https?://`)
 	if linkRegex.MatchString(desc) {
 		log.Printf("Detected potential image URL: %s", desc)
-		descOCR, err := processImageFromURLWithRetry(desc) // This function now also uses Sentry
+		descOCR, err := processImageFromURLWithRetry(desc)
 		if err != nil {
-			// Sentry capture is handled within processImageFromURLWithRetry or its callees
 			log.Printf("OCR processing failed after retries: %v, using LINK_FOUND as placeholder", err)
-			desc = "LINK_FOUND" // Placeholder if OCR fails
+			desc = "LINK_FOUND"
 		} else {
 			log.Printf("OCR extracted text length: %d characters", len(descOCR))
 			desc = descOCR
 		}
 	}
 
-	// Validate Gemini API key
-	apiKey := os.Getenv("GEMINI_API_KEY")
-	if apiKey == "" {
-		err := fmt.Errorf("GEMINI_API_KEY environment variable not set")
-		sentry.CaptureException(err)
-		log.Println(err.Error())
-		return nil, err
-	}
-
-	// Initialize Gemini client
-	log.Println("Initializing Gemini client")
-	client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
+	// Generate content with JSON validation and retry
+	responseContent, err := geminiClient.generateContentWithJSONValidation(ctx, desc)
 	if err != nil {
-		sentry.CaptureException(err)
-		log.Printf("Failed to create Gemini client: %v", err)
+		log.Printf("Failed to generate valid JSON content: %v", err)
 		return nil, err
 	}
-	defer client.Close()
 
-	modelName := constants.GeminiModelName
-	model := client.GenerativeModel(modelName)
-
-	// Set the system instruction for the model
-	model.SystemInstruction = &genai.Content{
-		Parts: []genai.Part{genai.Text(constants.OpenRouterInstrunctions)},
-	}
-
-	// Configure generation parameters
-	model.GenerationConfig = genai.GenerationConfig{
-		Temperature:      genai.Ptr(float32(0.7)),
-		MaxOutputTokens:  genai.Ptr(int32(4096)),
-		ResponseMIMEType: "application/json",
-	}
-
-		// Prepare the content for the model
-		resp, err := model.GenerateContent(ctx, genai.Text(desc))
-		if err != nil {
-			log.Printf("Gemini API error (attempt): %v", err)
-			return nil, fmt.Errorf("gemini api error: %w", err)
-		}
-
-		if len(resp.Candidates) == 0 || resp.Candidates[0].Content == nil || len(resp.Candidates[0].Content.Parts) == 0 {
-			log.Println("No candidates returned or content is empty")
-			return nil, fmt.Errorf("no candidates returned or content is empty")
-		}
-
-		// Assume the first part is the JSON string
-		var responseContent string
-		if text, ok := resp.Candidates[0].Content.Parts[0].(genai.Text); ok {
-			responseContent = string(text)
-		} else {
-			responseContent = fmt.Sprintf("%v", resp.Candidates[0].Content.Parts[0])
-		}
-
-		log.Printf("Processing complete. Gemini Response length: %d characters", len(responseContent))
+	log.Printf("Processing complete. Gemini Response length: %d characters", len(responseContent))
 
 	// Preprocess and unmarshal the response
 	processedData, err := PreprocessJobDescription([]byte(responseContent))
@@ -183,11 +292,9 @@ func ParseJobDescription(ctx context.Context, description string) (*JobDescripti
 }
 
 // PreprocessJobDescription remains largely the same.
-// It normalizes certain fields in the JSON data before final unmarshalling.
 func PreprocessJobDescription(jsonData []byte) ([]byte, error) {
 	var rawData map[string]interface{}
 	if err := json.Unmarshal(jsonData, &rawData); err != nil {
-		// This error will be caught by the caller (ParseJobDescription) and sent to Sentry.
 		return nil, fmt.Errorf("invalid JSON format for preprocessing: %w", err)
 	}
 
@@ -195,12 +302,7 @@ func PreprocessJobDescription(jsonData []byte) ([]byte, error) {
 	normalizeStringArrayField(rawData, "responsibleFor", false)
 
 	// Normalize RequiredMemberships field
-	normalizeStringArrayField(rawData, "requiredMemberships", true) // Handle "N/A" or empty as empty slice
-
-	// Potentially normalize other fields if necessary, e.g., RequiredExperience
-	// if requiredExperience, exists := rawData["requiredExperience"]; exists {
-	//    // Add normalization logic if it often comes in non-standard formats
-	// }
+	normalizeStringArrayField(rawData, "requiredMemberships", true)
 
 	return json.Marshal(rawData)
 }
@@ -220,35 +322,29 @@ func normalizeStringArrayField(rawData map[string]interface{}, fieldName string,
 			for _, item := range v {
 				if str, ok := item.(string); ok {
 					if treatNAAsEmpty && (str == "N/A" || str == "") {
-						// Skip if it's N/A and should be treated as empty part of a list
 						continue
 					}
 					strArr = append(strArr, str)
 				} else {
-					// Convert non-string items to string representation
 					strArr = append(strArr, fmt.Sprintf("%v", item))
 				}
 			}
 			rawData[fieldName] = strArr
 		case nil:
-			rawData[fieldName] = []string{} // Treat nil as empty array
-			// default: // If it's already []string, it's fine. Or handle other unexpected types.
-			//  log.Printf("Unexpected type for field %s: %T", fieldName, v)
+			rawData[fieldName] = []string{}
 		}
 	} else {
-		// If field doesn't exist, initialize as empty string array
 		rawData[fieldName] = []string{}
 	}
 }
 
 // GetResponsibleForAsStrings and other getter methods remain the same.
-// These are helpers for accessing fields that might have multiple types.
 func (jd *JobDescription) GetResponsibleForAsStrings() []string {
 	return getStringSliceField(jd.ResponsibleFor, false)
 }
 
 func (jd *JobDescription) GetRequiredMembershipsAsStrings() []string {
-	return getStringSliceField(jd.RequiredMemberships, true) // "N/A" or "" becomes empty slice
+	return getStringSliceField(jd.RequiredMemberships, true)
 }
 
 func getStringSliceField(fieldValue interface{}, treatNAAsEmpty bool) []string {
@@ -303,7 +399,7 @@ func (jd *JobDescription) GetRequiredExperienceAsStrings() []string {
 		return []string{v}
 	case map[string]interface{}:
 		var result []string
-		if minYears, ok := v["minimumYears"]; ok { // Check type of minYears more robustly
+		if minYears, ok := v["minimumYears"]; ok {
 			if yearsFloat, okFloat := minYears.(float64); okFloat {
 				result = append(result, fmt.Sprintf("Minimum %.0f years experience", yearsFloat))
 			} else if yearsStr, okStr := minYears.(string); okStr {
@@ -322,9 +418,7 @@ func (jd *JobDescription) GetRequiredExperienceAsStrings() []string {
 	case nil:
 		return []string{}
 	default:
-		// If it's an unhandled type, try to stringify it, or return empty.
-		// log.Printf("Unhandled type for RequiredExperience: %T", v)
-		return []string{fmt.Sprintf("%v", v)} // Fallback, might not be ideal
+		return []string{fmt.Sprintf("%v", v)}
 	}
 }
 
@@ -341,25 +435,23 @@ func (jd *JobDescription) GetContactDetailsAsString() string {
 	case nil:
 		return ""
 	default:
-		return fmt.Sprintf("%v", v) // Fallback
+		return fmt.Sprintf("%v", v)
 	}
 }
 
 // processImageFromURLWithRetry calls processImageFromURL with retry logic.
-// Sentry reporting for the final error is handled here.
 func processImageFromURLWithRetry(imageURL string) (string, error) {
 	var resultText string
 	err := withRetry(maxRetries, initialRetryDelay, maxRetryDelay, func() error {
-		text, err := processImageFromURL(imageURL) // Sentry capture for individual attempts is in processImageFromURL
+		text, err := processImageFromURL(imageURL)
 		if err == nil {
 			resultText = text
 		}
-		return err // Return error for retry logic
+		return err
 	})
 
 	if err != nil {
 		finalErr := fmt.Errorf("OCR processing failed for URL %s after %d attempts: %w", imageURL, maxRetries, err)
-		// Capture the final error to Sentry after all retries.
 		sentry.WithScope(func(scope *sentry.Scope) {
 			scope.SetTag("ocr_image_url", imageURL)
 			sentry.CaptureException(finalErr)
@@ -371,7 +463,6 @@ func processImageFromURLWithRetry(imageURL string) (string, error) {
 }
 
 // processImageFromURL performs OCR on an image URL.
-// Errors here are potential candidates for Sentry reporting if they are not transient.
 func processImageFromURL(imageURL string) (string, error) {
 	log.Printf("Processing image URL with OCR: %s", imageURL)
 
@@ -393,9 +484,7 @@ func processImageFromURL(imageURL string) (string, error) {
 	log.Println("Creating OCR API request")
 	req, err := http.NewRequest("POST", ocrAPIURL, strings.NewReader(form.Encode()))
 	if err != nil {
-		// This is an internal error creating the request.
 		reqErr := fmt.Errorf("error creating OCR request for %s: %w", imageURL, err)
-		// sentry.CaptureException(reqErr) // Consider if this should be captured immediately or returned for retry
 		log.Println(reqErr.Error())
 		return "", reqErr
 	}
@@ -405,10 +494,9 @@ func processImageFromURL(imageURL string) (string, error) {
 	log.Println("Sending OCR API request")
 	resp, err := client.Do(req)
 	if err != nil {
-		// Network or transport error.
 		sendErr := fmt.Errorf("error sending request to OCR service for %s: %w", imageURL, err)
 		log.Println(sendErr.Error())
-		return "", sendErr // Return for retry
+		return "", sendErr
 	}
 	defer resp.Body.Close()
 
@@ -417,34 +505,32 @@ func processImageFromURL(imageURL string) (string, error) {
 		bodyBytes, _ := io.ReadAll(resp.Body)
 		statusErr := fmt.Errorf("OCR service returned error (status %d) for %s: %s", resp.StatusCode, imageURL, string(bodyBytes))
 		log.Println(statusErr.Error())
-		// Non-200s might be retriable depending on the status code.
-		return "", statusErr // Return for retry
+		return "", statusErr
 	}
 
-    var result struct {
-        ParsedResults []struct {
-            ParsedText string `json:"ParsedText"`
-        } `json:"ParsedResults"`
-        IsErroredOnProcessing bool        `json:"IsErroredOnProcessing"`
-        ErrorMessage          interface{} `json:"ErrorMessage,omitempty"` // Handle both string/array
-        ErrorDetails          interface{} `json:"ErrorDetails,omitempty"` // Handle both string/array
-    }
+	var result struct {
+		ParsedResults []struct {
+			ParsedText string `json:"ParsedText"`
+		} `json:"ParsedResults"`
+		IsErroredOnProcessing bool        `json:"IsErroredOnProcessing"`
+		ErrorMessage          interface{} `json:"ErrorMessage,omitempty"`
+		ErrorDetails          interface{} `json:"ErrorDetails,omitempty"`
+	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		decodeErr := fmt.Errorf("error parsing OCR service response for %s: %w", imageURL, err)
 		log.Println(decodeErr.Error())
-		return "", decodeErr // Return for retry
+		return "", decodeErr
 	}
 
-    if result.IsErroredOnProcessing {
-        // Convert error fields to readable strings
-        errorMsg := convertInterfaceToString(result.ErrorMessage)
-        errorDetails := convertInterfaceToString(result.ErrorDetails)
-        ocrProcErr := fmt.Errorf("OCR service processing error for %s: %s. Details: %s", 
-            imageURL, errorMsg, errorDetails)
-        log.Println(ocrProcErr.Error())
-        return "", ocrProcErr
-    }
+	if result.IsErroredOnProcessing {
+		errorMsg := convertInterfaceToString(result.ErrorMessage)
+		errorDetails := convertInterfaceToString(result.ErrorDetails)
+		ocrProcErr := fmt.Errorf("OCR service processing error for %s: %s. Details: %s",
+			imageURL, errorMsg, errorDetails)
+		log.Println(ocrProcErr.Error())
+		return "", ocrProcErr
+	}
 
 	if len(result.ParsedResults) > 0 && result.ParsedResults[0].ParsedText != "" {
 		parsedText := result.ParsedResults[0].ParsedText
@@ -454,11 +540,10 @@ func processImageFromURL(imageURL string) (string, error) {
 
 	noTextErr := fmt.Errorf("no text found in the image or empty parsed text from OCR for URL: %s", imageURL)
 	log.Println(noTextErr.Error())
-	return "", noTextErr // Return for retry
+	return "", noTextErr
 }
 
 // withRetry implements exponential backoff retry logic.
-// Errors from `fn` are logged here during retries. The final error is returned.
 func withRetry(maxAttempts int, initialDelay, maxDelay time.Duration, fn func() error) error {
 	var err error
 	delay := initialDelay
@@ -466,25 +551,24 @@ func withRetry(maxAttempts int, initialDelay, maxDelay time.Duration, fn func() 
 	for attempt := 1; attempt <= maxAttempts; attempt++ {
 		err = fn()
 		if err == nil {
-			return nil // Success
+			return nil
 		}
 
 		log.Printf("Attempt %d/%d failed: %v", attempt, maxAttempts, err)
 		if attempt < maxAttempts {
 			log.Printf("Retrying in %v...", delay)
 			time.Sleep(delay)
-			delay *= 2 // Exponential backoff
+			delay *= 2
 			if delay > maxDelay {
-				delay = maxDelay // Cap delay
+				delay = maxDelay
 			}
 		}
 	}
-	// All attempts failed
 	return fmt.Errorf("function failed after %d attempts: %w", maxAttempts, err)
 }
 
-// min helper for time.Duration (already present and correct)
-func    min(a, b time.Duration) time.Duration {
+// min helper for time.Duration
+func min(a, b time.Duration) time.Duration {
 	if a < b {
 		return a
 	}
@@ -493,19 +577,19 @@ func    min(a, b time.Duration) time.Duration {
 
 // Helper function to convert interface{} (string/array) to flat string
 func convertInterfaceToString(val interface{}) string {
-    if val == nil {
-        return ""
-    }
-    switch v := val.(type) {
-    case string:
-        return v
-    case []interface{}:
-        parts := make([]string, 0, len(v))
-        for _, item := range v {
-            parts = append(parts, fmt.Sprintf("%v", item))
-        }
-        return strings.Join(parts, "; ")
-    default:
-        return fmt.Sprintf("%v", val)
-    }
+	if val == nil {
+		return ""
+	}
+	switch v := val.(type) {
+	case string:
+		return v
+	case []interface{}:
+		parts := make([]string, 0, len(v))
+		for _, item := range v {
+			parts = append(parts, fmt.Sprintf("%v", item))
+		}
+		return strings.Join(parts, "; ")
+	default:
+		return fmt.Sprintf("%v", val)
+	}
 }

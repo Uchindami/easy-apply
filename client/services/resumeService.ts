@@ -62,7 +62,7 @@ export async function generateTailoredDocuments(
       body: formData,
     });
 
-    if (!response.ok) {
+    if (!response.ok) {   
       const errorText = await response.text();
       throw new Error(
         `Failed to generate documents. Status: ${response.status}. Message: ${errorText}`

@@ -1,7 +1,6 @@
 import type React from "react";
 import { format } from "date-fns";
 import {
-  Briefcase,
   Calendar,
   Clock,
   ChevronRight,
@@ -24,17 +23,8 @@ import {
 } from "@/components/ui/tooltip";
 import DocumentViewer from "@/components/chats/resume-viewer";
 import { DocumentPreview } from "@/components/resume-generator/DocumentPreview";
-
-// --- Types ---
-interface DetailItemProps {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}
-
-interface JobDetailsCardProps {
-  historyData: HistoryData;
-}
+import { JobDetailsCard } from "@/components/chats/job-details-card";
+import { getJobDetailsByUrl } from "@/services/job-services";
 
 interface DocumentsViewerProps {
   historyData: HistoryData;
@@ -48,69 +38,6 @@ interface ErrorStateProps {
 }
 
 // --- Components ---
-const DetailItem: React.FC<DetailItemProps> = ({ icon, label, value }) => (
-  <div className="flex items-start gap-3">
-    <div className="flex-shrink-0">{icon}</div>
-    <div className="space-y-1 min-w-0">
-      <p className="text-sm font-medium text-gray-500">{label}</p>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <p className="text-sm truncate" title={value}>
-              {value}
-            </p>
-          </TooltipTrigger>
-        </Tooltip>
-      </TooltipProvider>
-    </div>
-  </div>
-);
-
-const JobDetailsCard: React.FC<JobDetailsCardProps> = ({ historyData }) => (
-  <Card className="max-w-sm">
-    <CardHeader className="items-center">
-      <CardTitle>Job Details</CardTitle>
-    </CardHeader>
-    <CardContent className="space-y-4">
-      <DetailItem
-        icon={<Briefcase className="h-5 w-5 text-gray-500 mt-0.5" />}
-        label="Company"
-        value={historyData.jobDetails.company || "Not specified"}
-      />
-      <DetailItem
-        icon={<LinkIcon className="h-5 w-5 text-gray-500 mt-0.5" />}
-        label="Source"
-        value={historyData.original.jobLink || "Not specified"}
-      />
-      <DetailItem
-        icon={<Calendar className="h-5 w-5 text-gray-500 mt-0.5" />}
-        label="Applied On"
-        value={
-          historyData.timestamp
-            ? format(historyData.timestamp, "PPP")
-            : "Unknown date"
-        }
-      />
-      <DetailItem
-        icon={<Clock className="h-5 w-5 text-gray-500 mt-0.5" />}
-        label="Status"
-        value={historyData.status || "Unknown"}
-      />
-      {historyData.original.jobLink && (
-        <Button className="w-full mt-4" asChild>
-          <a
-            href={historyData.original.jobLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View Original Job Posting
-          </a>
-        </Button>
-      )}
-    </CardContent>
-  </Card>
-);
-
 const DocumentsViewer: React.FC<DocumentsViewerProps> = ({
   historyData,
   isJobDetailsCollapsed,
@@ -141,14 +68,18 @@ const DocumentsViewer: React.FC<DocumentsViewerProps> = ({
         <TabsContent value="resume" className="mt-4 flex">
           <DocumentViewer
             documentHTML={historyData.generated.resumeText}
-            historyId={useParams<{ chatHistoryId: string; }>().chatHistoryId!}
-            documentType={"resume"} jobTitle={historyData.jobDetails.title} />
+            historyId={useParams<{ chatHistoryId: string }>().chatHistoryId!}
+            documentType={"resume"}
+            jobTitle={historyData.jobDetails.title}
+          />
         </TabsContent>
         <TabsContent value="coverLetter" className="mt-4">
           <DocumentViewer
             documentHTML={historyData.generated.coverLetterText}
-            historyId={useParams<{ chatHistoryId: string; }>().chatHistoryId!}
-            documentType={"coverLetter"} jobTitle={historyData.jobDetails.title} />
+            historyId={useParams<{ chatHistoryId: string }>().chatHistoryId!}
+            documentType={"coverLetter"}
+            jobTitle={historyData.jobDetails.title}
+          />
         </TabsContent>
       </Tabs>
     </CardContent>

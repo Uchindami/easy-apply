@@ -5,7 +5,6 @@ import (
 	"easy-apply/services"
 	"easy-apply/utils"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -59,11 +58,6 @@ func main() {
 		Timeout:         3 * time.Second,
 	})
 
-	if err := InitGeminiClient(ctx); err != nil {
-		log.Fatalf("Failed to initialize Gemini client: %v", err)
-	}
-	defer CloseGeminiClient()
-	
 	initFirebase()
 	setupRoutes(sentryHandler)
 
