@@ -6,11 +6,14 @@ import { LoadingCard } from "@/components/recommendations/loading-card";
 import { NoDataCard } from "@/components/recommendations/no-data-card";
 import { useRecommendations } from "@/hooks/use-job-recommendations";
 import { useSavedJobsInitialization } from "@/hooks/use-saved-jobs-initialization";
+
 import { motion } from "@/components/ui/motion";
 
 export function RecommendationsContent() {
+  
   // Custom hooks
   const { savedJobsInitialized } = useSavedJobsInitialization();
+
   const {
     data,
     loading,
@@ -85,7 +88,6 @@ export function RecommendationsContent() {
 function LoadingScreen() {
   return (
     <div className="space-y-12">
-      
       <div className="flex items-center gap-4">
         <div className="h-8 w-8 rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
         <div className="space-y-2">

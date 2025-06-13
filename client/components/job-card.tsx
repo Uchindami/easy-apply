@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,7 @@ import {
   CheckCircle2,
   Mail,
   Eye,
+  X,
 } from "lucide-react";
 import { formatRelativeTime } from "@/utils/date-utils";
 import { useSavedJobsStore } from "@/store/saved-jobs-store";
@@ -39,6 +40,7 @@ import { useNavigate } from "react-router";
 interface JobCardProps {
   job: Job;
   savedJobsInitialized?: boolean;
+  isSidebarSaved?: boolean;
 }
 
 interface JobMoreInfo {
@@ -99,15 +101,17 @@ const InfoList: React.FC<{ items: string[] }> = ({ items }) => (
     {items.map((item: string, index: number) => (
       <li key={index} className="flex items-start gap-2 text-sm">
         <CheckCircle2 className="h-3.5 w-3.5 text-black/25  dark:text-white/25 mt-0.5 flex-shrink-0" />
-        <span className="leading-relaxed text-black dark:text-white/70 ">{item}</span>
+        <span className="leading-relaxed text-black dark:text-white/70 ">
+          {item}
+        </span>
       </li>
     ))}
   </ul>
 );
-
 export const JobCard = React.memo(function JobCard({
   job,
   savedJobsInitialized = false,
+  isSidebarSaved = false,
 }: JobCardProps) {
   const { saveJob, unsaveJob, isJobSaved } = useSavedJobsStore();
   const { toast } = useToast();
@@ -118,6 +122,32 @@ export const JobCard = React.memo(function JobCard({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const showToast = useCallback(
+    (title: string, description: string, variant?: "destructive") => {
+      toast({ title, description, variant });
+    },
+    [toast]
+  );
+
+  const handleUnsaveJob = useCallback(
+    async (jobId: string) => {
+      try {
+        await unsaveJob(jobId);
+        showToast(
+          "Job removed",
+          "The job has been removed from your saved jobs"
+        );
+      } catch (err) {
+        showToast(
+          "Error removing job",
+          err instanceof Error ? err.message : "Failed to remove job",
+          "destructive"
+        );
+      }
+    },
+    [unsaveJob, showToast]
+  );
 
   const jobId =
     job.id ||
@@ -258,6 +288,16 @@ export const JobCard = React.memo(function JobCard({
               ) : (
                 <Bookmark className="h-4 w-4" />
               )}
+            </Button>
+          )}
+          {isSidebarSaved && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className=" group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={() => handleUnsaveJob(jobId)}
+            >
+              <X className="h-4 w-4" />
             </Button>
           )}
         </div>

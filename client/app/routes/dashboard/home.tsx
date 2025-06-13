@@ -11,6 +11,7 @@ import { ProgressIndicator } from "@/components/resume-generator/progress-indica
 import { TemplateSelector } from "@/components/resume-generator/TemplateSelector";
 import { useEffect } from "react";
 import { useLocation } from "react-router";
+import { GeneratingState } from "@/components/dashboard/generating-state";
 
 export default function DocumentGenerator() {
   const {
@@ -35,12 +36,11 @@ export default function DocumentGenerator() {
   const location = useLocation();
 
   useEffect(() => {
-    if (location.state && location.state.jobUrl) {
+    if (location.state?.jobUrl) {
       setJobUrl(location.state.jobUrl);
       setActiveTab("upload");
     }
-    // eslint-disable-next-line
-  }, [location.state]);
+  }, [location.state, setActiveTab, setJobUrl]);
 
   const isReadyToGenerate = resumeFile && jobUrl;
   const hasGeneratedDocuments = generatedResume || generatedCoverLetter;
@@ -140,98 +140,6 @@ export default function DocumentGenerator() {
   );
 }
 
-function GeneratingState() {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="p-8 md:p-12 bg-card rounded-lg shadow-md border border-border"
-    >
-      <div className="flex flex-col items-center justify-center">
-        <div className="relative">
-          <Loader2 className="h-16 w-16 animate-spin text-primary" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-4 w-4 rounded-full bg-primary"></div>
-          </div>
-        </div>
-        <h3 className="text-2xl font-semibold mt-6 mb-2">
-          Generating Your Documents
-        </h3>
-        <p className="text-muted-foreground text-center max-w-md">
-          We're analyzing the job posting and tailoring your resume and cover
-          letter to maximize your chances of success. This typically takes 45-60
-          seconds...
-        </p>
-
-        <div className="w-full max-w-md mt-8">
-          <div className="h-2 bg-muted rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-primary"
-              initial={{ width: "0%" }}
-              animate={{ width: "100%" }}
-              transition={{ duration: 45, ease: "linear" }}
-            />
-          </div>
-
-          <div className="mt-8 space-y-2">
-            <StepItem label="Analyzing resume content" status="complete" />
-            <StepItem label="Extracting job requirements" status="complete" />
-            <StepItem label="Tailoring resume content" status="active" />
-            <StepItem label="Creating cover letter" status="pending" />
-            <StepItem label="Finalizing documents" status="pending" />
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-function StepItem({
-  label,
-  status,
-}: {
-  label: string;
-  status: "pending" | "active" | "complete";
-}) {
-  return (
-    <div className="flex items-center space-x-3">
-      {status === "complete" ? (
-        <div className="h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-3 w-3 text-primary"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </div>
-      ) : status === "active" ? (
-        <div className="h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center">
-          <div className="h-2 w-2 rounded-full bg-primary animate-pulse"></div>
-        </div>
-      ) : (
-        <div className="h-5 w-5 rounded-full bg-muted flex items-center justify-center"></div>
-      )}
-      <span
-        className={`text-sm ${
-          status === "complete"
-            ? "text-primary"
-            : status === "active"
-            ? "text-foreground"
-            : "text-muted-foreground"
-        }`}
-      >
-        {label}
-      </span>
-    </div>
-  );
-}
-
 function EmptyState({
   onNavigateToUpload,
 }: {
@@ -246,7 +154,9 @@ function EmptyState({
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          aria-label="No documents generated"
         >
+          <title>No documents generated</title>
           <path
             strokeLinecap="round"
             strokeLinejoin="round"

@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useRef, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Bookmark } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -14,20 +12,20 @@ import { JobCard } from "@/components/job-card";
 import { SavedJobsDrawer } from "@/components/saved-jobs-drawer";
 import { useSavedJobsStore } from "@/store/saved-jobs-store";
 import { Toaster } from "@/components/toaster";
+import { useSavedJobsInitialization } from "@/hooks/use-saved-jobs-initialization";
 
 export default function JobListingPlatform() {
   const sourceBuckets = useJobStore((state) => state.sourceBuckets);
   const hasInitialized = useJobStore((state) => state.hasInitialized);
   const savedJobs = useSavedJobsStore((state) => state.savedJobs);
   const isLoadingSavedJobs = useSavedJobsStore((state) => state.isLoading);
-  const fetchSavedJobs = useSavedJobsStore((state) => state.fetchSavedJobs);
   const [activeTab, setActiveTab] = useState(0); // For mobile view
   const [activeSources, setActiveSources] = useState<number[]>([]); // For desktop view
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [savedJobsDrawerOpen, setSavedJobsDrawerOpen] = useState(false);
-  const [savedJobsInitialized, setSavedJobsInitialized] = useState(false);
+  const { savedJobsInitialized } = useSavedJobsInitialization();
 
   // Initialize active sources with first two sources when data is loaded
   useEffect(() => {
@@ -41,19 +39,6 @@ export default function JobListingPlatform() {
       setIsLoading(false);
     }
   }, [sourceBuckets, activeSources.length, hasInitialized]);
-
-  // Fetch saved jobs as early as possible
-  useEffect(() => {
-    // Load saved jobs from Firebase
-    fetchSavedJobs()
-      .then(() => {
-        setSavedJobsInitialized(true);
-      })
-      .catch((error) => {
-        console.error("Error fetching saved jobs:", error);
-        setSavedJobsInitialized(true); // Still mark as initialized even on error
-      });
-  }, [fetchSavedJobs]);
 
   // Listen to Firestore job updates
   useEffect(() => {

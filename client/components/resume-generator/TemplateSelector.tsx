@@ -358,7 +358,7 @@ function SectionHeader({
 
 function TooltipIcon({ Icon, label }: { Icon: any; label: string }) {
   return (
-    <div className="group relative" title={`Supports ${label} export`}>
+    <div className="group relative">
       <div className="flex items-center justify-center w-8 h-8 bg-primary/10 hover:w-10 hover:h-10 rounded-full transition-all duration-200">
         <Icon className="h-5 w-5 items-center justify-center" />
       </div>

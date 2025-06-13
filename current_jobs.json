@@ -9,7 +9,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.162Z",
+    "scrapedAt": "2025-06-13T17:44:20.557Z",
     "isValidUrl": true
   },
   {
@@ -22,7 +22,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.162Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -35,7 +35,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.162Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -48,7 +48,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.162Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -61,7 +61,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.162Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -74,7 +74,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.162Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -87,7 +87,7 @@
     "datePosted": "2025-06-06",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.162Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -100,7 +100,7 @@
     "datePosted": "2025-06-06",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.162Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -113,7 +113,7 @@
     "datePosted": "2025-06-03",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -126,7 +126,7 @@
     "datePosted": "2025-06-03",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -139,7 +139,7 @@
     "datePosted": "2025-06-02",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -152,7 +152,7 @@
     "datePosted": "2025-06-02",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -165,7 +165,33 @@
     "datePosted": "2025-06-02",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
+    "isValidUrl": true
+  },
+  {
+    "link": "https://careersmw.com/job/human-resources-assistant-2/",
+    "companyLogo": "https://i0.wp.com/careersmw.com/wp-content/uploads/2021/09/Banja-blm-e1647489492404.jpg?resize=150%2C150&ssl=1",
+    "position": "Human Resources Assistant Banja La Mtsogolo",
+    "companyName": "Banja La Mtsogolo",
+    "location": "Lilongwe, Malawi",
+    "jobType": "Full Time",
+    "datePosted": "2025-06-13",
+    "applicationDeadline": "N/A",
+    "source": "careersmw",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
+    "isValidUrl": true
+  },
+  {
+    "link": "https://careersmw.com/job/midwife/",
+    "companyLogo": "https://i0.wp.com/careersmw.com/wp-content/uploads/2022/06/Medicines-MSF.png?resize=150%2C150&ssl=1",
+    "position": "Midwife Nurse Re-Advertised M decins Sans Fronti res MSF",
+    "companyName": "M decins Sans Fronti res MSF",
+    "location": "Blantyre, Malawi",
+    "jobType": "Full Time",
+    "datePosted": "2025-06-13",
+    "applicationDeadline": "N/A",
+    "source": "careersmw",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -178,7 +204,7 @@
     "datePosted": "2025-06-13",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -191,7 +217,7 @@
     "datePosted": "2025-06-13",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -204,7 +230,7 @@
     "datePosted": "2025-06-13",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -217,7 +243,7 @@
     "datePosted": "2025-06-13",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -230,7 +256,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -243,7 +269,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -256,7 +282,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -269,7 +295,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -282,7 +308,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -295,7 +321,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -308,7 +334,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -321,7 +347,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -334,7 +360,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -347,7 +373,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -360,7 +386,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -373,7 +399,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -386,7 +412,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -399,7 +425,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -412,7 +438,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -425,7 +451,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -438,7 +464,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -451,7 +477,7 @@
     "datePosted": "2025-06-07",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -464,7 +490,7 @@
     "datePosted": "2025-06-07",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -477,7 +503,7 @@
     "datePosted": "2025-06-07",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -490,7 +516,7 @@
     "datePosted": "2025-06-07",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -503,7 +529,7 @@
     "datePosted": "2025-06-07",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -516,7 +542,7 @@
     "datePosted": "2025-06-07",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -529,7 +555,7 @@
     "datePosted": "2025-06-07",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -542,7 +568,7 @@
     "datePosted": "2025-06-07",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -555,7 +581,7 @@
     "datePosted": "2025-06-07",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -568,7 +594,7 @@
     "datePosted": "2025-06-07",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -581,7 +607,7 @@
     "datePosted": "2025-06-07",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -594,7 +620,7 @@
     "datePosted": "2025-06-07",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -607,7 +633,7 @@
     "datePosted": "2025-06-06",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -620,33 +646,7 @@
     "datePosted": "2025-06-06",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://careersmw.com/job/188751/",
-    "companyLogo": "https://i0.wp.com/careersmw.com/wp-content/uploads/2018/04/rsz_pppc.jpg?resize=150%2C150&ssl=1",
-    "position": "Software Development Analyst Public Private Partnership Commission PPPC",
-    "companyName": "Public Private Partnership Commission PPPC",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Full Time",
-    "datePosted": "2025-06-06",
-    "applicationDeadline": "N/A",
-    "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://careersmw.com/job/188755/",
-    "companyLogo": "https://i0.wp.com/careersmw.com/wp-content/uploads/2023/08/MCCCI.jpeg?resize=150%2C150&ssl=1",
-    "position": "Director Institutional Development Malawi Confederation of Chambers of Commerce and Industry MCCCI",
-    "companyName": "Malawi Confederation of Chambers of Commerce and Industry MCCCI",
-    "location": "Blantyre, Malawi",
-    "jobType": "Full Time",
-    "datePosted": "2025-06-06",
-    "applicationDeadline": "N/A",
-    "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -659,7 +659,7 @@
     "datePosted": "N/A",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -672,7 +672,7 @@
     "datePosted": "N/A",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -685,7 +685,7 @@
     "datePosted": "N/A",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -698,7 +698,7 @@
     "datePosted": "N/A",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
@@ -711,1333 +711,85 @@
     "datePosted": "N/A",
     "applicationDeadline": "N/A",
     "source": "careersmw",
-    "scrapedAt": "2025-06-13T04:56:38.163Z",
+    "scrapedAt": "2025-06-13T17:44:20.558Z",
     "isValidUrl": true
   },
   {
-    "link": "https://en.wikipedia.org/wiki/Malawi",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/05/Forum-for-African-Women-Educationalists-in-Malawi-FAWEMA.v2-150x150.webp",
-    "position": "Jobs in Malawi",
-    "companyName": "Forum for African Women Educationalists in Malawi FAWEMA",
-    "location": "Ntchisi, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 20, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/project-officer-13/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/05/Forum-for-African-Women-Educationalists-in-Malawi-FAWEMA.v2-150x150.webp",
-    "position": "Project Officer",
-    "companyName": "Forum for African Women Educationalists in Malawi FAWEMA",
-    "location": "Ntchisi, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 20, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/ict-officer-3/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/05/Forum-for-African-Women-Educationalists-in-Malawi-FAWEMA.v2-150x150.webp",
-    "position": "ICT Officer",
-    "companyName": "Forum for African Women Educationalists in Malawi FAWEMA",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 20, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/program-manager-4/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/ActionAid-150x150.png",
-    "position": "Program Manager",
-    "companyName": "ActionAid Malawi",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 20, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/pharmacist-5/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2023/10/Baylor-College-of-Medicine-Childrens-Foundation-%E2%80%93-Malawi-BCMCF-M-150x150.jpeg",
-    "position": "Pharmacist",
-    "companyName": "Baylor College of Medicine Children s Foundation Malawi BCMCF-M",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 25, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/artisan-fitter/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Illovo-Sugar-Malawi-plc-150x150.png",
-    "position": "Artisan Fitter",
-    "companyName": "Illovo Sugar Malawi plc",
-    "location": "Dwangwa, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 19, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/inventory-manager/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Illovo-Sugar-Malawi-plc-150x150.png",
-    "position": "Inventory Manager",
-    "companyName": "Illovo Sugar Malawi plc",
-    "location": "Nchalo, Chikwawa",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 27, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/copywriter/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/06/Corporate-Graphics-Malawi-150x150.avif",
-    "position": "Copywriter",
-    "companyName": "Corporate Graphics Malawi",
-    "location": "Blantyre, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 16, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/malawi-compliance-senior-coordinator/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/One-Acre-Fund-150x150.jpg",
-    "position": "Malawi Compliance Senior Coordinator",
-    "companyName": "One Acre Fund",
-    "location": "Zomba, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "September 3, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/temporary-systems-engineer/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Elizabeth-Glaser-Pediatric-AIDS-Foundation-EGPAF-150x150.png",
-    "position": "Temporary Systems Engineer",
-    "companyName": "Elizabeth Glaser Pediatric AIDS Foundation EGPAF",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "N/A",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/content-creation-and-social-media-management/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/United-Nations-Volunteers-Malawi-150x150.png",
-    "position": "Content creation and Social Media Management",
-    "companyName": "United Nations Volunteers UNV",
-    "location": "Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "N/A",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/incident-management-senior-technician/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/One-Acre-Fund-150x150.jpg",
-    "position": "Incident Management Senior Technician",
-    "companyName": "N/A",
-    "location": "Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "July 11, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/project-officer-12/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Opportunity-International-Malawi-150x150.jpg",
-    "position": "Project Officer",
-    "companyName": "Opportunity International",
-    "location": "Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 19, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/lead-data-protection-2/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Airtel-Malawi-150x150.png",
-    "position": "Lead Data Protection",
-    "companyName": "Airtel Mobile Commerce Limited",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 16, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/data-analyst-2/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/01/HAIL-COTTON-Malawi-LIMITED-150x150.jpg",
-    "position": "Data Analyst",
-    "companyName": "Hail Cotton Malawi Ltd",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 17, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/agronomy-technicians/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/01/HAIL-COTTON-Malawi-LIMITED-150x150.jpg",
-    "position": "Agronomy Technicians",
-    "companyName": "Hail Cotton Malawi Ltd",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 17, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/driverdriver/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/01/HAIL-COTTON-Malawi-LIMITED-150x150.jpg",
-    "position": "Driver",
-    "companyName": "Hail Cotton Malawi Ltd",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 17, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/stores-clerk-3/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/02/PressCane-Limited--150x150.jpeg",
-    "position": "Stores Clerk",
-    "companyName": "PressCane Limited",
-    "location": "Chikwawa, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 20, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/rehabilitation-of-mponda-primary-school-classroom-block/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/11/Dowa-District-Council-150x150.png",
-    "position": "Rehabilitation of Mponda Primary School Classroom Block",
-    "companyName": "Dowa District Council",
-    "location": "Dowa, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 23, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/event-sales-and-reservations-agent/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Protea-Hotel-150x150.png",
-    "position": "Event sales and Reservations Agent",
-    "companyName": "Protea Hotel",
-    "location": "Blantyre, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 18, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/financing-specialist/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2023/10/UNDP-Malawi-Office-150x150.png",
-    "position": "Financing Specialist",
-    "companyName": "United Nations Development Programme UNDP",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 17, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/pharmacist-4/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/06/One-Stop-Community-Phamarcy.v1-150x150.avif",
-    "position": "PHARMACIST",
-    "companyName": "One Acre Fund",
-    "location": "Blantyre, Lilongwe, Zomba or Mzuzu.",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 20, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/collections-consultant-central-region/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/12/image_2024-12-16_074844430-1-150x150.png",
-    "position": "Collections Consultant Central Region",
-    "companyName": "Select Africa Limited",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 17, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/call-for-nominations-of-the-board-of-trustees-for-the-national-initiative-for-civic-education-nice-public-trust/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2023/12/The-National-Initiative-for-Civic-Education-NICE-150x150.jpeg",
-    "position": "CALL FOR NOMINATIONS OF THE BOARD OF TRUSTEES FOR THE NATIONAL INITIATIVE FOR CIVIC EDUCATION NICE PUBLIC TRUST",
-    "companyName": "National Initiative for Civic Education NICE",
-    "location": "Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 30, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/subcontracts-and-procurement-specialist/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/04/Chemonics-Malawi-150x150.png",
-    "position": "Subcontracts and Procurement Specialist",
-    "companyName": "Chemonics",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/regional-product-launch-manager-2/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/05/MSI-Reproductive-Choices-150x150.png",
-    "position": "Regional Product Launch Manager",
-    "companyName": "MSI Reproductive Choices",
-    "location": "Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 24, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/chief-of-mission-com/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/04/International-Organization-for-Migration-IOM-150x150.jpg",
-    "position": "Chief of Mission CoM",
-    "companyName": "International Organization for Migration IOM",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 18, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/operations-executive-3/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/05/Hallmark-Limited-150x150.jpg",
-    "position": "Operations Executive",
-    "companyName": "Hallmark Limited",
-    "location": "Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/assistant-transport-officer/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/10/Rab-Processors-Limited-150x150.png",
-    "position": "Assistant Transport Officer",
-    "companyName": "Rab Processors Limited",
-    "location": "Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 14, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/accounting-associate/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/10/ERIS-Properties-Mw-Limited-150x150.png",
-    "position": "Accounting Associate",
-    "companyName": "ERIS Properties Mw Limited",
-    "location": "Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 16, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/fumigator/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/10/Rab-Processors-Limited-150x150.png",
-    "position": "FUMIGATOR",
-    "companyName": "Rab Processors Limited",
-    "location": "Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 14, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/marketing-assistant/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/03/apply-now-150x150.png",
-    "position": "Marketing Assistant",
-    "companyName": "N/A",
-    "location": "Blantyre, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "N/A",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/airport-receptionist/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/12/Diplomats-CAR-HIRE--150x150.jpeg",
-    "position": "AIRPORT RECEPTIONIST",
-    "companyName": "Diplomats Car Hire",
-    "location": "Blantyre, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 15, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/audio-visual-technicians/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/03/Sunbird-Tourism-Plc-SUNBRD.mw_-150x150.webp",
-    "position": "AUDIO VISUAL TECHNICIANS",
-    "companyName": "Sunbird Tourism Plc",
-    "location": "Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/laboratory-technician-histopathology-laboratory/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/05/Medecins-Sans-Frontieres-msf-named-Doctors-Without-Borders.v1-150x150.webp",
-    "position": "Laboratory Technician Histopathology Laboratory",
-    "companyName": "M decins Sans Fronti res MSF",
-    "location": "Blantyre, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 16, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/relationship-officer-3/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/11/Sycamore-Credit-Limited-150x150.png",
-    "position": "Relationship Officer",
-    "companyName": "Sycamore Credit Limited",
-    "location": "Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "Closed: June 11, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/risk-collections-and-rehabilitation-officers/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/11/Sycamore-Credit-Limited-150x150.png",
-    "position": "Risk Collections and Rehabilitation Officers",
-    "companyName": "Sycamore Credit Limited",
-    "location": "Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "Closed: June 11, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/temporary-presiding-officers-15164-positions/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2023/10/Malawi-Electoral-Commission-MEC-150x150.png",
-    "position": "Temporary Presiding Officers 15 164 Positions",
-    "companyName": "Malawi Electoral Commission MEC",
-    "location": "Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 24, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/senior-program-manager/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/06/m-mama-Malawi-150x150.avif",
-    "position": "Senior Program Manager",
-    "companyName": "m-mama Malawi",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 27, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/administrative-assistant-13/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/06/Chris-Motorsport-150x150.avif",
-    "position": "Administrative Assistant",
-    "companyName": "Chris Motorsport",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/social-media-manager-4/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/09/STEM-Malawi-150x150.png",
-    "position": "Social Media Manager",
-    "companyName": "STEM CONSULT",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 20, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/%ef%82%a7-diesel-mechanics-2-posts-%ef%82%a7-welder-1-post-%ef%82%a7-painter-1-post/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/01/January-31-2024-150x150.png",
-    "position": "DIESEL MECHANICS 2 Posts WELDER 1 Post PAINTER 1 Post",
-    "companyName": "UNITRANS MALAWI LTD",
-    "location": "Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/senior-quantity-surveyor-2/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Mota-Engil-Malawi-150x150.png",
-    "position": "SENIOR QUANTITY SURVEYOR",
-    "companyName": "Mota Engil Malawi",
-    "location": "Kasungu, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 20, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/property-manager/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/04/Mukuru-150x150.png",
-    "position": "Property Manager",
-    "companyName": "Mukuru",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "N/A",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/director-of-corporate-services-3/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/09/Umodzi-Park-150x150.png",
-    "position": "Director of Corporate Services",
-    "companyName": "Umodzi Holdings Limited UHL",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 27, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/nurse-service-provider/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Family-Planning-Association-of-Malawi-FPAM-150x150.jpg",
-    "position": "Nurse Service Provider",
-    "companyName": "Family Planning Association of Malawi FPAM",
-    "location": "Kasungu, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 17, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/district-manager/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Family-Planning-Association-of-Malawi-FPAM-150x150.jpg",
-    "position": "District Manager",
-    "companyName": "Family Planning Association of Malawi FPAM",
-    "location": "Kasungu, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 17, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/operations-contracts-procurement-officer/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Palladium-Group-150x150.jpg",
-    "position": "Operations Contracts Procurement Officer",
-    "companyName": "Palladium",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 20, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/field-assistant-manager/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/03/apply-now-150x150.png",
-    "position": "Field Assistant Manager",
-    "companyName": "Vizara Plantations Limited",
-    "location": "Nkhatabay, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/security-officer-4/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/03/apply-now-150x150.png",
-    "position": "Security Officer",
-    "companyName": "Vizara Plantations Limited",
-    "location": "Nkhatabay, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/stem-power-generation-engineer/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Illovo-Sugar-Malawi-plc-150x150.png",
-    "position": "Stem Power Generation Engineer",
-    "companyName": "Illovo Sugar Malawi plc",
-    "location": "Dwangwa, Nkhotakota",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 16, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/principal-2/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/09/St-Patricks-International-Academy-150x150.jpeg",
-    "position": "Principal",
-    "companyName": "St Patrick s International Academy",
-    "location": "Blantyre, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "Closed: June 10, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/project-manager-18/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Illovo-Sugar-Malawi-plc-150x150.png",
-    "position": "Project Manager",
-    "companyName": "N/A",
-    "location": "Dwangwa, Nkhotakota",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 16, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/technical-officer-repairs-and-maintenance/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/05/Machinga-Teacher-Training-College-150x150.png",
-    "position": "Technical Officer- Repairs and Maintenance",
-    "companyName": "Ministry of Basic and Secondary Education MoBSE",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 22, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/technical-officer-quality-assurance/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/05/Machinga-Teacher-Training-College-150x150.png",
-    "position": "Technical Officer Quality Assurance",
-    "companyName": "Ministry of Basic and Secondary Education MoBSE",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 22, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.611Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/programme-officer-7/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/05/Machinga-Teacher-Training-College-150x150.png",
-    "position": "Programme Officer",
-    "companyName": "Ministry of Basic and Secondary Education MoBSE",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 22, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/communication-and-advocacy-officer-3/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/05/Machinga-Teacher-Training-College-150x150.png",
-    "position": "Communication and Advocacy Officer",
-    "companyName": "Ministry of Basic and Secondary Education MoBSE",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 22, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/administration-and-supply-chain-officer/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2023/10/download-1-150x150.png",
-    "position": "Administration and Supply Chain Officer",
-    "companyName": "Ministry of Basic and Secondary Education MoBSE",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 22, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/social-media-engagement-youthconnekt/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2023/10/UNDP-Malawi-Office-150x150.png",
-    "position": "Social media Engagement-YouthConnekt",
-    "companyName": "United Nations Development Programme UNDP",
-    "location": "Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 19, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/technical-assistance-consultant/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Palladium-Group-150x150.jpg",
-    "position": "Technical Assistance Consultant",
-    "companyName": "Palladium International",
-    "location": "Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 30, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/government-relations-country-coordinator/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/06/University-of-Georgia-Research-Foundation-150x150.png",
-    "position": "Government Relations Country Coordinator",
-    "companyName": "University of Georgia Research Foundation",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 23, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/health-economics-research-fellow/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Kamuzu-University-of-Health-Sciences-KUHeS-150x150.png",
-    "position": "Health Economics Research Fellow",
-    "companyName": "Kamuzu University of Health Sciences KUHeS",
-    "location": "Rumphi or Nkhotakota",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 20, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/research-associate-3/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2023/10/UNDP-Malawi-Office-150x150.png",
-    "position": "Research Associate",
-    "companyName": "United Nations Development Programme UNDP",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 19, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/2025-2026-indian-ayush-scholarship-scheme/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/03/apply-now-150x150.png",
-    "position": "2025 2026 INDIAN AYUSH SCHOLARSHIP SCHEME",
-    "companyName": "N/A",
-    "location": "N/A",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "N/A",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/marketing-manager-2/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/05/Football-Association-of-Malawi-FAM-150x150.jpeg",
-    "position": "Marketing Manager",
-    "companyName": "Football Association of Malawi FAM",
-    "location": "Blantyre, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/office-assistant-driver/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/01/Sparc-Systems-150x150.png",
-    "position": "Office Assistant Driver",
-    "companyName": "Sparc Systems",
-    "location": "Blantyre, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/project-manager-cafe-manager/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/03/apply-now-150x150.png",
-    "position": "Project Manager Cafe Manager",
-    "companyName": "N/A",
-    "location": "Nkhata Bay, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 30, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/director-institutional-development/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/06/Malawi-Confederation-of-Chambers-of-Commerce-and-Industry-MCCCI-150x150.jpeg",
-    "position": "Director Institutional Development",
-    "companyName": "Malawi Confederation of Chambers of Commerce and Industry MCCCI",
-    "location": "Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 16, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/daily-invoicetracker-associate/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/10/Tiderise-Malawi-1-150x150.jpeg",
-    "position": "Daily InvoiceTracker Associate",
-    "companyName": "Tiderise",
-    "location": "Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "July 4, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/senior-finance-officer/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/03/Mott-MacDonald-150x150.jpeg",
-    "position": "Senior Finance Officer",
-    "companyName": "N/A",
-    "location": "Blantyre, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/pharmacist-3/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/images-150x150.png",
-    "position": "Pharmacist",
-    "companyName": "Family Health Services FHS",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "Closed: June 12, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/direct-sales-supervisor/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/03/apply-now-150x150.png",
-    "position": "Direct Sales Supervisor",
-    "companyName": "N/A",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "Closed: June 9, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/general-manager-4/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2023/12/malawi-mangoes-150x150.jpeg",
-    "position": "General Manager",
-    "companyName": "Malawi Mangoes Operations Limited",
-    "location": "Salima, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/wash-accounts-financing-consultant/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/04/UNICEF-Eastern-and-Southern-Africa-Regional-Office-ESARO-150x150.jpg",
-    "position": "WASH Accounts Financing Consultant",
-    "companyName": "United Nations Children s Fund UNICEF",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "Closed: June 12, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/call-for-pitches-commissioned-essays-and-poems/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/06/Ipas-150x150.png",
-    "position": "Call for Pitches commissioned essays and poems",
-    "companyName": "Ipas",
-    "location": "Asia, Africa, and the Americas",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 16, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/lecturers-in-social-work-3-positions-lecturer-in-education-foundations-1-position/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2023/12/Nkhoma-University-150x150.png",
-    "position": "Lecturers in Social Work 3 positions Lecturer in Education Foundations 1 position",
-    "companyName": "Nkhoma University",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 18, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/fleet-management-supervisor-2/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Blantyre-Water-Board-BWB-150x150.png",
-    "position": "Fleet Management Supervisor",
-    "companyName": "Blantyre Water Board",
-    "location": "Blantyre, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 17, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/senior-credit-manager-group/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/First-Capital-Bank-150x150.png",
-    "position": "Senior Credit Manager Group",
-    "companyName": "FMB Capital Group",
-    "location": "Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 16, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/finance-business-analyst/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/04/Old-Mutual-Life-Assurance-Malawi-Limited-150x150.png",
-    "position": "Finance Business Analyst",
-    "companyName": "Old Mutual Limited",
-    "location": "Blantyre, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/clearance-broker-associate/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/FedEx-150x150.jpg",
-    "position": "Clearance Broker- Associate",
-    "companyName": "FedEx",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/human-resource-manager-4/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/03/apply-now-150x150.png",
-    "position": "Human Resource Manager",
-    "companyName": "ND MADALITSO",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 16, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/ict-officer-2/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/03/apply-now-150x150.png",
-    "position": "ICT Officer",
-    "companyName": "ND MADALITSO",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 16, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/accountant-9/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Mzuzu-University-MZUNI-150x150.png",
-    "position": "Accountant",
-    "companyName": "Mzuzu University Trust Fund",
-    "location": "Mzuzu, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/waiters/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Mzuzu-University-MZUNI-150x150.png",
-    "position": "Waiters",
-    "companyName": "Mzuzu University Trust Fund",
-    "location": "Mzuzu, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/bartenders/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Mzuzu-University-MZUNI-150x150.png",
-    "position": "Bartenders",
-    "companyName": "Mzuzu University Trust Fund",
-    "location": "Mzuzu, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/reception-front-line-supervisor/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Mzuzu-University-MZUNI-150x150.png",
-    "position": "Reception Front-line Supervisor",
-    "companyName": "Mzuzu University Trust Fund",
-    "location": "Mzuzu, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/food-and-beverage-supervisor/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Mzuzu-University-MZUNI-150x150.png",
-    "position": "Food and Beverage Supervisor",
-    "companyName": "Mzuzu University Trust Fund",
-    "location": "Mzuzu, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/head-chef-3/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Mzuzu-University-MZUNI-150x150.png",
-    "position": "Head Chef",
-    "companyName": "Mzuzu University Trust Fund",
-    "location": "Mzuzu, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/hotel-manager/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Mzuzu-University-MZUNI-150x150.png",
-    "position": "Hotel Manager",
-    "companyName": "Mzuzu University Trust Fund",
-    "location": "Mzuzu, Malawi",
-    "jobType": "Opportunity",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/temporary-assistant-procurement-and-disposal-officer/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/03/National-Oil-Company-of-Malawi-NOCMa.v1-150x150.webp",
-    "position": "Temporary Assistant Procurement and Disposal Officer",
-    "companyName": "National Oil Company of Malawi NOCMa",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 14, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/fleet-management-supervisor/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Blantyre-Water-Board-BWB-150x150.png",
-    "position": "Fleet Management Supervisor",
-    "companyName": "Blantyre Water Board BWB",
-    "location": "Blantyre, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 17, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/business-development-officer-3/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Mzuzu-University-MZUNI-150x150.png",
-    "position": "Business Development Officer",
-    "companyName": "Mzuzu University Trust Fund",
-    "location": "Mzuzu, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/assistant-accountant-8/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/06/Shire-River-Crocodiles-Ltd.v1-150x150.webp",
-    "position": "Assistant Accountant",
-    "companyName": "Shire River Crocodiles Ltd SRC Ltd",
-    "location": "Nsanje, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 15, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/horticulturist/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2025/06/Msaiwale-Agro-Traders-Limited.v1-150x150.webp",
-    "position": "Horticulturist",
-    "companyName": "Msaiwale Agro Traders Limited",
-    "location": "Kasungu, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/meal-coordinator-choice-project/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/Oxfam-International-150x150.png",
-    "position": "MEAL Coordinator CHOICE project",
-    "companyName": "Oxfam in Malawi",
-    "location": "Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 18, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/supply-chain-officer/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/World-Food-Program-WFP-150x150.png",
-    "position": "Supply Chain Officer",
-    "companyName": "World Food Program WFP",
-    "location": "Lilongwe, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 17, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/youth-empowerment-associate/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2024/08/United-Nations-Population-Fund-UNFPA-150x150.png",
-    "position": "Youth Empowerment Associate",
-    "companyName": "United Nations Population Fund UNFPA",
-    "location": "Mchinji, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 16, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/hr-business-partner-and-administration-manager/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2023/12/VANGUARD-LIFE-ASSURANCE-COMPANY-LIMITED-150x150.jpeg",
-    "position": "HR Business Partner and Administration Manager",
-    "companyName": "Vanguard Life Assurance Company Ltd",
-    "location": "Blantyre, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/company-secretary-and-compliance-manager/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2023/12/VANGUARD-LIFE-ASSURANCE-COMPANY-LIMITED-150x150.jpeg",
-    "position": "Company Secretary and Compliance Manager",
-    "companyName": "Vanguard Life Assurance Company Ltd",
-    "location": "Blantyre, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/head-of-business-development/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2023/12/VANGUARD-LIFE-ASSURANCE-COMPANY-LIMITED-150x150.jpeg",
-    "position": "Head of Business Development",
-    "companyName": "Vanguard Life Assurance Company Ltd",
-    "location": "Blantyre, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://ntchito.com/job/ict-manager-2/",
-    "companyLogo": "https://ntchito.com/wp-content/uploads/2023/12/VANGUARD-LIFE-ASSURANCE-COMPANY-LIMITED-150x150.jpeg",
-    "position": "ICT Manager",
-    "companyName": "Vanguard Life Assurance Company Ltd",
-    "location": "Blantyre, Malawi",
-    "jobType": "Job Vacancy in Malawi",
-    "datePosted": "N/A",
-    "applicationDeadline": "June 13, 2025",
-    "source": "ntchito",
-    "scrapedAt": "2025-06-13T04:56:47.612Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://jobsearchmalawi.com/job/multiple-positions-imagine-worldwide/",
-    "companyLogo": "https://jobsearchmalawi.com/wp-content/uploads/2025/06/Imagine-Worldwide-150x150.png",
-    "position": "Multiple Positions Imagine Worldwide Imagine Worldwide",
-    "companyName": "Imagine Worldwide",
-    "location": "Lilongwe",
+    "link": "https://jobsearchmalawi.com/job/conditional-salaried-sales-agent/",
+    "companyLogo": "https://jobsearchmalawi.com/wp-content/uploads/2025/06/Old-Mutual-150x150.jpeg",
+    "position": "Conditional Salaried Sales Agent Old Mutua",
+    "companyName": "Old Mutua",
+    "location": "Mzuzu",
     "jobType": "Full Time",
-    "datePosted": "2025-06-07",
+    "datePosted": "2025-06-13",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.398Z",
+    "isValidUrl": true
+  },
+  {
+    "link": "https://jobsearchmalawi.com/job/temporary-water-monitoring-assistant/",
+    "companyLogo": "https://jobsearchmalawi.com/wp-content/uploads/2025/05/Gov-150x150.png",
+    "position": "Temporary Water Monitoring Assistant Thyolo District Council",
+    "companyName": "Thyolo District Council",
+    "location": "Thyolo",
+    "jobType": "Temporary",
+    "datePosted": "2025-06-13",
+    "applicationDeadline": "N/A",
+    "source": "jobsearchmalawi",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
+    "isValidUrl": true
+  },
+  {
+    "link": "https://jobsearchmalawi.com/job/web-developer-2/",
+    "companyLogo": "https://jobsearchmalawi.com/wp-content/uploads/2025/06/daeyang_university_logo.jpeg",
+    "position": "Web Developer Daeyang University",
+    "companyName": "Daeyang University",
+    "location": "Lilongwe",
+    "jobType": "Full Time",
+    "datePosted": "2025-06-13",
+    "applicationDeadline": "N/A",
+    "source": "jobsearchmalawi",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
+    "isValidUrl": true
+  },
+  {
+    "link": "https://jobsearchmalawi.com/job/ict-officer-2/",
+    "companyLogo": "https://jobsearchmalawi.com/wp-content/uploads/2025/06/FAWEMA-146x150.jpeg",
+    "position": "ICT Officer Forum for African Women Educationalists in Malawi FAWEMA",
+    "companyName": "Forum for African Women Educationalists in Malawi FAWEMA",
+    "location": "Lilongwe",
+    "jobType": "Full Time",
+    "datePosted": "2025-06-13",
+    "applicationDeadline": "N/A",
+    "source": "jobsearchmalawi",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
+    "isValidUrl": true
+  },
+  {
+    "link": "https://jobsearchmalawi.com/job/project-officer/",
+    "companyLogo": "https://jobsearchmalawi.com/wp-content/uploads/2025/06/FAWEMA-146x150.jpeg",
+    "position": "Project Officer Forum for African Women Educationalists in Malawi FAWEMA",
+    "companyName": "Forum for African Women Educationalists in Malawi FAWEMA",
+    "location": "Ntchisi",
+    "jobType": "Full Time",
+    "datePosted": "2025-06-13",
+    "applicationDeadline": "N/A",
+    "source": "jobsearchmalawi",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
+    "isValidUrl": true
+  },
+  {
+    "link": "https://jobsearchmalawi.com/job/multiple-positions-tasty-foods-industries/",
+    "companyLogo": "https://jobsearchmalawi.com/wp-content/uploads/2025/05/Job-Search-Malawi-150x150.png",
+    "position": "Multiple Positions Tasty Foods Industries Tasty Foods Industries",
+    "companyName": "Tasty Foods Industries",
+    "location": "Blantyre",
+    "jobType": "Full Time",
+    "datePosted": "2025-06-13",
+    "applicationDeadline": "N/A",
+    "source": "jobsearchmalawi",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2050,7 +802,7 @@
     "datePosted": "2025-06-13",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2063,7 +815,7 @@
     "datePosted": "2025-06-13",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2076,7 +828,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2089,7 +841,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2102,7 +854,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2115,7 +867,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2128,7 +880,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2141,7 +893,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2154,7 +906,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2167,7 +919,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2180,7 +932,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2193,7 +945,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2206,7 +958,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2219,7 +971,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2232,7 +984,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2245,7 +997,7 @@
     "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2258,7 +1010,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2271,7 +1023,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2284,7 +1036,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2297,7 +1049,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2310,7 +1062,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2323,7 +1075,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2336,7 +1088,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2349,7 +1101,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2362,7 +1114,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2375,7 +1127,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2388,7 +1140,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2401,7 +1153,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2414,7 +1166,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2427,7 +1179,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2440,7 +1192,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2453,7 +1205,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2466,7 +1218,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2479,7 +1231,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2492,7 +1244,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2505,7 +1257,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2518,7 +1270,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2531,7 +1283,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2544,7 +1296,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2557,7 +1309,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2570,7 +1322,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2583,7 +1335,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2596,7 +1348,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2609,7 +1361,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2622,7 +1374,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.192Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2635,7 +1387,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.193Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2648,7 +1400,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.193Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2661,7 +1413,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.193Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2674,7 +1426,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.193Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2687,7 +1439,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.193Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2700,7 +1452,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.193Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2713,7 +1465,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.193Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2726,7 +1478,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.193Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
@@ -2739,73 +1491,164 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.193Z",
+    "scrapedAt": "2025-06-13T17:48:08.399Z",
     "isValidUrl": true
   },
   {
-    "link": "https://jobsearchmalawi.com/job/senior-quantity-surveyor/",
-    "companyLogo": "https://jobsearchmalawi.com/wp-content/uploads/2025/06/Mota-Engil-Malawi-150x150.png",
-    "position": "Senior Quantity Surveyor Mota-Engil Malawi",
-    "companyName": "Mota-Engil Malawi",
-    "location": "Lilongwe",
-    "jobType": "Full Time",
-    "datePosted": "2025-06-09",
-    "applicationDeadline": "N/A",
-    "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.193Z",
-    "isValidUrl": true
+    "link": "https://jobs.unicef.org/en-us/job/581726/consultance-nationale-en-gestion-de-linformation-et-m%C3%A9canisme-de-feedback-communautaire-burundi-6-mois",
+    "position": "Consultance nationale en gestion de l information et m canisme de feedback communautaire Burundi 6 mois",
+    "location": "Burundi",
+    "datePosted": "N/A",
+    "applicationDeadline": "20 Jun 2025 11:55 PM",
+    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
+    "companyName": "UNICEF",
+    "source": "unicef-careers",
+    "jobType": "International Organization",
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
   },
   {
-    "link": "https://jobsearchmalawi.com/job/property-manager/",
-    "companyLogo": "https://jobsearchmalawi.com/wp-content/uploads/2025/06/Mukuru-150x150.jpeg",
-    "position": "Property Manager Mukuru",
-    "companyName": "Mukuru",
-    "location": "Lilongwe",
-    "jobType": "Full Time",
-    "datePosted": "2025-06-09",
-    "applicationDeadline": "N/A",
-    "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.193Z",
-    "isValidUrl": true
+    "link": "https://jobs.unicef.org/en-us/job/581761/consultor%C3%ADa-asistencia-t%C3%A9cnica-en-el-desarrollo-del-nuevo-sistema-inform%C3%A1tico-de-control-de-calidad-de-alimentos-fortificados-siccaf-versi%C3%B3n-20-sede-la-pazbolivia-75-d%C3%ADas-req-581761",
+    "position": "Consultor a Asistencia T cnica en el Desarrollo del Nuevo Sistema Inform tico de Control de Calidad de Alimentos Fortificados SICCAF Versi n 2 0 Sede La Paz-Bolivia 75 d as Req 581761",
+    "location": "Bolivia",
+    "datePosted": "N/A",
+    "applicationDeadline": "19 Jun 2025 11:55 PM",
+    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
+    "companyName": "UNICEF",
+    "source": "unicef-careers",
+    "jobType": "International Organization",
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
   },
   {
-    "link": "https://jobsearchmalawi.com/job/diesel-mechanics/",
-    "companyLogo": "https://jobsearchmalawi.com/wp-content/uploads/2025/06/Unitrans-Malawi-Ltd-150x150.jpeg",
-    "position": "Diesel Mechanics Unitrans Malawi Ltd",
-    "companyName": "Unitrans Malawi Ltd",
-    "location": "Dwangwa",
-    "jobType": "Full Time",
-    "datePosted": "2025-06-09",
-    "applicationDeadline": "N/A",
-    "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.193Z",
-    "isValidUrl": true
+    "link": "https://jobs.unicef.org/en-us/job/581746/consultor%C3%ADa-asistencia-t%C3%A9cnica-en-el-desarrollo-de-un-curso-de-capacitaci%C3%B3n-continua-en-l%C3%ADnea-sobre-la-iniciativa-amigos-de-la-madre-y-la-ni%C3%B1ez-para-el-personal-de-salud-sede-la-pazbolivia-50-d%C3%ADas-calendario-req-581746",
+    "position": "Consultor a Asistencia T cnica en el Desarrollo de un Curso de Capacitaci n Continua en L nea sobre la Iniciativa Amigos de la Madre y la Ni ez para el Personal de Salud Sede La Paz-Bolivia 50 d as calendario Req 581746",
+    "location": "Bolivia",
+    "datePosted": "N/A",
+    "applicationDeadline": "19 Jun 2025 11:55 PM",
+    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
+    "companyName": "UNICEF",
+    "source": "unicef-careers",
+    "jobType": "International Organization",
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
   },
   {
-    "link": "https://jobsearchmalawi.com/job/welder/",
-    "companyLogo": "https://jobsearchmalawi.com/wp-content/uploads/2025/06/Unitrans-Malawi-Ltd-150x150.jpeg",
-    "position": "Welder Unitrans Malawi Ltd",
-    "companyName": "Unitrans Malawi Ltd",
-    "location": "Dwangwa",
-    "jobType": "Full Time",
-    "datePosted": "2025-06-09",
-    "applicationDeadline": "N/A",
-    "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.193Z",
-    "isValidUrl": true
+    "link": "https://jobs.unicef.org/en-us/job/581750/consultor%C3%ADa-asistencia-t%C3%A9cnica-en-la-digitalizaci%C3%B3n-de-las-tarjetas-de-dispensaci%C3%B3n-de-los-complementos-nutricionales-nutri-mam%C3%A1-y-nutribeb%C3%A9-sede-la-pazbolivia-60-d%C3%ADas-calendario-req-581750",
+    "position": "Consultor a Asistencia t cnica en la Digitalizaci n de las Tarjetas de Dispensaci n de los Complementos Nutricionales Nutri Mam y Nutribeb Sede La Paz-Bolivia 60 d as calendario Req 581750",
+    "location": "Bolivia",
+    "datePosted": "N/A",
+    "applicationDeadline": "19 Jun 2025 11:55 PM",
+    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
+    "companyName": "UNICEF",
+    "source": "unicef-careers",
+    "jobType": "International Organization",
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
   },
   {
-    "link": "https://jobsearchmalawi.com/job/painter/",
-    "companyLogo": "https://jobsearchmalawi.com/wp-content/uploads/2025/06/Unitrans-Malawi-Ltd-150x150.jpeg",
-    "position": "Painter Unitrans Malawi Ltd",
-    "companyName": "Unitrans Malawi Ltd",
-    "location": "Dwangwa",
-    "jobType": "Full Time",
-    "datePosted": "2025-06-09",
-    "applicationDeadline": "N/A",
-    "source": "jobsearchmalawi",
-    "scrapedAt": "2025-06-13T04:57:09.193Z",
-    "isValidUrl": true
+    "link": "https://jobs.unicef.org/en-us/job/581753/consultor%C3%ADa-asistencia-t%C3%A9cnica-al-ministerio-de-salud-y-deportes-en-la-actualizaci%C3%B3n-del-reglamentos-t%C3%A9cnicos-de-la-unidad-de-alimentaci%C3%B3n-y-nutrici%C3%B3n-sede-la-pazbolivia-50-d%C3%ADas-calendario-req-581753",
+    "position": "Consultor a Asistencia T cnica al Ministerio de Salud y Deportes en la Actualizaci n del Reglamentos T cnicos de la Unidad de Alimentaci n y Nutrici n Sede La Paz-Bolivia 50 d as calendario Req 581753",
+    "location": "Bolivia",
+    "datePosted": "N/A",
+    "applicationDeadline": "19 Jun 2025 11:55 PM",
+    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
+    "companyName": "UNICEF",
+    "source": "unicef-careers",
+    "jobType": "International Organization",
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
+  },
+  {
+    "link": "https://jobs.unicef.org/en-us/job/581775/consultante-national-charg%C3%A9e-de-lorganisation-gestion-et-le-suivi-de-la-campagne-national-pour-la-rentr%C3%A9e-scolaire-20252026-au-burkina-faso",
+    "position": "Consultant e national charg e de l organisation gestion et le suivi de la campagne national pour la Rentr e Scolaire 2025-2026 au Burkina Faso",
+    "location": "Burkina Faso",
+    "datePosted": "N/A",
+    "applicationDeadline": "20 Jun 2025 11:55 PM",
+    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
+    "companyName": "UNICEF",
+    "source": "unicef-careers",
+    "jobType": "International Organization",
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
+  },
+  {
+    "link": "https://jobs.unicef.org/en-us/job/581724/consultance-nationale-%C3%A9tat-des-lieux-du-corps-de-travail-des-services-sociaux-burundi-4-mois",
+    "position": "Consultance nationale - tat des lieux du corps de travail des services sociaux Burundi 4 mois",
+    "location": "Burundi",
+    "datePosted": "N/A",
+    "applicationDeadline": "30 Jun 2025 11:55 PM",
+    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
+    "companyName": "UNICEF",
+    "source": "unicef-careers",
+    "jobType": "International Organization",
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
+  },
+  {
+    "link": "https://jobs.unicef.org/en-us/job/581712/consultance-internationale-pour-lanalyse-du-paysage-genre-et-eha-bujumburaburundi-55-jours-home-based",
+    "position": "Consultance Internationale pour l analyse du paysage Genre et EHA Bujumbura Burundi 55 jours home based",
+    "location": "Burundi",
+    "datePosted": "N/A",
+    "applicationDeadline": "19 Jun 2025 11:55 PM",
+    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
+    "companyName": "UNICEF",
+    "source": "unicef-careers",
+    "jobType": "International Organization",
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
+  },
+  {
+    "link": "https://jobs.unicef.org/en-us/job/581773/pharmacist-officer-in-charge-of-quantification-and-quality-assurance-of-health-products-p3-temporary-appointment-06-month-post122627-req-581773-bangui-central-african-republic",
+    "position": "Pharmacist officer in charge of quantification and quality assurance of health products P-3 Temporary Appointment 06 month Post 122627 Req 581773 Bangui Central African Republic",
+    "location": "Central African Republic",
+    "datePosted": "N/A",
+    "applicationDeadline": "19 Jun 2025 11:55 PM",
+    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
+    "companyName": "UNICEF",
+    "source": "unicef-careers",
+    "jobType": "International Organization",
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
+  },
+  {
+    "link": "https://jobs.unicef.org/en-us/job/581768/homebased-in-prague-two-2-legal-experts-for-the-development-of-the-new-comprehensive-child-protection-and-family-support-legislation-and-regulatory-impact-assessment-document-unicef-czech-republic-rro",
+    "position": "Home-based in Prague Two 2 Legal Experts for the development of the new comprehensive Child Protection and Family Support Legislation and Regulatory Impact Assessment document - UNICEF Czech Republic RRO",
+    "location": "Czech Republic",
+    "datePosted": "N/A",
+    "applicationDeadline": "4 Jul 2025 11:55 PM",
+    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
+    "companyName": "UNICEF",
+    "source": "unicef-careers",
+    "jobType": "International Organization",
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
+  },
+  {
+    "link": "https://jobs.unicef.org/en-us/job/581769/homebased-in-prague-one-1-cp-expert-for-the-development-of-the-new-comprehensive-child-protection-and-family-support-legislation-and-regulatory-impact-assessment-document-unicef-czech-republic-rro",
+    "position": "Home-based in Prague One 1 CP Expert for the development of the new comprehensive Child Protection and Family Support Legislation and Regulatory Impact Assessment document - UNICEF Czech Republic RRO",
+    "location": "Czech Republic",
+    "datePosted": "N/A",
+    "applicationDeadline": "4 Jul 2025 11:55 PM",
+    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
+    "companyName": "UNICEF",
+    "source": "unicef-careers",
+    "jobType": "International Organization",
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
+  },
+  {
+    "link": "https://jobs.unicef.org/en-us/job/581770/remotehomebased-international-consultant-to-support-the-development-and-provide-technical-review-of-the-new-comprehensive-child-protection-and-family-support-legislation-unicef-czech-republic-rro",
+    "position": "Remote Home-based International Consultant to support the development and provide technical review of the new Comprehensive Child Protection and Family Support Legislation - UNICEF Czech Republic RRO",
+    "location": "Czech Republic",
+    "datePosted": "N/A",
+    "applicationDeadline": "4 Jul 2025 11:55 PM",
+    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
+    "companyName": "UNICEF",
+    "source": "unicef-careers",
+    "jobType": "International Organization",
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
+  },
+  {
+    "link": "https://jobs.unicef.org/en-us/job/581412/readvertisement-homebased-regional-administrative-data-consultant-50-working-days-with-travel-as-needed-europe-and-central-asia-regional-office-ecaro",
+    "position": "RE-ADVERTISEMENT Home-based Regional Administrative Data Consultant 50 working days with travel as needed - Europe and Central Asia Regional Office ECARO",
+    "location": "Türkiye",
+    "datePosted": "N/A",
+    "applicationDeadline": "25 Jun 2025 11:55 PM",
+    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
+    "companyName": "UNICEF",
+    "source": "unicef-careers",
+    "jobType": "International Organization",
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
   },
   {
     "link": "https://jobs.unicef.org/en-us/job/581677/internship-opportunity-support-the-development-of-green-risings-urban-strategy-for-youth-engagement-in-slums-generation-unlimited-genu-programme-group-fulltimeremote",
@@ -2817,7 +1660,7 @@
     "companyName": "UNICEF",
     "source": "unicef-careers",
     "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
   },
   {
     "link": "https://jobs.unicef.org/en-us/job/581730/consultancy-fundraisingpartnership-consultant-req-581730",
@@ -2829,7 +1672,7 @@
     "companyName": "UNICEF",
     "source": "unicef-careers",
     "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
   },
   {
     "link": "https://jobs.unicef.org/en-us/job/581737/solution-architect-senior-software-engineer-consultant-req-581737",
@@ -2841,7 +1684,7 @@
     "companyName": "UNICEF",
     "source": "unicef-careers",
     "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
   },
   {
     "link": "https://jobs.unicef.org/en-us/job/581429/relanzamiento-consultor%C3%ADa-para-apoyar-la-elaboraci%C3%B3n-de-la-pol%C3%ADtica-nacional-de-reducci%C3%B3n-de-la-morbimortalidad-materna-y-neonatal-quito-ecuador-6-meses",
@@ -2853,7 +1696,7 @@
     "companyName": "UNICEF",
     "source": "unicef-careers",
     "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
   },
   {
     "link": "https://jobs.unicef.org/en-us/job/581673/consultor%C3%ADa-para-la-sistematizaci%C3%B3n-de-la-iniciativa-escuelas-resilientes-implementadas-en-lago-agrio-sucumb%C3%ADos-ecuador-3-meses",
@@ -2865,7 +1708,7 @@
     "companyName": "UNICEF",
     "source": "unicef-careers",
     "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
   },
   {
     "link": "https://jobs.unicef.org/en-us/job/581406/consultancy-6-months-homebased-ideally-within-eap-timezone-market-research-project-manager-and-analyst-division-of-private-fundraising-and-partnerships-pfp",
@@ -2877,11 +1720,11 @@
     "companyName": "UNICEF",
     "source": "unicef-careers",
     "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
   },
   {
-    "link": "https://jobs.unicef.org/en-us/job/581741/national-individual-consultant-to-support-the-induction-and-capacity-building-of-wedge-midwives-midwife-mentors-to-provide-support-to-the-maternal-health-and-prevention-of-vertical-transmission-programme-pretoria-south-africa-6-months-remote",
-    "position": "National Individual Consultant to Support the Induction and Capacity Building of Wedge Midwives Midwife Mentors to Provide Support to the Maternal Health and Prevention of Vertical Transmission Programme Pretoria South Africa 6 months Remote",
+    "link": "https://jobs.unicef.org/en-us/job/581741/consultant-to-support-the-induction-and-capacity-building-of-wedge-midwives-to-provide-support-to-the-maternal-health-prevention-of-vertical-transmission-programme-pretoria-south-africa-6-months-remote",
+    "position": "Consultant to Support the Induction and Capacity Building of Wedge Midwives to Provide Support to the Maternal Health Prevention of Vertical Transmission Programme Pretoria South Africa 6 months Remote",
     "location": "South Africa",
     "datePosted": "N/A",
     "applicationDeadline": "26 Jun 2025 06:00 AM",
@@ -2889,167 +1732,37 @@
     "companyName": "UNICEF",
     "source": "unicef-careers",
     "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
+    "scrapedAt": "2025-06-13T17:48:31.287Z"
   },
   {
-    "link": "https://jobs.unicef.org/en-us/job/581733/consultor%C3%ADa-asistencia-t%C3%A9cnica-para-el-desarrollo-y-definici%C3%B3n-de-acciones-para-el-cambio-social-de-comportamiento-para-una-alimentaci%C3%B3n-saludable-prevenci%C3%B3n-del-sobrepeso-y-obesidad-sede-la-paz-bolivia-60-d%C3%ADas-calendario-req-581733",
-    "position": "Consultor a Asistencia t cnica para el desarrollo y definici n de acciones para el cambio social de comportamiento para una alimentaci n saludable prevenci n del sobrepeso y obesidad Sede La Paz - Bolivia 60 d as calendario Req 581733",
-    "location": "Bolivia",
-    "datePosted": "N/A",
-    "applicationDeadline": "18 Jun 2025 11:55 PM",
-    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
-    "companyName": "UNICEF",
-    "source": "unicef-careers",
-    "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
+    "link": "https://opportunitiesforyouth.org/2025/06/13/one-world-scholarship-2025-in-austria-for-global-south-students-partial-funding-for-masters-and-phd/",
+    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/WhatsApp-Image-2025-06-13-at-10.37.28.jpeg?resize=440%2C264&ssl=1",
+    "position": "One World Scholarship 2025 in Austria for Global South Students Partial Funding for Master s and PhD",
+    "companyName": "N/A",
+    "location": "Continent",
+    "jobType": "SCHOLARSHIPS",
+    "datePosted": "2025-06-12",
+    "applicationDeadline": "N/A",
+    "source": "opportunitiesforyouth",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
+    "isValidUrl": true
   },
   {
-    "link": "https://jobs.unicef.org/en-us/job/581678/internship-social-behavior-change-colombo-sri-lanka-26-weeks",
-    "position": "Internship - Social Behavior Change Colombo Sri Lanka 26 weeks",
-    "location": "Sri Lanka",
-    "datePosted": "N/A",
-    "applicationDeadline": "20 Jun 2025 11:55 PM",
-    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
-    "companyName": "UNICEF",
-    "source": "unicef-careers",
-    "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
-  },
-  {
-    "link": "https://jobs.unicef.org/en-us/job/581702/supporting-knowledge-development-and-wash-sector-documentation-national-consultancy-for-9-months",
-    "position": "Supporting Knowledge development and WASH sector documentation - National consultancy for 9 months",
-    "location": "Papua New Guinea",
-    "datePosted": "N/A",
-    "applicationDeadline": "26 Jun 2025 11:55 PM",
-    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
-    "companyName": "UNICEF",
-    "source": "unicef-careers",
-    "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
-  },
-  {
-    "link": "https://jobs.unicef.org/en-us/job/581738/international-consultant-to-support-the-development-of-the-multisectoral-nutrition-action-plan-for-tajikistan-20262030-70-wds-dushanbe-tajikistan",
-    "position": "International consultant to support the development of the multisectoral nutrition action plan for Tajikistan 2026-2030 70 w ds Dushanbe Tajikistan",
-    "location": "Tajikistan",
-    "datePosted": "N/A",
-    "applicationDeadline": "22 Jun 2025 11:55 PM",
-    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
-    "companyName": "UNICEF",
-    "source": "unicef-careers",
-    "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
-  },
-  {
-    "link": "https://jobs.unicef.org/en-us/job/581736/consultant-hpv-integration-guidance-unicef-east-asia-and-pacific-regional-office-eapro-bangkok-thailand-job-no-581736",
-    "position": "Consultant HPV Integration Guidance UNICEF East Asia and Pacific Regional Office EAPRO Bangkok Thailand Job No 581736",
-    "location": "Thailand",
-    "datePosted": "N/A",
-    "applicationDeadline": "26 Jun 2025 11:55 PM",
-    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
-    "companyName": "UNICEF",
-    "source": "unicef-careers",
-    "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
-  },
-  {
-    "link": "https://jobs.unicef.org/en-us/job/581676/consultor%C3%ADa-implementaci%C3%B3n-de-la-pol%C3%ADtica-de-habilidades-digitales-y-socioemocionales-incluido-el-apoyo-log%C3%ADstico-a-las-actividades-de-inclusi%C3%B3n-digital-sede-la-paz-195-d%C3%ADas-calendario-requisiton-no-581676",
-    "position": "Consultor a Implementaci n de la Pol tica de Habilidades Digitales y Socioemocionales Incluido el Apoyo Log stico a las Actividades de Inclusi n Digital Sede La Paz 195 d as calendario Requisiton No 581676",
-    "location": "Bolivia",
-    "datePosted": "N/A",
-    "applicationDeadline": "17 Jun 2025 11:55 PM",
-    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
-    "companyName": "UNICEF",
-    "source": "unicef-careers",
-    "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
-  },
-  {
-    "link": "https://jobs.unicef.org/en-us/job/581675/consultor%C3%ADa-elaboraci%C3%B3n-de-una-propuesta-de-pol%C3%ADtica-de-educaci%C3%B3n-digital-para-la-formaci%C3%B3n-de-maestras-y-maestros-sede-en-la-paz-120-d%C3%ADas-calendario-requisition-no-581675",
-    "position": "Consultor a Elaboraci n de una Propuesta de Pol tica de Educaci n Digital para la Formaci n de Maestras y Maestros Sede en La Paz 120 d as calendario Requisition No 581675",
-    "location": "Bolivia",
-    "datePosted": "N/A",
-    "applicationDeadline": "16 Jun 2025 11:55 PM",
-    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
-    "companyName": "UNICEF",
-    "source": "unicef-careers",
-    "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
-  },
-  {
-    "link": "https://jobs.unicef.org/en-us/job/581667/consultancy-child-protection-and-children-and-armed-conflict-consultant-ref581667",
-    "position": "Consultancy Child Protection and Children and Armed Conflict Consultant - Ref 581667",
-    "location": "United States",
-    "datePosted": "N/A",
-    "applicationDeadline": "18 Jun 2025 11:55 PM",
-    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
-    "companyName": "UNICEF",
-    "source": "unicef-careers",
-    "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
-  },
-  {
-    "link": "https://jobs.unicef.org/en-us/job/581704/recrutement-dun-ing%C3%A9nieur-en-construction-international-wcarbenin-132-jours",
-    "position": "Recrutement d un ing nieur en construction international- WCAR-BENIN 132 jours",
-    "location": "Benin",
-    "datePosted": "N/A",
-    "applicationDeadline": "17 Jun 2025 11:55 PM",
-    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
-    "companyName": "UNICEF",
-    "source": "unicef-careers",
-    "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
-  },
-  {
-    "link": "https://jobs.unicef.org/en-us/job/581707/republication-consultante-nationale-ing%C3%A9nieur-en-b%C3%A2timent-11-mois-farchana-tchad",
-    "position": "Re-publication - Consultant e national e Ing nieur en b timent - 11 mois Farchana Tchad",
-    "location": "Chad",
-    "datePosted": "N/A",
-    "applicationDeadline": "17 Jun 2025 11:55 PM",
-    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
-    "companyName": "UNICEF",
-    "source": "unicef-careers",
-    "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
-  },
-  {
-    "link": "https://jobs.unicef.org/en-us/job/581701/international-consultant-for-vaccine-management-officer-vmo-niamey-niger-6-months",
-    "position": "International Consultant for Vaccine Management Officer VMO Niamey Niger 6 months",
-    "location": "Niger",
-    "datePosted": "N/A",
-    "applicationDeadline": "17 Jun 2025 11:55 PM",
-    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
-    "companyName": "UNICEF",
-    "source": "unicef-careers",
-    "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
-  },
-  {
-    "link": "https://jobs.unicef.org/en-us/job/581603/readvertisement-mental-health-and-psychosocial-support-consultant-for-europe-and-central-asia-regional-office",
-    "position": "RE-ADVERTISEMENT Mental Health and Psychosocial support Consultant for Europe and Central Asia Regional Office",
-    "location": "Switzerland",
-    "datePosted": "N/A",
-    "applicationDeadline": "18 Jun 2025 11:55 PM",
-    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
-    "companyName": "UNICEF",
-    "source": "unicef-careers",
-    "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
-  },
-  {
-    "link": "https://jobs.unicef.org/en-us/job/581709/human-resources-associate-g6-temporary-appointment-ictd-digital-core-cio-office-valencia-spain-00132221-until-31-december-2025",
-    "position": "Human Resources Associate G-6 Temporary Appointment ICTD Digital Core - CIO Office Valencia Spain 00132221 until 31 December 2025",
-    "location": "Spain",
-    "datePosted": "N/A",
-    "applicationDeadline": "18 Jun 2025 11:55 PM",
-    "companyLogo": "https://logowik.com/content/uploads/images/930_unicef.jpg",
-    "companyName": "UNICEF",
-    "source": "unicef-careers",
-    "jobType": "International Organization",
-    "scrapedAt": "2025-06-13T04:57:18.647Z"
+    "link": "https://opportunitiesforyouth.org/2025/06/13/knight-hennessy-scholarship-2026-at-stanford-university-fully-funded-in-the-usa/",
+    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/Study-Abroad-Program.png?resize=150%2C150&ssl=1",
+    "position": "Knight-Hennessy Scholarship 2026 at Stanford University Fully Funded in the USA",
+    "companyName": "N/A",
+    "location": "Africa",
+    "jobType": "SCHOLARSHIPS",
+    "datePosted": "2025-06-12",
+    "applicationDeadline": "N/A",
+    "source": "opportunitiesforyouth",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
+    "isValidUrl": true
   },
   {
     "link": "https://opportunitiesforyouth.org/2025/06/12/__trashed-4/",
-    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/1749576852440.jpeg?resize=440%2C264&ssl=1",
+    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/1749576852440.jpeg?resize=150%2C150&ssl=1",
     "position": "2025 2 UFV Free Online Foreign Language Courses Now Open for Applications",
     "companyName": "N/A",
     "location": "Bachelor",
@@ -3057,7 +1770,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.016Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3070,7 +1783,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.016Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3083,38 +1796,38 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.016Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
-    "link": "https://opportunitiesforyouth.org/2025/06/12/2025-ai-for-climate-resilience-fellowship-in-africa-apply-now/",
-    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/WhatsApp-Image-2025-06-12-at-16.24.57.jpeg?resize=150%2C150&ssl=1",
-    "position": "2025 AI for Climate Resilience Fellowship in Africa Apply Now",
+    "link": "https://opportunitiesforyouth.org/2025/06/13/calling-organisations-to-apply-special-accreditation-for-un-youth-programme-anniversary-meeting/",
+    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/WPAY.jpg?resize=440%2C264&ssl=1",
+    "position": "Calling Organisations to Apply Special Accreditation for UN Youth Programme Anniversary Meeting",
     "companyName": "N/A",
     "location": "Africa",
-    "jobType": "SCHOLARSHIPS",
-    "datePosted": "2025-06-11",
+    "jobType": "TRAINING & CONFERENCES",
+    "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.016Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
-    "link": "https://opportunitiesforyouth.org/2025/06/12/serve-as-a-middle-school-english-teacher-in-togo/",
-    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/final.png?resize=150%2C150&ssl=1",
-    "position": "Serve as a Middle School English Teacher in Togo",
+    "link": "https://opportunitiesforyouth.org/2025/06/13/girl-tank-pitch-power-planet-virtual-steam-challenge-for-future-climate-leaders/",
+    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/0145DF58-D04A-46B7-B5A0-224E153216D1.jpg?resize=150%2C150&ssl=1",
+    "position": "Girl Tank Pitch Power Planet Virtual STEAM Challenge for Future Climate Leaders",
     "companyName": "N/A",
-    "location": "America",
-    "jobType": "SCHOLARSHIPS",
-    "datePosted": "2025-06-11",
+    "location": "Asia",
+    "jobType": "TRAINING & CONFERENCES",
+    "datePosted": "2025-06-12",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.016Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
     "link": "https://opportunitiesforyouth.org/2025/06/10/un-summer-academy-2025-join-the-global-online-training-on-digital-transformation-for-sustainable-development/",
-    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/1749479805010.jpg?resize=440%2C264&ssl=1",
+    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/1749479805010.jpg?resize=150%2C150&ssl=1",
     "position": "UN Summer Academy 2025 Join the Global Online Training on Digital Transformation for Sustainable Development",
     "companyName": "N/A",
     "location": "Africa",
@@ -3122,7 +1835,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.016Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3135,7 +1848,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.016Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3148,33 +1861,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.016Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://opportunitiesforyouth.org/2025/06/09/bonn-international-fellowships-2026-individual-funding-for-visiting-researchers/",
-    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/Copy-of-Template-7-1.jpg?resize=150%2C150&ssl=1",
-    "position": "Bonn International Fellowships 2026 Individual Funding for Visiting Researchers",
-    "companyName": "N/A",
-    "location": "Africa",
-    "jobType": "TRAINING & CONFERENCES",
-    "datePosted": "2025-06-08",
-    "applicationDeadline": "N/A",
-    "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.016Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://opportunitiesforyouth.org/2025/06/05/apply-now-2025-korean-peninsula-emerging-leaders-program/",
-    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/ncafp.png?resize=150%2C150&ssl=1",
-    "position": "Apply Now 2025 Korean Peninsula Emerging Leaders Program",
-    "companyName": "N/A",
-    "location": "America",
-    "jobType": "TRAINING & CONFERENCES",
-    "datePosted": "2025-06-04",
-    "applicationDeadline": "N/A",
-    "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.016Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3187,7 +1874,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.016Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3200,7 +1887,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.016Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3213,7 +1900,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.016Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3226,7 +1913,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.016Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3239,7 +1926,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.016Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3252,12 +1939,25 @@
     "datePosted": "2025-06-03",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.016Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
+    "isValidUrl": true
+  },
+  {
+    "link": "https://opportunitiesforyouth.org/2025/06/12/serve-as-a-middle-school-english-teacher-in-togo/",
+    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/final.png?resize=440%2C264&ssl=1",
+    "position": "Serve as a Middle School English Teacher in Togo",
+    "companyName": "N/A",
+    "location": "N/A",
+    "jobType": "BACHELORS",
+    "datePosted": "2025-06-11",
+    "applicationDeadline": "N/A",
+    "source": "opportunitiesforyouth",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
     "link": "https://opportunitiesforyouth.org/2025/06/12/kaplan-pathways-uk-progression-scholarships-2026/",
-    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/1749548742041.jpeg?resize=440%2C264&ssl=1",
+    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/1749548742041.jpeg?resize=150%2C150&ssl=1",
     "position": "Kaplan Pathways UK Progression Scholarships 2026",
     "companyName": "N/A",
     "location": "N/A",
@@ -3265,7 +1965,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.017Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3278,7 +1978,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.017Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3291,25 +1991,25 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.017Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
-    "link": "https://opportunitiesforyouth.org/2025/06/11/european-labour-authority-ela-traineeship-programme-2025-2026-apply-now/",
-    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/WhatsApp-Image-2025-06-11-at-18.05.34.jpeg?resize=150%2C150&ssl=1",
-    "position": "European Labour Authority ELA Traineeship Programme 2025 2026 Apply Now",
+    "link": "https://opportunitiesforyouth.org/2025/06/12/2025-ai-for-climate-resilience-fellowship-in-africa-apply-now/",
+    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/WhatsApp-Image-2025-06-12-at-16.24.57.jpeg?resize=440%2C264&ssl=1",
+    "position": "2025 AI for Climate Resilience Fellowship in Africa Apply Now",
     "companyName": "N/A",
     "location": "N/A",
-    "jobType": "BACHELORS",
-    "datePosted": "2025-06-10",
+    "jobType": "MASTERS",
+    "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.017Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
     "link": "https://opportunitiesforyouth.org/2025/06/12/iaca-scholarships-for-anti-corruption-masters-programs-2025-26/",
-    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/Scholarships-for-MACS-and-IMACC.jpg?resize=440%2C264&ssl=1",
+    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/Scholarships-for-MACS-and-IMACC.jpg?resize=150%2C150&ssl=1",
     "position": "IACA Scholarships for Anti-Corruption Master s Programs 2025 26",
     "companyName": "N/A",
     "location": "N/A",
@@ -3317,7 +2017,7 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.017Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3330,7 +2030,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.017Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3343,20 +2043,7 @@
     "datePosted": "2025-06-10",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.017Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://opportunitiesforyouth.org/2025/06/10/apply-now-2025-2026-eac-student-mobility-scholarships-for-undergraduate-masters-and-phd-studies-across-east-africa/",
-    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/Navy-Blue-Scholarship-Instagram-Post-1.png?resize=150%2C150&ssl=1",
-    "position": "Apply Now 2025 2026 EAC Student Mobility Scholarships for Undergraduate Master s and PhD Studies Across East Africa",
-    "companyName": "N/A",
-    "location": "N/A",
-    "jobType": "MASTERS",
-    "datePosted": "2025-06-09",
-    "applicationDeadline": "N/A",
-    "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.017Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3369,7 +2056,20 @@
     "datePosted": "2025-06-11",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.017Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
+    "isValidUrl": true
+  },
+  {
+    "link": "https://opportunitiesforyouth.org/2025/06/10/apply-now-2025-2026-eac-student-mobility-scholarships-for-undergraduate-masters-and-phd-studies-across-east-africa/",
+    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/Navy-Blue-Scholarship-Instagram-Post-1.png?resize=150%2C150&ssl=1",
+    "position": "Apply Now 2025 2026 EAC Student Mobility Scholarships for Undergraduate Master s and PhD Studies Across East Africa",
+    "companyName": "N/A",
+    "location": "N/A",
+    "jobType": "PHD",
+    "datePosted": "2025-06-09",
+    "applicationDeadline": "N/A",
+    "source": "opportunitiesforyouth",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3382,7 +2082,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.017Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   },
   {
@@ -3395,20 +2095,7 @@
     "datePosted": "2025-06-09",
     "applicationDeadline": "N/A",
     "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.017Z",
-    "isValidUrl": true
-  },
-  {
-    "link": "https://opportunitiesforyouth.org/2025/06/09/mpower-women-in-stem-scholarship-2025-empowering-global-female-leaders-in-science-and-technology/",
-    "companyLogo": "https://i0.wp.com/opportunitiesforyouth.org/wp-content/uploads/2025/06/Copy-of-Scholarship-Template-2.png?resize=150%2C150&ssl=1",
-    "position": "MPOWER Women in STEM Scholarship 2025 Empowering Global Female Leaders in Science and Technology",
-    "companyName": "N/A",
-    "location": "N/A",
-    "jobType": "PHD",
-    "datePosted": "2025-06-08",
-    "applicationDeadline": "N/A",
-    "source": "opportunitiesforyouth",
-    "scrapedAt": "2025-06-13T04:57:26.017Z",
+    "scrapedAt": "2025-06-13T17:48:41.232Z",
     "isValidUrl": true
   }
 ]
