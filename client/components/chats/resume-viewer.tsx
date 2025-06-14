@@ -120,8 +120,8 @@ export default function DocumentViewer({
             checked={isEditing}
             onCheckedChange={setIsEditing}
           />
-          <Label htmlFor="edit-mode" className="flex items-center">
-            <Edit className="h-4 w-4 mr-1" />
+          <Label htmlFor="edit-mode" className="flex items-center text-primary">
+            <Edit className="h-4 w-4 mr-1 text-primary" />
             <span>Edit Mode</span>
           </Label>
         </div>
@@ -166,7 +166,7 @@ export default function DocumentViewer({
       ) : documentType === "coverLetter" ? (
         <Textarea
           value={editorContent}
-          className="min-h-[500px] font-serif text-md"
+          className="min-h-[500px] font-serif text-md text-primary"
         />
       ) : (
         <ResumeImageRenderer htmlContent={editorContent} />

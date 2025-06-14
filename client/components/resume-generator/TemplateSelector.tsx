@@ -19,6 +19,7 @@ import {
   type Template,
   type ColorScheme,
 } from "@/lib/resume-templates";
+import { useDocumentStore } from "@/store/useResumeStore";
 
 const formatIcons = {
   pdf: PdfIcon,
@@ -43,12 +44,13 @@ export function TemplateSelector({
   onContinue,
   isGenerating,
 }: TemplateSelectorProps) {
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
-    null
-  );
-  const [selectedColors, setSelectedColors] = useState<ColorScheme | null>(
-    null
-  );
+  const {
+    selectedTemplate,
+    selectedColors,
+    setSelectedTemplate,
+    setSelectedColors,
+  } = useDocumentStore();
+  
   const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);
 
   const handleTemplateSelect = (template: Template) => {

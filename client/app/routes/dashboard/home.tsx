@@ -1,17 +1,15 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 import { Header } from "@/components/Header";
 import { ResumeUploader } from "@/components/resume-generator/ResumeUploader";
 import { JobDetails } from "@/components/resume-generator/JobDetails";
 import { useDocumentStore } from "@/store/useResumeStore";
 import DocumentViewer from "@/components/chats/resume-viewer";
-import { motion } from "framer-motion";
 import { ProgressIndicator } from "@/components/resume-generator/progress-indicator";
 import { TemplateSelector } from "@/components/resume-generator/TemplateSelector";
 import { useEffect } from "react";
 import { useLocation } from "react-router";
-import { GeneratingState } from "@/components/dashboard/generating-state";
+import { GeneratingState } from "@/components/generating-state/generating-state";
 
 export default function DocumentGenerator() {
   const {
@@ -22,13 +20,10 @@ export default function DocumentGenerator() {
     generatedResume,
     chatId,
     generatedCoverLetter,
-    selectedTemplate,
-    selectedColors,
+    sseChannelId,
     setResumeFile,
     setJobUrl,
     setActiveTab,
-    setSelectedTemplate,
-    setSelectedColors,
     generateDocuments,
     resetForm,
   } = useDocumentStore();
@@ -46,7 +41,7 @@ export default function DocumentGenerator() {
   const hasGeneratedDocuments = generatedResume || generatedCoverLetter;
 
   return (
-    <div className=" flex flex-col overflow-hidden bg-gradient-to-b from-background to-muted/20">
+    <div className="flex flex-col overflow-hidden bg-gradient-to-b from-background to-muted/20">
       <Header
         title="Resume Tailoring Tool"
         onReset={resetForm}
@@ -56,7 +51,10 @@ export default function DocumentGenerator() {
       <div className="flex-1 overflow-y-auto p-4 md:p-6 w-full max-w-[1200px] mx-auto">
         <Tabs
           value={activeTab}
-          onValueChange={setActiveTab as (value: string) => void}
+          onValueChange={(value) =>
+            !isGenerating &&
+            setActiveTab(value as "upload" | "design" | "preview")
+          }
           className="w-full"
         >
           <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
@@ -91,7 +89,7 @@ export default function DocumentGenerator() {
             />
           </div>
 
-          <TabsContent value="upload" className=" space-y-6 mt-0">
+          <TabsContent value="upload" className="space-y-6 mt-0">
             <div className="flex flex-col gap-6">
               <ResumeUploader
                 resumeFile={resumeFile}
@@ -110,10 +108,7 @@ export default function DocumentGenerator() {
 
           <TabsContent value="design" className="space-y-6 mt-0">
             <TemplateSelector
-              onTemplateSelect={(template, colors) => {
-                setSelectedTemplate(template);
-                setSelectedColors(colors);
-              }}
+              onTemplateSelect={() => {}}
               onContinue={generateDocuments}
               isGenerating={isGenerating}
             />
@@ -121,11 +116,11 @@ export default function DocumentGenerator() {
 
           <TabsContent value="preview" className="space-y-6 mt-0">
             {isGenerating ? (
-              <GeneratingState />
+              <GeneratingState channelId={sseChannelId} />
             ) : hasGeneratedDocuments ? (
               <DocumentPreview
-                generatedResume={generatedResume}
-                generatedCoverLetter={generatedCoverLetter}
+                generatedResume={generatedResume ?? ""}
+                generatedCoverLetter={generatedCoverLetter ?? ""}
                 chatId={chatId ?? ""}
                 onNewDocument={() => setActiveTab("upload")}
                 onReset={resetForm}
@@ -195,7 +190,6 @@ function DocumentPreview({
           <TabsTrigger value="resume">Resume</TabsTrigger>
           <TabsTrigger value="coverLetter">Cover Letter</TabsTrigger>
         </TabsList>
-
         <TabsContent value="resume" className="mt-0">
           <DocumentViewer
             documentHTML={generatedResume}
@@ -204,7 +198,6 @@ function DocumentPreview({
             jobTitle=""
           />
         </TabsContent>
-
         <TabsContent value="coverLetter" className="mt-0">
           <DocumentViewer
             documentHTML={generatedCoverLetter}
@@ -214,7 +207,6 @@ function DocumentPreview({
           />
         </TabsContent>
       </Tabs>
-
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
         <Button onClick={onReset} variant="outline">
           Start New

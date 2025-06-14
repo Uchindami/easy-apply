@@ -1,3 +1,4 @@
+import type { channel } from "diagnostics_channel";
 import { Document, Packer, Paragraph } from "docx";
 
 interface GeneratedDocuments {
@@ -26,17 +27,19 @@ export async function generateTailoredDocuments(
   jobUrl: string,
   userId: string,
   selectedTemplate: object,
-  selectedColors: object
+  selectedColors: object,
+  channelId:string
 ): Promise<GeneratedDocuments> {
-  if (
-    !resumeFile ||
-    !jobUrl ||
-    !userId ||
-    !selectedTemplate ||
-    !selectedColors
-  ) {
+  const missingParams: string[] = [];
+  if (!resumeFile) missingParams.push("resumeFile");
+  if (!jobUrl) missingParams.push("jobUrl");
+  if (!userId) missingParams.push("userId");
+  if (!selectedTemplate) missingParams.push("selectedTemplate");
+  if (!selectedColors) missingParams.push("selectedColors");
+
+  if (missingParams.length > 0) {
     throw new Error(
-      "Missing required parameters: resumeFile, jobUrl, or userId"
+      `Missing required parameter(s): ${missingParams.join(", ")}`
     );
   }
   if (!(resumeFile instanceof File)) {
@@ -50,6 +53,7 @@ export async function generateTailoredDocuments(
   formData.append("file", resumeFile);
   formData.append("weblink", jobUrl);
   formData.append("userId", userId);
+  formData.append("channelId", channelId); 
   formData.append("selectedTemplate", JSON.stringify(selectedTemplate));
   formData.append("selectedColors", JSON.stringify(selectedColors));
 
