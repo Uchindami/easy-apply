@@ -12,11 +12,11 @@ import (
 type Job map[string]interface{}
 
 const (
-	currentJobsFile  = "./current_jobs.json"
-	previousJobsFile = "./previous_jobs.json"
-	newJobsFile      = "./new_jobs.json"
-	nodeScriptPath   = "E:/code/random-projects/javascript/web-scrapping/index.mjs"
-	nodeScriptMore   = "E:/code/random-projects/javascript/web-scrapping/get-more-details.mjs"
+	currentJobsFile  = "./scraper/current_jobs.json"
+	previousJobsFile = "./scraper/previous_jobs.json"
+	newJobsFile      = "./scraper/new_jobs.json"
+	nodeScriptPath   = "./scraper/index.mjs"
+	nodeScriptMore   = "./scraper/get-more-details.mjs"
 	scraperInterval  = time.Minute * 10 // 5 minutes
 )
 

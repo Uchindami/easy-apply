@@ -1,3 +1,37 @@
 easy-apply.json
+# Ignore configuration files
 .env
 env.go
+
+# Ignore build artifacts
+*.exe
+
+# Ignore logs
+*.log
+
+# Ignore temporary files
+*.tmp
+
+# Ignore IDE specific files
+.idea/
+
+# Ignore OS generated files
+.DS_Store
+
+# Ignore node_modules directory
+node_modules/
+
+# Ignore Python cache files
+__pycache__/
+
+# Ignore coverage reports
+coverage/
+
+# Ignore test output files
+test-output/    
+
+# Ignore documentation build files
+docs/_build/
+
+# Ignore virtual environment directories
+venv/
