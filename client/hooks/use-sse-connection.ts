@@ -17,9 +17,6 @@ interface UseSSEConnectionProps {
 const BASE_RECONNECT_DELAY = 1000;
 const MAX_RECONNECT_DELAY = 30000;
 
-export const getApiUrl = (): string => {
-	return "http://localhost:8080";
-};
 
 export const calculateReconnectDelay = (attempt: number): number => {
 	return Math.min(BASE_RECONNECT_DELAY * 2 ** attempt, MAX_RECONNECT_DELAY);
@@ -122,8 +119,8 @@ export const useSSEConnection = ({
 
 		cleanup();
 
-		const apiUrl = getApiUrl();
-		const eventSource = new EventSource(`${apiUrl}/events/${channelId}`);
+
+		const eventSource = new EventSource(`/events/${channelId}`);
 		eventSourceRef.current = eventSource;
 
 		eventSource.onopen = () => {

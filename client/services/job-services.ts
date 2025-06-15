@@ -154,7 +154,7 @@ export async function fetchJobRecommendations(
       formData.append("requestType", "new");
     }
 
-    const response = await fetch("http://localhost:8080/recommendations", {
+    const response = await fetch("/recommendations", {
       method: "POST",
       body: formData,
     });
