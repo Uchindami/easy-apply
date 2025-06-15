@@ -29,23 +29,23 @@ const initialSteps: Step[] = [
 // Helper function to get API URL safely
 const getApiUrl = (): string => {
   // Check if we're in a browser environment
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     // Try to get from window object first (if set by your app)
     if ((window as any).API_URL) {
       return (window as any).API_URL;
     }
-    
+
     // For client-side, you can also check if Next.js has injected the env var
-    if (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_API_URL) {
+    if (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_URL) {
       return process.env.NEXT_PUBLIC_API_URL;
     }
   }
-  
+
   // Server-side or fallback
-  if (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_API_URL) {
+  if (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
-  
+
   // Default fallback
   return "http://localhost:8080";
 };

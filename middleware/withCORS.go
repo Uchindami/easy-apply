@@ -19,7 +19,8 @@ func WithCORS(handler http.HandlerFunc) http.HandlerFunc {
 }
 
 func enableCORS(w http.ResponseWriter) {
-    w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+    // w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+    w.Header().Add("Access-Control-Allow-Origin", "https://399f-102-70-10-67.ngrok-free.app")
     w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
     w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 }
