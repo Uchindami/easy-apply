@@ -6,6 +6,13 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
   server: {
-    allowedHosts: ["399f-102-70-10-67.ngrok-free.app"],
+    proxy: {
+      "/backend": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/backend/, ""),
+      },
+    },
   },
 });
+// This Vite configuration sets up a React project with Tailwind CSS and TypeScript support.

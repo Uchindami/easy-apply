@@ -4,7 +4,7 @@
  * @returns The backend's JSON response (e.g. { valid: boolean, ... })
  */
 export async function validateUrlWithBackend(url: string): Promise<any> {
-  const endpoint = `/validate-url?url=${encodeURIComponent(
+  const endpoint = `/backend/validate-url?url=${encodeURIComponent(
     url
   )}`;
   try {
