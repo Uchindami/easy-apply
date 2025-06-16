@@ -95,7 +95,7 @@ func convertPDFHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pdfService := NewPDFService("http://localhost:3000/forms/chromium/convert/html")
+	pdfService := NewPDFService("http://gotenberg:3000/forms/chromium/convert/html")
 	pdfReader, err := pdfService.ConvertHTMLToPDF(req.HTML)
 	if err != nil {
 		handleServiceError(w, err)
