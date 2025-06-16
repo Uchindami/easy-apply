@@ -6,6 +6,8 @@ services:
     container_name: backend
     ports:
       - "8080:8080" # Expose backend port for direct access (optional)
+    depends_on:
+      - gotenberg
     restart: unless-stopped
 
   # Frontend Service (Node/React)
@@ -16,6 +18,20 @@ services:
     ports:
       - "5173:5173" # Expose frontend port for direct access (optional)
     restart: unless-stopped
+
+  # Gotenberg Service for PDF conversion
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    container_name: gotenberg
+    ports:
+      - "3000:3000" # Expose Gotenberg API port
+    restart: unless-stopped
+    # Optional: Add health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # Nginx Service
   nginx:
@@ -31,4 +47,5 @@ services:
     depends_on:
       - backend
       - frontend
+      - gotenberg
     restart: unless-stopped
