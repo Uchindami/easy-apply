@@ -8,13 +8,10 @@
   "main": "index.js",
   "scripts": {},
   "dependencies": {
-    "fuse.js": "^7.1.0",
-    "puppeteer": "^24.7.2",
-    "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-adblocker": "^2.13.6"
+    "puppeteer": "^24.7.2"
   },
   "devDependencies": {
-    "@playwright/test": "^1.52.0",
+    "@playwright/test": "^1.53.0",
     "@types/node": "^22.15.18"
   }
 }

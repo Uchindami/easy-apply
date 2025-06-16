@@ -19,7 +19,7 @@ FROM node:22 AS node-deps
 WORKDIR /app/scraper
 COPY scraper/package*.json ./
 # Install only production dependencies
-RUN npm ci --only=production
+RUN npm ci
 
 # ---
 
