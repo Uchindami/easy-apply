@@ -20,7 +20,7 @@ services:
 
   # Nginx Service
   nginx:
-    image: nginx:latest
+    image: nginx:1.27.5
     container_name: nginx
     ports:
       - "80:80" # Map host port 80 to Nginx container port 80

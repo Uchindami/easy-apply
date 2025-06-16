@@ -13,7 +13,7 @@ export function SidebarFooterNav({ isActive, onLogout }: SidebarFooterNavProps) 
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
+      {/* <SidebarMenuItem>
         <SidebarMenuButton
           onClick={() => navigate("/dashboard/settings")}
           tooltip="Settings"
@@ -22,7 +22,7 @@ export function SidebarFooterNav({ isActive, onLogout }: SidebarFooterNavProps) 
           <Settings className="mr-2" />
           <span>Settings</span>
         </SidebarMenuButton>
-      </SidebarMenuItem>
+      </SidebarMenuItem> */}
       <SidebarMenuItem>
         <SidebarMenuButton
           onClick={() => navigate("/dashboard/profile")}

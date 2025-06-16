@@ -67,7 +67,7 @@ func SendProgress(channelID, step, status, message string) {
 
 // EventsHandler manages the lifecycle of an SSE connection
 func EventsHandler(w http.ResponseWriter, r *http.Request) {
-	channelID := strings.TrimPrefix(r.URL.Path, "/events/")
+	channelID := strings.TrimPrefix(r.URL.Path, "/api/events/")
 	if channelID == "" {
 		utils.HandleError(w, r, "Channel ID is required", http.StatusBadRequest, fmt.Errorf("channel ID is missing"))
 		return

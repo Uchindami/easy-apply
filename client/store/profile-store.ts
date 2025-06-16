@@ -35,6 +35,7 @@ export type ProfileActions = {
   resetStore: () => void;
   clearError: () => void;
   clearRecommendation: () => void;
+  setLogout: () => void; // Logout action
 };
 
 const defaultPreferences: Preferences = {
@@ -70,6 +71,21 @@ export const useProfileStore = create<ProfileState & ProfileActions>()(
     setInitialized: (initialized) => set({ isInitialized: initialized }),
     clearError: () => set({ error: null }),
     clearRecommendation: () => set({ recommendation: null }),
+    setLogout: async () => {
+      const { resetStore } = get();
+      try {
+        await auth.signOut();
+        cleanupAuth();
+        resetStore();
+        set({ isInitialized: false });
+        window.location.href = "/"; // Navigate to root
+      } catch (error) {
+        console.error("Error during logout:", error);
+        set({
+          error: error instanceof Error ? error.message : "Failed to logout",
+        });
+      }
+    },
 
     fetchProfile: async () => {
       const { user } = get();
@@ -164,4 +180,3 @@ onAuthStateChanged(auth, (user) => {
     useProfileStore.getState().fetchProfile();
   }
 });
-

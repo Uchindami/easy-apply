@@ -25,6 +25,7 @@ export type RecommendationData = {
   industry: string;
   skills?: string[];
   experience?: string;
+  confidence: string; // Optional field for confidence level
   // Add other recommendation fields as needed
 };
 

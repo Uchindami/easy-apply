@@ -1,4 +1,4 @@
-import { useEffect, useMemo, type FC } from "react"
+import { useEffect, useMemo, type FC } from "react";
 import { useNavigate } from "react-router";
 import { BookOpen, MoreHorizontal, Trash2 } from "lucide-react";
 import {
@@ -26,7 +26,7 @@ import { historyService } from "@/services/history-service";
 
 interface ChatListProps {
   isActive: (path: string) => boolean;
-  searchQuery: string
+  searchQuery: string;
 }
 
 const ChatListSkeleton: FC = () => (
@@ -102,22 +102,18 @@ export function ChatList({ isActive, searchQuery }: ChatListProps) {
 
   const handleDeleteChat = async (chatId: string) => {
     if (!user) return;
-
     try {
-      historyService.deleteHistory(user.uid, chatId);
-      await fetchChats(user.uid); // Refresh chat list after deletion
-      if (location.pathname.includes(chatId)) {
-        navigate("/dashboard"); // Redirect to dashboard if current chat is deleted
-      }
+      await historyService.deleteHistory(user.uid, chatId);
       toast({
         title: "Chat deleted",
-        description: "The chat has been removed from your history",
+        description: "The chat has been successfully deleted.",
       });
+      // Optionally, refetch chats after deletion
+      await fetchChats(user.uid);
     } catch (err) {
       toast({
         title: "Failed to delete chat",
-        description:
-          err instanceof Error ? err.message : "Unknown error occurred",
+        description: err instanceof Error ? err.message : "Unknown error occurred",
         variant: "destructive",
       });
     }
@@ -131,7 +127,9 @@ export function ChatList({ isActive, searchQuery }: ChatListProps) {
   }, [chats, searchQuery]);
 
   const currentChatId = useMemo(() => {
-    const match = location.pathname.match(/\/dashboard\/(chat|chatHistory)\/(.+)/);
+    const match = location.pathname.match(
+      /\/dashboard\/(chat|chatHistory)\/(.+)/
+    );
     return match ? match[2] : undefined;
   }, [location.pathname]);
 

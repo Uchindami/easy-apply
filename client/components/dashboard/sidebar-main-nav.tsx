@@ -33,11 +33,11 @@ export function SidebarMainNav({ isActive, onNewChat }: SidebarMainNavProps) {
         <SidebarMenuItem>
           <SidebarMenuButton
             onClick={onNewChat}
-            tooltip="New Chat"
+            tooltip="New Application"
             variant="outline"
           >
             <Plus className="mr-2" />
-            <span>New Chat</span>
+            <span>New Application</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

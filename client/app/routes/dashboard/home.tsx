@@ -10,6 +10,7 @@ import { TemplateSelector } from "@/components/resume-generator/TemplateSelector
 import { useEffect } from "react";
 import { useLocation } from "react-router";
 import { GeneratingState } from "@/components/generating-state/generating-state";
+import Footer from "@/components/footer";
 
 export default function DocumentGenerator() {
   const {
@@ -131,6 +132,7 @@ export default function DocumentGenerator() {
           </TabsContent>
         </Tabs>
       </div>
+      <Footer />
     </div>
   );
 }

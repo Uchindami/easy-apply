@@ -1,10 +1,4 @@
-import {
-  Outlet,
-  useNavigate,
-  useLocation,
-  redirect,
-  Navigate,
-} from "react-router";
+import { Outlet, useNavigate, useLocation } from "react-router";
 import { useEffect, useState } from "react";
 import {
   SidebarProvider,
@@ -23,38 +17,28 @@ import { SidebarTools } from "@/components/dashboard/sidebar-tools";
 import { SidebarFooterNav } from "@/components/dashboard/sidebar-footer-nav";
 import { SidebarSearch } from "@/components/dashboard/sidebar-search";
 import { SidebarMainNav } from "@/components/dashboard/sidebar-main-nav";
+import { useDocumentStore } from "@/store/useResumeStore";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isLoading } = useProfileStore();
   const { toast } = useToast();
+  const {resetForm} = useDocumentStore();
+  const { user, isLoading, setLogout } = useProfileStore();
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleLogout = async () => {
-    try {
-      navigate("/login");
-      toast({
-        title: "Logged out successfully",
-      });
-    } catch (err) {
-      toast({
-        title: "Failed to logout",
-        description:
-          err instanceof Error ? err.message : "Unknown error occurred",
-        variant: "destructive",
-      });
-    }
+    setLogout();
   };
 
   const handleNewChat = async () => {
     if (!user) return;
-
     try {
       navigate(`/dashboard`);
+      resetForm(); // Reset the form state
       toast({
         title: "New chat created",
-        description: "You can start your conversation now",
+        description: "You can start your Application now",
       });
     } catch (err) {
       toast({
