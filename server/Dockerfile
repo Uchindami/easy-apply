@@ -29,7 +29,9 @@ FROM node:22
 WORKDIR /app
 
 # Install system dependencies required by Chromium
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    chromium-sandbox \
     chromium \
     fonts-liberation \
     libappindicator3-1 \
@@ -46,6 +48,8 @@ RUN apt-get update && apt-get install -y \
     libxss1 \
     libgconf-2-4 \
     # Clean up the apt cache to reduce image size
+    && apt-get clean autoclean \
+    && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables to tell Puppeteer/Playwright to use the system-installed Chromium
