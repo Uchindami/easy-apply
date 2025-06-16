@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 import { JobCard } from "@/components/job-card"
 import type { SourceBucket, SwipeState } from "@/types/job"
-import { memo } from "react"
+import { memo, useMemo } from "react"
 
 interface JobContentProps {
   isMobile: boolean
@@ -12,6 +12,16 @@ interface JobContentProps {
   savedJobsInitialized: boolean
 }
 
+const GRID_COLUMNS_MAP = {
+  1: "grid-cols-1",
+  2: "grid-cols-2",
+  3: "grid-cols-3",
+  4: "grid-cols-4",
+  5: "grid-cols-5",
+} as const
+
+const MAX_COLUMNS = 5
+
 export const JobContent = memo(function JobContent({
   isMobile,
   sourceBuckets,
@@ -20,31 +30,24 @@ export const JobContent = memo(function JobContent({
   swipeState,
   savedJobsInitialized,
 }: JobContentProps) {
-  const getGridColsClass = () => {
-    switch (Math.min(activeSources.length || 1, 5)) {
-      case 1:
-        return "grid-cols-1"
-      case 2:
-        return "grid-cols-2"
-      case 3:
-        return "grid-cols-3"
-      case 4:
-        return "grid-cols-4"
-      case 5:
-        return "grid-cols-5"
+  const gridColsClass = useMemo(() => {
+    const columnCount = Math.min(activeSources.length || 1, MAX_COLUMNS) as keyof typeof GRID_COLUMNS_MAP
+    return GRID_COLUMNS_MAP[columnCount]
+  }, [activeSources.length])
+
+  const swipeTransform = useMemo(() => {
+    switch (swipeState.swipeDirection) {
+      case "left":
+        return "translate-x-[-8px]"
+      case "right":
+        return "translate-x-[8px]"
       default:
-        return "grid-cols-1"
+        return ""
     }
-  }
+  }, [swipeState.swipeDirection])
 
   return (
-    <div
-      className={cn(
-        "transition-transform bg-background duration-150 ease-out",
-        swipeState.swipeDirection === "left" && "translate-x-[-8px]",
-        swipeState.swipeDirection === "right" && "translate-x-[8px]",
-      )}
-    >
+    <div className={cn("transition-transform bg-background duration-150 ease-out", swipeTransform)}>
       {isMobile ? (
         <MobileJobContent
           sourceBuckets={sourceBuckets}
@@ -55,7 +58,7 @@ export const JobContent = memo(function JobContent({
         <DesktopJobContent
           sourceBuckets={sourceBuckets}
           activeSources={activeSources}
-          gridColsClass={getGridColsClass()}
+          gridColsClass={gridColsClass}
           savedJobsInitialized={savedJobsInitialized}
         />
       )}
@@ -74,37 +77,28 @@ const MobileJobContent = memo(function MobileJobContent({
   activeTab,
   savedJobsInitialized,
 }: MobileJobContentProps) {
-  if (sourceBuckets.length === 0 || activeTab >= sourceBuckets.length) {
-    return null
+  const currentBucket = useMemo(() => {
+    if (sourceBuckets.length === 0 || activeTab >= sourceBuckets.length) {
+      return null
+    }
+    return sourceBuckets[activeTab]
+  }, [sourceBuckets, activeTab])
+
+  if (!currentBucket) {
+    return <div className="p-4 text-center text-muted-foreground">No content available</div>
   }
 
-  const currentBucket = sourceBuckets[activeTab]
-
   return (
-    <div
-      className="relative"
-      style={{ 
-        touchAction: "pan-y pinch-zoom",
-        WebkitOverflowScrolling: "touch" 
-      }}
-    >
+    <section className="relative touch-pan-y" style={{ WebkitOverflowScrolling: "touch" }}>
       <div
         className="p-4 overflow-y-auto"
         role="tabpanel"
         id={`tab-panel-${currentBucket.id}`}
         aria-labelledby={`tab-${currentBucket.id}`}
       >
-        <div className="space-y-4">
-          {currentBucket.jobs.length === 0 ? (
-            <div className="text-center text-gray-400">No jobs found.</div>
-          ) : (
-            currentBucket.jobs.map((job, idx) => (
-              <JobCard key={`${job.id || job.link}-${idx}`} job={job} savedJobsInitialized={savedJobsInitialized} />
-            ))
-          )}
-        </div>
+        <JobList jobs={currentBucket.jobs} savedJobsInitialized={savedJobsInitialized} />
       </div>
-    </div>
+    </section>
   )
 })
 
@@ -121,35 +115,64 @@ const DesktopJobContent = memo(function DesktopJobContent({
   gridColsClass,
   savedJobsInitialized,
 }: DesktopJobContentProps) {
+  const activeBuckets = useMemo(() => {
+    return activeSources.map((sourceIndex) => sourceBuckets[sourceIndex]).filter(Boolean)
+  }, [sourceBuckets, activeSources])
+
   if (activeSources.length === 0) {
     return (
       <div className="grid grid-cols-1">
-        <div className="col-span-full p-6 text-center text-gray-500">Select at least one source to view jobs</div>
+        <div className="col-span-full p-6 text-center text-muted-foreground">
+          Select at least one source to view jobs
+        </div>
       </div>
     )
   }
 
   return (
-    <div className={`grid ${gridColsClass} gap-4`}>
-      {activeSources.map((sourceIndex) => {
-        const bucket = sourceBuckets[sourceIndex]
-        if (!bucket) return null
+    <div className={cn("grid gap-4", gridColsClass)}>
+      {activeBuckets.map((bucket) => (
+        <SourceColumn key={bucket.id} bucket={bucket} savedJobsInitialized={savedJobsInitialized} />
+      ))}
+    </div>
+  )
+})
 
-        return (
-          <div key={bucket.id} className="p-6">
-            <h3 className="font-medium text-lg mb-4">{bucket.title}</h3>
-            <div className="space-y-4 overflow-y-auto max-h-[calc(100vh-200px)]">
-              {bucket.jobs.length === 0 ? (
-                <div className="text-center text-gray-400">No jobs found.</div>
-              ) : (
-                bucket.jobs.map((job, idx) => (
-                  <JobCard key={`${job.id || job.link}-${idx}`} job={job} savedJobsInitialized={savedJobsInitialized} />
-                ))
-              )}
-            </div>
-          </div>
-        )
-      })}
+interface SourceColumnProps {
+  bucket: SourceBucket
+  savedJobsInitialized: boolean
+}
+
+const SourceColumn = memo(function SourceColumn({ bucket, savedJobsInitialized }: SourceColumnProps) {
+  return (
+    <div className="p-6">
+      <h3 className="font-medium text-lg mb-4 text-foreground">{bucket.title}</h3>
+      <div className="space-y-4 overflow-y-auto max-h-[calc(100vh-200px)] scrollbar-hide">
+        <JobList jobs={bucket.jobs} savedJobsInitialized={savedJobsInitialized} />
+      </div>
+    </div>
+  )
+})
+
+interface JobListProps {
+  jobs: SourceBucket["jobs"]
+  savedJobsInitialized: boolean
+}
+
+const JobList = memo(function JobList({ jobs, savedJobsInitialized }: JobListProps) {
+  if (jobs.length === 0) {
+    return <div className="text-center text-muted-foreground py-8">No jobs found</div>
+  }
+
+  return (
+    <div className="space-y-4">
+      {jobs.map((job, idx) => (
+        <JobCard
+          key={job.id ? `${job.id}-${idx}` : `${job.link}-${idx}`}
+          job={job}
+          savedJobsInitialized={savedJobsInitialized}
+        />
+      ))}
     </div>
   )
 })

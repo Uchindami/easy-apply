@@ -17,7 +17,7 @@ import (
 	// "google.golang.org/grpc/codes"
 )
 
-const jobsInputFile = "new_jobs.json"
+const jobsInputFile = "./scraper/new_jobs.json"
 
 // JobListing represents the structure of a job listing as read from the input JSON.
 type JobListing struct {

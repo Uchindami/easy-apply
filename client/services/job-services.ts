@@ -154,7 +154,7 @@ export async function fetchJobRecommendations(
       formData.append("requestType", "new");
     }
 
-    const response = await fetch("/recommendations", {
+    const response = await fetch("/api/recommendations", {
       method: "POST",
       body: formData,
     });

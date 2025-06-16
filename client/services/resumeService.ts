@@ -61,7 +61,7 @@ export async function generateTailoredDocuments(
   console.log("FormData prepared for upload:", formData);
 
   try {
-    const response = await fetch("/upload", {
+    const response = await fetch("/api/upload", {
       method: "POST",
       body: formData,
     });
@@ -92,7 +92,7 @@ export async function generateTailoredDocuments(
  * @returns A Blob representing the PDF file.
  */
 export async function convertHtmlToPdf(htmlContent: string): Promise<Blob> {
-  const response = await fetch("/convert-pdf", {
+  const response = await fetch("/api/convert-pdf", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ html: htmlContent }),

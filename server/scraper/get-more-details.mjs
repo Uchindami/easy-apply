@@ -1,15 +1,13 @@
 import { chromium } from 'playwright';
 import fs from 'fs/promises';
-import path from 'path';
-import os from 'os';
 
 // Configuration
 const CONFIG = {
   concurrency: 20, // Number of concurrent browser contexts to use
   timeout: 30000,  // Navigation timeout in ms
   selectorTimeout: 5000, // Selector timeout in ms
-  inputPath: "./new_jobs.json",
-  outputPath: "./new_jobs.json"
+  inputPath: "./scraper/new_jobs.json",
+  outputPath: "./scraper/new_jobs.json"
 };
 
 // Selector mapping by source
@@ -21,7 +19,10 @@ const SELECTORS = {
 
 async function scrapeJobDescriptions(jobs) {
   // Launch a single browser instance
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({
+    executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined,
+    headless: true,
+  });
 
   // Process jobs in batches for controlled concurrency
   const results = [];

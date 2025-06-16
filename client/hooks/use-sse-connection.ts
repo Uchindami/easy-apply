@@ -119,8 +119,7 @@ export const useSSEConnection = ({
 
 		cleanup();
 
-
-		const eventSource = new EventSource(`/events/${channelId}`);
+		const eventSource = new EventSource(`/api/events/${channelId}`);
 		eventSourceRef.current = eventSource;
 
 		eventSource.onopen = () => {

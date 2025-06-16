@@ -1,0 +1,32 @@
+
+services:
+  # Backend Service (Go)
+  backend:
+    build:
+      context: ./server # Path to your backend's Dockerfile
+    container_name: backend
+    ports:
+      - "8080:8080" # Expose backend port for direct access (optional)
+    restart: unless-stopped
+
+  # Frontend Service (Node/React)
+  frontend:
+    build:
+      context: ./client # Path to your frontend's Dockerfile
+    container_name: frontend
+    ports:
+      - "5173:5173" # Expose frontend port for direct access (optional)
+    restart: unless-stopped
+
+  # Nginx Service
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80" # Map host port 80 to Nginx container port 80
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf # Mount the Nginx config
+    depends_on:
+      - backend
+      - frontend
+    restart: unless-stopped
