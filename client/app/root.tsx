@@ -8,6 +8,7 @@ import {
 } from "react-router";
 import { AuthProvider } from "@/components/auth-provider";
 import { ThemeProvider } from "@/components/theme-provider";
+import { PostHogProvider } from "posthog-js/react";
 import type { Route } from "./+types/root";
 import "./app.css";
 import { Toaster } from "@/components/toaster";
@@ -36,10 +37,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-          <AuthProvider>{children}</AuthProvider>
-          <Toaster />
-        </ThemeProvider>
+        <PostHogProvider
+          apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
+          options={{
+            api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
+            capture_exceptions: true,
+            debug: import.meta.env.MODE === "development",
+          }}
+        >
+          <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+            <AuthProvider>{children}</AuthProvider>
+            <Toaster />
+          </ThemeProvider>
+        </PostHogProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

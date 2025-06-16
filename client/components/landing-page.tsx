@@ -19,13 +19,6 @@ const LandingPage = () => {
       <div className="relative z-10 flex-1 flex items-center justify-center py-16 px-4 sm:py-24">
         <div className="max-w-5xl w-full">
           <div className="flex flex-col items-center gap-6 text-center">
-            {/* Icon container */}
-            <div className="rounded-xl bg-background/30 p-4 shadow-sm backdrop-blur-sm dark:bg-foreground/5">
-              <div className="flex items-center justify-center gap-2">
-                <FileEdit className="h-10 w-10 text-primary" />
-                <Briefcase className="h-10 w-10 text-primary" />
-              </div>
-            </div>
 
             {/* Heading and description */}
             <div>
@@ -44,7 +37,7 @@ const LandingPage = () => {
             <div className="mt-6 flex justify-center gap-3">
               <Link to="/signup">
                 <Button className="shadow-sm transition-shadow hover:shadow">
-                  Try it, it's Free
+                 Log In
                 </Button>
               </Link>
               <Link to="/signup">

@@ -5,5 +5,8 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
+  ssr: {
+    noExternal: ["posthog-js", "posthog-js/react"],
+  },
 });
 // This Vite configuration sets up a React project with Tailwind CSS and TypeScript support.
