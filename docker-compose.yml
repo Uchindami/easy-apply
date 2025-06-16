@@ -1,3 +1,4 @@
+
 services:
   # Backend Service (Go)
   backend:
@@ -22,23 +23,10 @@ services:
     image: nginx:1.27.5
     container_name: nginx
     ports:
-      - "80:80"   # HTTP
-      - "443:443" # HTTPS
+      - "80:80" # Map host port 80 to Nginx container port 80
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./certbot/conf:/etc/letsencrypt        # SSL certificates
-      - ./certbot/www:/var/www/certbot         # Webroot for validation
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf # Mount the Nginx config
     depends_on:
       - backend
       - frontend
     restart: unless-stopped
-
-  # Certbot Service
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    # This will be overridden when we run commands manually
-    command: echo "Certbot container ready"
