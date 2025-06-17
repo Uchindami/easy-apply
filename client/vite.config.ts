@@ -8,5 +8,14 @@ export default defineConfig({
   ssr: {
     noExternal: ["posthog-js", "posthog-js/react"],
   },
+  // server: {
+  //   proxy: {
+  //     "/api": {
+  //       target: "http://localhost:8080",
+  //       changeOrigin: true, 
+  //       rewrite: (path) => path.replace(/^\/api/, "/"),
+  //     },
+  //   },
+  // },
 });
 // This Vite configuration sets up a React project with Tailwind CSS and TypeScript support.

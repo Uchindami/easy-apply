@@ -19,7 +19,7 @@ export default function NotFound() {
 					</p>
 				</div>
 				<div className="pt-4">
-					<Button variant="default" className="gap-2">
+					<Button variant="default" className="gap-2" onClick={() => window.location.href = "/"}>
 						<ArrowLeft className="h-4 w-4" />
 						Back to home
 					</Button>
